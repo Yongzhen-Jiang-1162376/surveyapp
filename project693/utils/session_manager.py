@@ -15,6 +15,7 @@ class SessionManager:
         SITEHOME = "site_home"
         ADDPLANT = "add_plant"
         LISTPLANTS = "list_plants"
+        DASHBOARD = "dashboard"
 
     @staticmethod
     def set(key, value):

@@ -42,3 +42,4 @@ from . import home_controller
 from . import plant_controller
 from . import user_controller
 from . import survey_controller
+from . import dashboard_controller

@@ -18,6 +18,10 @@
                 color: white !important;
             }
         </style>
+
+        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.js"></script>
+        <link href="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.css" rel="stylesheet">
+
     </head>
 
     <body class="d-flex flex-column min-vh-100" style="background-color: #f8f9fa; color: #333">
@@ -41,6 +45,11 @@
                     <!-- prettier-ignore -->
                     {% if session.user.role == 'siteadmin' %}
                     <!-- Site Management -->
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if session.active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {% if session.active_page in ['add_plant', 'list_plants'] %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown">
                             Site Management
@@ -89,7 +98,7 @@
 
         <footer class="text-white text-center py-3 d-flex align-items-center justify-content-center" style="background-color: #343a40">
             <img src="{{ url_for('static', filename='img/grouplogo.jpg') }}" alt="Footer Image" class="img-fluid me-2" style="max-height: 30px" />
-            <p class="mb-0">COMP693_25S1_project_JeremyChee1159850</p>
+            <p class="mb-0">COMP693_25S2_project</p>
         </footer>
     </body>
 </html>
