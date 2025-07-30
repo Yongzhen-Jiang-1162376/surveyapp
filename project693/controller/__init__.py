@@ -22,8 +22,7 @@ config = {
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-while current_dir and os.path.basename(current_dir) != "COMP693_25S1_project_Jeremy_Chee_1159850":
-    current_dir = os.path.dirname(current_dir)
+current_dir = os.path.dirname(current_dir)
 
 dotenv_path = os.path.join(current_dir, ".env")
 load_dotenv(dotenv_path)
