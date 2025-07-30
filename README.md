@@ -1,4 +1,4 @@
-# COMP693_25S1_project_JeremyChee1159850
+# COMP693_25S2_project_GreenMean
 
 ## Username and Password for Login Functionality
 
