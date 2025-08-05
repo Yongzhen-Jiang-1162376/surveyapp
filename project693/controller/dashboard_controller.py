@@ -10,7 +10,7 @@ from bokeh.models import ColumnDataSource, Select
 from bokeh.resources import CDN
 import pandas as pd
 
-@app.route("/siteadmin/dashboard", methods=["GET", "POST"])
+@app.route("/dashboard/", methods=["GET", "POST"])
 def dashboard():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value

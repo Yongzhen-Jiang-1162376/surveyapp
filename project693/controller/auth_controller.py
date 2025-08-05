@@ -26,7 +26,8 @@ exempt_routes_patterns = [
     r"^/survey/next/$",
     r"^/survey/questionnaire/$",
     r"^/favicon.ico$",
-    r"^/misc/.*$"
+    r"^/misc/.*$",
+    r"^/dashboard/.*$",
 ]
 
 
