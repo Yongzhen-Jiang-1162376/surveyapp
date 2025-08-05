@@ -6,3 +6,7 @@
 |------------|-----------------|
 | siteadmin1 | siteadmin1pass  |
 | siteadmin2 | siteadmin2pass  |
+
+
+## Compile Tailwind CSS into fully generated CSS file
+npx @tailwindcss/cli -i ./project693/static/src/input.css -o ./project693/static/dist/output.css
