@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>{% block title %}{% endblock %}</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <style>
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" /> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" /> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" /> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
+    <!-- <style>
             .dropdown-menu .dropdown-item.active,
             .dropdown-menu .dropdown-item:focus {
                 background-color: #1c9a37 !important;
@@ -17,15 +17,73 @@
                 background-color: #1c9a37 !important;
                 color: white !important;
             }
-        </style>
+        </style> -->
 
-        <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.js"></script>
-        <link href="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.css" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='dist/output.css')}}"
+    />
 
-    </head>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-    <body class="d-flex flex-column min-vh-100" style="background-color: #f8f9fa; color: #333">
-        <nav class="navbar navbar-expand-sm navbar-dark" style="position: fixed; top: 0; width: 100%; z-index: 1000; background-color: #343a40; padding-top: 5px; padding-bottom: 5px">
+    <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.js"></script>
+    <link
+      href="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="h-[60px]">
+      <nav
+        class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800"
+      >
+        <div class="flex flex-wrap justify-between items-center mx-auto">
+          <a href="{{ url_for('site_home') }}" class="flex items-center">
+            <img
+              src="{{ url_for('static', filename='img/cclogo.png') }}"
+              class="mr-3 h-6 sm:h-9"
+              alt="Logo"
+            />
+            <span
+              class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
+              >GreenMean</span
+            >
+          </a>
+          <div class="flex items-center lg:order-2">
+            <a
+              href="#"
+              class="text-gray-800 dark:text-white hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+              >Log in</a
+            >
+            <!-- <a href="#" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">Get started</a>
+                <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                    <svg class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button> -->
+          </div>
+          <div
+            class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
+            id="mobile-menu-2"
+          >
+            <ul
+              class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0"
+            >
+              <li>
+                <a
+                  href="{{ url_for('dashboard') }}"
+                  class="block py-2 pr-4 pl-3 text-gray-950 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+                  >Dashboard</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="position: fixed; top: 0; width: 100%; z-index: 1000; background-color: #343a40; padding-top: 5px; padding-bottom: 5px">
             <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
                     <img src="{{ url_for('static', filename='img/cclogo.png') }}" alt="Logo" style="height: 40px" />
@@ -52,9 +110,7 @@
                     </li>
                     {% else %}
 
-                    <!-- prettier-ignore -->
                     {% if session.user.role == 'siteadmin' %}
-                    <!-- Site Management -->
 
                     <li class="nav-item">
                         <a class="nav-link {% if session.active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
@@ -100,15 +156,27 @@
                     {%endif%}
                 </ul>
             </div>
-        </nav>
+        </nav> -->
 
-        <div style="height: 60px"></div>
+    <!-- <div style="height: 60px"></div> -->
 
-        <main class="flex-grow-1 container-fluid py-4" style="background-color: #fff; color: #333">{% block content %}{% endblock %}</main>
+    <main
+      class="p-4"
+      style="min-height: calc(100vh - 120px) !important;"
+    >
+      {% block content %}{% endblock %}
+    </main>
 
-        <footer class="text-white text-center py-3 d-flex align-items-center justify-content-center" style="background-color: #343a40">
-            <img src="{{ url_for('static', filename='img/grouplogo.jpg') }}" alt="Footer Image" class="img-fluid me-2" style="max-height: 30px" />
-            <p class="mb-0">COMP693_25S2_project</p>
-        </footer>
-    </body>
+    <footer
+      class="h-[60px] bg-blue-400 text-center py-3 flex items-center justify-center"
+    >
+      <img
+        src="{{ url_for('static', filename='img/grouplogo.jpg') }}"
+        alt="Footer Image"
+        class="img-fluid me-2"
+        style="max-height: 30px"
+      />
+      <p class="mb-0">COMP693_25S2_project</p>
+    </footer>
+  </body>
 </html>
