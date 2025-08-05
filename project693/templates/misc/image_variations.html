@@ -1,0 +1,32 @@
+{% extends "site_layout.html" %}
+{% block title %}Image Variations by DALLE-E-2{% endblock %}
+
+{% block content %}
+
+    <h2>Image Variations</h2>
+
+
+    <div class="container-fluid mt-4">
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col" class="text-center"><h3>Plant Name</h3></th>
+        <th scope="col" class="text-center"><h3>Original Image</h3></th>
+        <th scope="col" class="text-center"><h3>Image Variation 1</h3></th>
+        <th scope="col" class="text-center"><h3>Image Variation 2</h3></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for image in images%}
+            <tr>
+                <th scope="row">{{image[1]}}</th>
+                <td><img src="{{ url_for('static', filename='images/' ~ image[2]) }}" alt="avatar" style="width: 500px; height: 500px; object-fit: cover;"></td>
+                <td><img src="{{ url_for('static', filename='images/' ~ image[3]) }}" alt="avatar" style="width: 500px; height: 500px"></td>
+                <td><img src="{{ url_for('static', filename='images/' ~ image[4]) }}" alt="avatar" style="width: 500px; height: 500px"></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -36,6 +36,16 @@
                     <li class="nav-item">
                         <a class="nav-link {% if session.active_page == 'site_home' %}active{% endif %}" href="{{ url_for('site_home') }}">Home</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if session.active_page in ['list_image_variations'] %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown">
+                            Misc Links
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item {% if session.active_page == 'list_image_variations' %}active{% endif %}" href="{{ url_for('list_image_variations') }}">Image Variation</a>
+                            </li>
+                        </ul>
+                    </li>
                     {%if not session.user|default('') %}
                     <li class="nav-item">
                         <a class="nav-link {% if session.active_page == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
