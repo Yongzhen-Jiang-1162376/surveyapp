@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from project693.dao.plant_dao import PlantDAO
 from project693.utils.session_manager import SessionManager
 import os, uuid, json
-from project693.data.dall_e_2_image_variations import dall_e_2_images_variations
+from project693.data.mockdata import dall_e_2_images_variations
 
 
 @app.route("/misc/image_variations", methods=["GET"])
