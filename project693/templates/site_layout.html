@@ -24,7 +24,8 @@
       href="{{url_for('static',filename='dist/output.css')}}"
     />
 
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/preline@2.5.0/dist/preline.min.js"></script>
 
     <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.js"></script>
     <link
@@ -33,10 +34,10 @@
     />
   </head>
 
-  <body class="bg-gray-100 min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col">
     <header class="h-[60px]">
       <nav
-        class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800"
+        class="bg-gray-400 border-gray-800 z-100 px-4 lg:px-6 py-2.5"
       >
         <div class="flex flex-wrap justify-between items-center mx-auto">
           <a href="{{ url_for('site_home') }}" class="flex items-center">
@@ -161,7 +162,6 @@
     <!-- <div style="height: 60px"></div> -->
 
     <main
-      class="p-4"
       style="min-height: calc(100vh - 120px) !important;"
     >
       {% block content %}{% endblock %}
