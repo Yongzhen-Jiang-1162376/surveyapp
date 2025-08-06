@@ -2,19 +2,19 @@
 %} {% block content %}
 
 <div class="flex p-4">
-  <div class="basis-1/4 z-40 bg-gray-200 border-gray-800 rounded px-2 py-4">
+  <div class="basis-1/5 z-40 bg-gray-200 border-gray-800 rounded px-2 py-4">
     <ul class="space-y-2 font-medium">
       <li>
         <a
-          href="#"
+          href="{{ url_for('dashboard') }}"
           class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
         >
-          <span class="ms-3">Dashboard</span>
+          <span class="ms-3">Overall</span>
         </a>
       </li>
       <li>
         <a
-          href="#"
+          href="{{ url_for('choices_by_age_group') }}"
           class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
         >
           <span class="ms-3">Choices by Age Group</span>
@@ -22,10 +22,10 @@
       </li>
       <li>
         <a
-          href="#"
+          href="{{ url_for('choices_by_gardening') }}"
           class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
         >
-          <span class="ms-3">Choices by Gardener/Non-Gardener</span>
+          <span class="ms-3">Choices by Gardening</span>
         </a>
       </li>
       <li>
@@ -39,7 +39,7 @@
     </ul>
   </div>
 
-  <div class="basis-3/4 p-4 py-0">
+  <div class="basis-4/5 p-4 py-0">
     <h1 class="text-4xl mb-12">
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
