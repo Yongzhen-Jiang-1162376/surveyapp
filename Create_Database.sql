@@ -58,3 +58,30 @@ CREATE TABLE `survey_results` (
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+/* update database tables and structured for stage 2 */
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- add fields in plants table
+alter table plants
+add (
+	`ai_generated` bool,
+  `is_variation` bool,
+  `original_image_id`	int
+);
+
+-- add fields in survey results table
+alter table survey_results
+add (
+	`response_time`	float,
+	`invasive_plant_id` int,
+  `non_invasive_plant_id` int,
+  `invasive_plant_selected` bool
+);
+
+-- rename question_number to question_seq 
+alter table survey_results
+change question_number question_seq int;
+
+
+SET FOREIGN_KEY_CHECKS = 1;
