@@ -204,3 +204,29 @@ labels = LabelSet(x="win_percentage", y="bradley_terry_beta", text="plant", leve
 p.add_layout(labels)
 
 show(p)
+
+# Histogram of Attractiveness Scores by Each Image
+image_names = [all_plants[idx_to_id[idx]] for idx in range(len(beta_normalized))]
+scores = beta_normalized
+
+colors = [
+    "red" if invasive_map[idx_to_id[idx]] == 1 else "green"
+    for idx in range(len(beta_normalized))
+]
+
+source = ColumnDataSource(data=dict(
+    names=image_names,
+    score=scores,
+    color=colors
+))
+
+p = figure(x_range=image_names, height=600, sizing_mode="stretch_width",
+           title="Normalized Attractiveness Score per Plant",
+           x_axis_label="Plant Name", y_axis_label="Score [-1, +1]",
+           toolbar_location=None, tools="")
+
+p.vbar(x="names", top="score", width=0.6, color="color", source=source)
+
+p.xaxis.major_label_orientation = 0.785
+
+show(p)
