@@ -230,3 +230,41 @@ p.vbar(x="names", top="score", width=0.6, color="color", source=source)
 p.xaxis.major_label_orientation = 0.785
 
 show(p)
+
+
+
+# Histogram of Attractiveness Scores by Plant Type
+bins = np.linspace(-1, 1, 20)
+
+hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
+hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
+
+p = figure(height=600, sizing_mode="stretch_width",
+           title="Histogram of Normalized Attractiveness Scores",
+           x_axis_label="Normalized Score", y_axis_label="Count")
+
+p.quad(top=hist_invasive, bottom=0,
+       left=edges_invasive[:-1], right=edges_invasive[1:],
+       fill_color="red", line_color="white", alpha=0.5,
+       legend_label="Invasive")
+
+p.quad(top=hist_non_invasive, bottom=0,
+       left=edges_non_invasive[:-1], right=edges_non_invasive[1:],
+       fill_color="green", line_color="white", alpha=0.5,
+       legend_label="Non-Invasive")
+
+mean_invasive = np.mean(normalized_invasive_betas)
+mean_non_invasive = np.mean(normalized_non_invasive_betas)
+
+span_invasive = Span(location=mean_invasive, dimension="height", line_color="red",
+                     line_width=2, line_dash="dashed")
+span_non_invasive = Span(location=mean_non_invasive, dimension="height", line_color="green",
+                         line_width=2, line_dash="dashed")
+
+p.add_layout(span_invasive)
+p.add_layout(span_non_invasive)
+
+p.legend.location = "top_left"
+p.legend.click_policy = "hide"
+
+show(p)
