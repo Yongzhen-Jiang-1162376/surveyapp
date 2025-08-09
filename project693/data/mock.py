@@ -234,7 +234,8 @@ show(p)
 
 
 # Histogram of Attractiveness Scores by Plant Type
-bins = np.linspace(-1, 1, 20)
+# bins = np.linspace(-1, 1, 20)
+bins = np.linspace(min(beta_normalized), max(beta_normalized), 10)
 
 hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
 hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
@@ -245,12 +246,12 @@ p = figure(height=600, sizing_mode="stretch_width",
 
 p.quad(top=hist_invasive, bottom=0,
        left=edges_invasive[:-1], right=edges_invasive[1:],
-       fill_color="red", line_color="white", alpha=0.5,
+       fill_color="red", line_color="white", alpha=1,
        legend_label="Invasive")
 
 p.quad(top=hist_non_invasive, bottom=0,
        left=edges_non_invasive[:-1], right=edges_non_invasive[1:],
-       fill_color="green", line_color="white", alpha=0.5,
+       fill_color="green", line_color="white", alpha=1,
        legend_label="Non-Invasive")
 
 mean_invasive = np.mean(normalized_invasive_betas)
@@ -291,9 +292,9 @@ source = ColumnDataSource(data=dict(
 p = figure(x_range=images, height=600, sizing_mode="stretch_width", title="Wins/Losses per Image")
 
 p.vbar(x=dodge("images", -0.15, range=p.x_range), top="wins", width=0.3, source=source,
-       color="#718dbf", legend_label="Wins")
+       color="red", legend_label="Wins")
 p.vbar(x=dodge("images", 0.15, range=p.x_range), top="losses", width=0.3, source=source,
-       color="#e84d60", legend_label="Losses")
+       color="green", legend_label="Losses")
 
 # Styling
 p.x_range.range_padding = 0.05
