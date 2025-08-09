@@ -268,3 +268,41 @@ p.legend.location = "top_left"
 p.legend.click_policy = "hide"
 
 show(p)
+
+
+# Wins/Losses Chart
+print(invasive_map)
+print(all_plants)
+images = [all_plants[id] for id in image_ids]
+print(images)
+
+wins = [int((data['winner'] == id).sum()) for id in image_ids]
+losses = [int((data['loser'] == id).sum()) for id in image_ids]
+
+print(wins)
+print(losses)
+
+source = ColumnDataSource(data=dict(
+    images=images,
+    wins=wins,
+    losses=losses
+))
+
+p = figure(x_range=images, height=600, sizing_mode="stretch_width", title="Wins/Losses per Image")
+
+p.vbar(x=dodge("images", -0.15, range=p.x_range), top="wins", width=0.3, source=source,
+       color="#718dbf", legend_label="Wins")
+p.vbar(x=dodge("images", 0.15, range=p.x_range), top="losses", width=0.3, source=source,
+       color="#e84d60", legend_label="Losses")
+
+# Styling
+p.x_range.range_padding = 0.05
+p.xgrid.grid_line_color = None
+p.y_range.start = 0
+p.yaxis.axis_label = "Count"
+p.legend.location = "top_left"
+p.legend.orientation = "horizontal"
+
+p.xaxis.major_label_orientation = 0.785
+
+show(p)
