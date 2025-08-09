@@ -148,3 +148,59 @@ normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value 
 
 # print("\nMean normalized beta (invasive):", np.mean(normalized_invasive_betas))
 # print("\nMean normalized beta (non-invasive):", np.mean(normalized_non_invasive_betas))
+
+
+# Calculate in percentage
+wins = data['winner'].value_counts()
+appearances = pd.concat([data['winner'], data['loser']]).value_counts()
+
+win_percentages = (wins / appearances).fillna(0)
+
+all_plants = {p[0]: p[1] for p in (invasive_plants + non_invasive_plants)}
+
+plot_data = {
+    'plant': [],
+    'win_percentage': [],
+    'bradley_terry_beta': [],
+    'label_color': []
+}
+
+
+win_percentages_dict = win_percentages.to_dict()
+
+for idx in range(num_images):
+    plant_name = all_plants[idx_to_id[idx]]
+    win_percentages = win_percentages_dict[idx_to_id[idx]]
+    bradley_terry_beta = float(beta_normalized[idx])
+    color = 'red' if invasive_map[idx_to_id[idx]] == 1 else 'green'
+    
+    plot_data['plant'].append(plant_name)
+    plot_data['win_percentage'].append(win_percentages)
+    plot_data['bradley_terry_beta'].append(bradley_terry_beta)
+    plot_data['label_color'].append(color)
+
+
+output_notebook()
+source = ColumnDataSource(data=plot_data)
+
+x_min = min(plot_data['win_percentage'])
+x_max = max(plot_data['win_percentage']) + 0.5
+
+p = figure(
+    x_range=(x_min, x_max),
+    title="Bradley-Terry beta vs. Win %",
+    x_axis_label="Win percentage",
+    y_axis_label="Bradley-Terry beta",
+    height=600,
+    sizing_mode="stretch_width"
+)
+
+# p.circle("win_percentage", "bradley_terry_beta", size=8, source=source, color="navy", alpha=0.6)
+
+p.scatter("win_percentage", "bradley_terry_beta", size=8, marker="circle", source=source, color="navy", alpha=0.6)
+
+labels = LabelSet(x="win_percentage", y="bradley_terry_beta", text="plant", level="glyph",
+                  x_offset=5, y_offset=5, source=source, text_font_size="9pt", text_color="label_color")
+p.add_layout(labels)
+
+show(p)
