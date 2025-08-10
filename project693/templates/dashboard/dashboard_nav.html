@@ -1,0 +1,44 @@
+<div class="basis-1/5 z-40 bg-gray-200 border-gray-800 rounded px-2 py-4">
+  <ul class="space-y-2 font-medium">
+    <li>
+      <a
+        href="{{ url_for('dashboard') }}"
+        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+      >
+        <span class="ms-3">Overall</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('choices_by_age_group') }}"
+        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+      >
+        <span class="ms-3">Choices by Age Group</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('choices_by_gardening') }}"
+        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+      >
+        <span class="ms-3">Choices by Gardening</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('bt_model_unweighted') }}"
+        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+      >
+        <span class="ms-3">Bradley-Terry Model (unweighted)</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('bt_model_weighted') }}"
+        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
+      >
+        <span class="ms-3">Bradley-Terry Model (weighted)</span>
+      </a>
+    </li>
+  </ul>
+</div>
