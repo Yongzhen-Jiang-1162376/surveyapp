@@ -41,7 +41,7 @@ class SurveyDAO(BaseDAO):
         Stores an answer to a survey question.
         """
         query = """
-            INSERT INTO survey_results (session_id, question_number, selected_plant_id)
+            INSERT INTO survey_results (session_id, question_seq, selected_plant_id)
             VALUES (%s, %s, %s)
         """
         self.execute_non_query(
