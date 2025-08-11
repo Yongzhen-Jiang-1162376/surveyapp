@@ -2,9 +2,9 @@
 {% block title %}Green or Mean Survey{% endblock %}
 {% block content %}
 
-<div class="container mt-3">
-    <div class="p-3 mb-3 bg-light rounded-3">
-        <div class="container-fluid py-3">
+<div class="mt-3">
+    <div>
+        <div class="py-3">
             <h1 class="display-5 text-center">Green or Mean Prototype Survey</h1>
             <p class="lead text-center">Which of these two plants would you prefer in your garden?</p>
             <p class="text-center fw-bold">Question {{ question_number }} of 10</p>
@@ -12,16 +12,25 @@
 
             {% if pair|length == 2 %}
             <form method="POST" action="{{ url_for('survey_next') }}">
-                <div class="row justify-content-center">
-                    {% for comp in pair %}
-                    <div class="col-md-5 m-2 border rounded bg-white d-flex align-items-center justify-content-center" style="height: 320px;">
-                        <button type="submit" name="selected_id" value="{{ comp.id }}" class="btn btn-link text-decoration-none p-0">
-                            <img src="{{ url_for('static', filename='img/' ~ comp.image) }}" 
-                                alt="{{ comp.name }}" 
-                                style="width: 300px; height: 300px; object-fit: cover; border-radius: 6px;" />
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1 w-[672px] flex justify-end">
+                        <button type="submit" name="selected_id" value="{{ pair[0].id }}" class="btn btn-link text-decoration-none p-0">
+                            <img src="{{ url_for('static', filename='img/' ~ pair[0].image) }}" 
+                                 alt="{{ pair[0].name }}" 
+                                 width="672px"
+                                 height="672px"
+                                 class="aspect-square object-cover" />
                         </button>
                     </div>
-                    {% endfor %}
+                    <div class="flex-1 w-[672px]">
+                        <button type="submit" name="selected_id" value="{{ pair[1].id }}" class="btn btn-link text-decoration-none p-0">
+                            <img src="{{ url_for('static', filename='img/' ~ pair[1].image) }}" 
+                                 alt="{{ pair[1].name }}" 
+                                 width="672px"
+                                 height="672px"
+                                 class="aspect-square object-cover" />
+                        </button>
+                    </div>
                 </div>
             </form>
             {% else %}
