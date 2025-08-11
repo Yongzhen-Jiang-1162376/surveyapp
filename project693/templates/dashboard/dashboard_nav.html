@@ -1,44 +1,97 @@
-<div class="basis-1/5 z-40 bg-gray-200 border-gray-800 rounded px-2 py-4">
-  <ul class="space-y-2 font-medium">
-    <li>
-      <a
-        href="{{ url_for('dashboard') }}"
-        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
-      >
-        <span class="ms-3">Overall</span>
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ url_for('choices_by_age_group') }}"
-        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
-      >
-        <span class="ms-3">Choices by Age Group</span>
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ url_for('choices_by_gardening') }}"
-        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
-      >
-        <span class="ms-3">Choices by Gardening</span>
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ url_for('bt_model_unweighted') }}"
-        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
-      >
-        <span class="ms-3">Bradley-Terry Model (unweighted)</span>
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ url_for('bt_model_weighted') }}"
-        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group"
-      >
-        <span class="ms-3">Bradley-Terry Model (weighted)</span>
-      </a>
-    </li>
-  </ul>
-</div>
+<nav class="w-full flex border border-gray-500 divide-x divide-gray-500 overflow-hidden">
+  <a class="group 
+            relative 
+            min-w-0 
+            flex-1 
+            {% if current_page == 'dashboard' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-4 
+            px-4 
+            {% if current_page == 'dashboard' %}text-blue-600{% else %}text-gray-300{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('dashboard') }}">
+    Overall proportion
+  </a>
+  <a class="group 
+            relative 
+            min-w-0 
+            flex-1 
+            {% if current_page == 'age_group' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-4 
+            px-4 
+            {% if current_page == 'age_group' %}text-blue-600{% else %}text-gray-300{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('choices_by_age_group') }}">
+    Age Group
+  </a>
+  <a class="group 
+            relative 
+            min-w-0 
+            flex-1 
+            {% if current_page == 'gardening' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-4 
+            px-4 
+            {% if current_page == 'gardening' %}text-blue-600{% else %}text-gray-300{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('choices_by_gardening') }}">
+    Gardenning
+  </a>
+  <a class="group 
+            relative 
+            min-w-0 
+            flex-1 
+            {% if current_page == 'bt_model' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-4 
+            px-4 
+            {% if current_page == 'bt_model' %}text-blue-600{% else %}text-gray-300{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('bt_model_unweighted') }}">
+    Bradley-Terry Model
+  </a>
+  <a class="group 
+            relative 
+            min-w-0 
+            flex-1 
+            {% if current_page == 'bt_model_weighted' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-4 
+            px-4 
+            {% if current_page == 'bt_model_weighted' %}text-blue-600{% else %}text-gray-300{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('bt_model_weighted') }}">
+    Bradley-Terry Model Weighted
+  </a>
+</nav>
