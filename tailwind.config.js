@@ -1,5 +1,8 @@
 tailwind.config = {
-  content: ["./project693/templates/**/*.{html,js,jsx,tsx}"],
+  content: [
+    "./project693/templates/**/*.{html,js,jsx,tsx}",
+    // "./node_modules/preline/preline.js"
+  ],
   darkMode: "class",
   theme: {
     extend: {
