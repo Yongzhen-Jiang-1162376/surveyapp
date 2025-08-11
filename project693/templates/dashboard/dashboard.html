@@ -1,54 +1,49 @@
-{% extends "site_layout.html" %} {% block title %}Analysis Dashboard{% endblock%} 
+{% extends "site_layout.html" %} 
+{% block title %}Analysis Dashboard{% endblock%} 
 
 
 {% block content %}
 
+{% include "dashboard/dashboard_nav.html" %}
 
-
-<div>
-  {% include "dashboard/dashboard_nav.html" %}
-
-  <div class="p-4 py-0">
-    <h1 class="text-4xl mb-12">
-      Analysis of Plant Invasiveness vs. Attractiveness
-    </h1>
-    <div class="flex p-4 gap-4">
-      <div
-        class="basis-1/2 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
-      >
-        <div class="bg-gray-100 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5 mb-12">
-          <p class="mt-1 text-2xl text-center text-gray-900">
-            Overall proportion of choices
-          </p>
-        </div>
-        <div class="px-4 py-8 md:p-5 grid grid-cols-2 gap-4">
-          <div class="bg-gray-300 rounded text-center py-6">
-            <div class="font-bold mb-6">Invasive Choices</div>
-            <div class="flex justify-between lg:px-8 md:px-4">
-              <div class="text-3xl text-red-800">85%</div>
-              <div class="text-3xl text-red-800">1980</div>
-            </div>
+<div class="p-4 py-0 bg-gray-100">
+  <h1 class="text-4xl py-6 text-center">
+    Analysis of Plant Invasiveness vs. Attractiveness
+  </h1>
+  <div class="flex p-4 gap-4">
+    <div
+      class="basis-1/2 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+    >
+      <div class="bg-gray-300 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5 mb-12">
+        <p class="mt-1 text-2xl text-center text-gray-900">
+          Overall proportion of choices
+        </p>
+      </div>
+      <div class="px-4 py-8 md:p-5 grid grid-cols-2 gap-4">
+        <div class="bg-gray-300 rounded text-center py-6">
+          <div class="font-bold mb-6">Invasive Choices</div>
+          <div class="flex justify-between lg:px-8 md:px-4">
+            <div class="text-3xl text-red-800">85%</div>
+            <div class="text-3xl text-red-800">1980</div>
           </div>
-          <div class="bg-gray-300 rounded text-center py-6">
-            <div class="font-bold mb-6">Non-Invasive Choices</div>
-            <div class="flex justify-between lg:px-8 md:px-4">
-              <div class="text-3xl text-green-800">15%</div>
-              <div class="text-3xl text-green-800">349</div>
-            </div>
+        </div>
+        <div class="bg-gray-300 rounded text-center py-6">
+          <div class="font-bold mb-6">Non-Invasive Choices</div>
+          <div class="flex justify-between lg:px-8 md:px-4">
+            <div class="text-3xl text-green-800">15%</div>
+            <div class="text-3xl text-green-800">349</div>
           </div>
         </div>
       </div>
-      <div class="basis-1/2 w-full">{{ div | safe }}</div>
     </div>
-    <!-- <div class="grid sm:grid-cols-1 gap-2 md:grid-cols-2">
-            <div>
-                
-            </div>
-            <div>
-                {{ div2 | safe }}
-            </div>
-        </div> -->
+    <div
+      class="basis-1/2 w-full bg-white border border-gray-200 shadow-2xs rounded-xl"
+    >
+      {{ div | safe }}
+    </div>
   </div>
 </div>
 
-{{ script | safe }} {% endblock %}
+{{ script | safe }} 
+
+{% endblock %}

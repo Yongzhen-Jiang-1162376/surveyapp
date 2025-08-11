@@ -4,15 +4,15 @@
 <div>
   {% include "dashboard/dashboard_nav.html" %}
 
-  <div class="p-4 py-0">
-    <h1 class="text-4xl mb-12">
+  <div class="p-4 py-0 bg-gray-100">
+    <h1 class="text-4xl py-6 text-center">
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
     <div class="flex p-4 gap-4">
       <div
         class="basis-1/2 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
       >
-        <div class="bg-gray-100 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5">
+        <div class="bg-gray-300 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5">
           <p class="mt-1 text-2xl text-center text-gray-900">
             Overall proportion of choices by age group
           </p>
@@ -98,16 +98,12 @@
           </div>
         </div>
       </div>
-      <div class="basis-1/2 w-full">{{ div | safe }}</div>
+      <div
+        class="basis-1/2 w-full bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        {{ div | safe }}
+      </div>
     </div>
-    <!-- <div class="grid sm:grid-cols-1 gap-2 md:grid-cols-2">
-            <div>
-                
-            </div>
-            <div>
-                {{ div2 | safe }}
-            </div>
-        </div> -->
   </div>
 </div>
 

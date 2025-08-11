@@ -1,0 +1,93 @@
+{% extends "site_layout.html" %} 
+
+{% block title %}Analysis Dashboard{%endblock%} 
+
+{% block content %}
+  {% include "dashboard/dashboard_nav.html" %}
+
+  <div class="p-4 py-0 bg-gray-100">
+    <h1 class="text-4xl py-6 text-center">
+      Analysis of Plant Invasiveness vs. Attractiveness
+    </h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ div | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ div2 | safe }}</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_image_div | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_image_div2 | safe }}</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_image_div | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_image_div2 | safe }}</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_type_div | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ hist_type_div2 | safe }}</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8">
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ win_loss_div | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+      >
+        <div class="w-full">{{ win_loss_div2 | safe }}</div>
+      </div>
+    </div>
+  </div>
+
+{{ script | safe }}
+{{ script2 | safe }}
+{{ hist_image_script | safe }}
+{{ hist_image_script2 | safe }}
+{{ hist_type_script | safe }}
+{{ hist_type_script2 | safe }}
+{{ win_loss_script | safe }}
+{{ win_loss_script2 | safe }}
+
+{% endblock %}
