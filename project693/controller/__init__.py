@@ -42,5 +42,11 @@ from . import home_controller
 from . import plant_controller
 from . import user_controller
 from . import survey_controller
-from . import dashboard_controller, dashboard_age_group_controller, dashboard_gardening_controller
+from . import (
+    dashboard_controller, 
+    dashboard_age_group_controller, 
+    dashboard_gardening_controller, 
+    dashboard_bt_model_weighted_controller,
+    dashboard_bt_model_unweighted_controller
+)
 from . import image_controller
