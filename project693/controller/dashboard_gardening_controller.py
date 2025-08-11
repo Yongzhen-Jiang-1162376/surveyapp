@@ -109,4 +109,4 @@ def choices_by_gardening():
     
     script, div = components(p)
     
-    return render_template("dashboard/dashboard_gardening.html", script=script, div=div)
+    return render_template("dashboard/dashboard_gardening.html", script=script, div=div, current_page="gardening")

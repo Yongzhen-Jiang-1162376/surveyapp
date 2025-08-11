@@ -109,4 +109,4 @@ def choices_by_age_group():
     
     script, div = components(p)
     
-    return render_template("dashboard/dashboard_age_group.html", script=script, div=div)
+    return render_template("dashboard/dashboard_age_group.html", script=script, div=div, current_page="age_group")

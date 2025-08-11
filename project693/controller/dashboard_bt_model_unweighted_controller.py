@@ -204,4 +204,4 @@ def bt_model_unweighted():
     
     script, div = components(plot)
     
-    return render_template("dashboard/dashboard_bt_model_unweighted.html", script=script, div=div)
+    return render_template("dashboard/dashboard_bt_model_unweighted.html", script=script, div=div, current_page="bt_model")

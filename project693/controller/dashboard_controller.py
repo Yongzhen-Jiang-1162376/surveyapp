@@ -71,4 +71,4 @@ def dashboard():
     
     script, div = components(plot)
     
-    return render_template("dashboard/dashboard.html", script=script, div=div)
+    return render_template("dashboard/dashboard.html", script=script, div=div, current_page="dashboard")
