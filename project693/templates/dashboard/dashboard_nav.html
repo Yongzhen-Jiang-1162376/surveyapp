@@ -1,12 +1,11 @@
-<nav class="w-full flex border border-gray-500 divide-x divide-gray-500 overflow-hidden">
-  <a class="group 
-            relative 
+  <nav class="flex flex-col md:flex-row border border-gray-500 divide-y md:divide-y-0 md:divide-x divide-gray-500 overflow-hidden">
+    <a class=" 
+             
             min-w-0 
-            flex-1 
             {% if current_page == 'dashboard' %}bg-gray-200{% else %}bg-white{% endif %}
             py-4 
             px-4 
-            {% if current_page == 'dashboard' %}text-blue-600{% else %}text-gray-300{% endif %}
+            {% if current_page == 'dashboard' %}text-blue-600{% endif %}
             hover:text-gray-700 
             font-medium 
             text-center 
@@ -16,16 +15,15 @@
             focus:outline-hidden 
             cursor-pointer"
       href="{{ url_for('dashboard') }}">
-    Overall proportion
+    Overall
   </a>
-  <a class="group 
-            relative 
+  <a class=" 
+             
             min-w-0 
-            flex-1 
             {% if current_page == 'age_group' %}bg-gray-200{% else %}bg-white{% endif %}
             py-4 
             px-4 
-            {% if current_page == 'age_group' %}text-blue-600{% else %}text-gray-300{% endif %}
+            {% if current_page == 'age_group' %}text-blue-600{% endif %}
             hover:text-gray-700 
             font-medium 
             text-center 
@@ -37,14 +35,13 @@
       href="{{ url_for('choices_by_age_group') }}">
     Age Group
   </a>
-  <a class="group 
-            relative 
+  <a class=" 
+             
             min-w-0 
-            flex-1 
             {% if current_page == 'gardening' %}bg-gray-200{% else %}bg-white{% endif %}
             py-4 
             px-4 
-            {% if current_page == 'gardening' %}text-blue-600{% else %}text-gray-300{% endif %}
+            {% if current_page == 'gardening' %}text-blue-600{% endif %}
             hover:text-gray-700 
             font-medium 
             text-center 
@@ -56,14 +53,13 @@
       href="{{ url_for('choices_by_gardening') }}">
     Gardenning
   </a>
-  <a class="group 
-            relative 
+  <a class=" 
+             
             min-w-0 
-            flex-1 
             {% if current_page == 'bt_model' %}bg-gray-200{% else %}bg-white{% endif %}
             py-4 
             px-4 
-            {% if current_page == 'bt_model' %}text-blue-600{% else %}text-gray-300{% endif %}
+            {% if current_page == 'bt_model' %}text-blue-600{% endif %}
             hover:text-gray-700 
             font-medium 
             text-center 
@@ -72,26 +68,7 @@
             focus:z-10 
             focus:outline-hidden 
             cursor-pointer"
-      href="{{ url_for('bt_model_unweighted') }}">
+      href="{{ url_for('bradley_terry_model') }}">
     Bradley-Terry Model
-  </a>
-  <a class="group 
-            relative 
-            min-w-0 
-            flex-1 
-            {% if current_page == 'bt_model_weighted' %}bg-gray-200{% else %}bg-white{% endif %}
-            py-4 
-            px-4 
-            {% if current_page == 'bt_model_weighted' %}text-blue-600{% else %}text-gray-300{% endif %}
-            hover:text-gray-700 
-            font-medium 
-            text-center 
-            overflow-hidden 
-            hover:bg-gray-200 
-            focus:z-10 
-            focus:outline-hidden 
-            cursor-pointer"
-      href="{{ url_for('bt_model_weighted') }}">
-    Bradley-Terry Model Weighted
   </a>
 </nav>
