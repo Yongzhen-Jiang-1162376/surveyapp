@@ -102,10 +102,10 @@ def choices_by_age_group():
             height=450, sizing_mode="stretch_width", toolbar_location=None, tools="")
 
     p.vbar(x=dodge('age_group', -0.25, range=p.x_range), top='Invasive', source=source,
-        width=0.2, color="#F15F36", legend_label="Invasive")
+        width=0.2, color="#FFC000", legend_label="Invasive")
 
     p.vbar(x=dodge('age_group',  0.0,  range=p.x_range), top='Non-Invasive', source=source,
-        width=0.2, color="#19A0AA", legend_label="Non-Invasive")    
+        width=0.2, color="#00B050", legend_label="Non-Invasive")    
     
     script, div = components(p)
     
