@@ -83,5 +83,13 @@ add (
 alter table survey_results
 change question_number question_seq int;
 
+-- rename survey result column names to support statistical analysis
+alter table survey_results
+add (
+  `winner` int,
+  `loser` int,
+  `invasive_winner` int,
+  `invasive_loser` int
+)
 
 SET FOREIGN_KEY_CHECKS = 1;
