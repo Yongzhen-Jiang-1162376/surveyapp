@@ -55,7 +55,7 @@ def survey_next_get():
 
     qn = session.get("question_number", 1)
 
-    if qn == 10:
+    if qn == 11:
         return render_template("survey_questionnaire.html")
 
     used_invasive = SessionManager.get("used_invasive") or []
@@ -71,6 +71,8 @@ def survey_next_get():
         return redirect(url_for("list_plants"))
 
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
+    
+    print(qn)
 
     return render_template("survey.html", pair=pair, question_number=qn)
 
