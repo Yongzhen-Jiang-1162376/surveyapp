@@ -4,31 +4,51 @@
 
 <div class="mt-3">
     <div>
-        <div class="py-3">
-            <h1 class="display-5 text-center">Green or Mean Prototype Survey</h1>
-            <p class="lead text-center">Which of these two plants would you prefer in your garden?</p>
-            <p class="text-center fw-bold">Question {{ question_number }} of 10</p>
-            <hr class="my-3">
+        <div class="mb-3 px-4">
+            <div class="flex flex-col mx-auto px-1 w-full md:w-m-[300px] md:w-[30%] mb-2">
+                <div class="flex justify-between">
+                    <p>Green Mean Plant Survey</p>
+                    <p class="italic font-bold text-red-400">Select the image you like better</p>
+                </div>
+                
+                <div class="w-full mx-auto mt-2 flex items-center gap-x-1">
+                    {% for n in range(1, 11) %}
+                        <div class="w-full 
+                                h-2.5 
+                                flex 
+                                flex-col 
+                                justify-center 
+                                overflow-hidden
+                                {% if question_number >= n %}bg-teal-500{% else %}bg-gray-300{% endif %}
+                                transition 
+                                duration-500"
+                        ></div>
+                    {% endfor %}
+                </div>
+                <div class="flex">
+                    <p class="pt-2 text-sm text-gray-500">{{ question_number }} of 10 to unlock result</p>
+                </div>
+            </div>
 
             {% if pair|length == 2 %}
             <form method="POST" action="{{ url_for('survey_next') }}">
-                <div class="flex flex-col md:flex-row items-center gap-8">
-                    <div class="flex-1 w-[672px] flex justify-end">
-                        <button type="submit" name="selected_id" value="{{ pair[0].id }}" class="btn btn-link text-decoration-none p-0">
+                <div class="flex flex-col md:flex-row items-center gap-3 md:gap-12">
+                    <div class="flex-1 flex justify-end">
+                        <button type="submit" name="selected_id" value="{{ pair[0].id }}" class="btn btn-link text-decoration-none p-0 cursor-pointer">
                             <img src="{{ url_for('static', filename='img/' ~ pair[0].image) }}" 
                                  alt="{{ pair[0].name }}" 
                                  width="672px"
                                  height="672px"
-                                 class="aspect-square object-cover" />
+                                 class="aspect-square object-cover rounded-2xl" />
                         </button>
                     </div>
-                    <div class="flex-1 w-[672px]">
-                        <button type="submit" name="selected_id" value="{{ pair[1].id }}" class="btn btn-link text-decoration-none p-0">
+                    <div class="flex-1">
+                        <button type="submit" name="selected_id" value="{{ pair[1].id }}" class="btn btn-link text-decoration-none p-0 cursor-pointer">
                             <img src="{{ url_for('static', filename='img/' ~ pair[1].image) }}" 
                                  alt="{{ pair[1].name }}" 
                                  width="672px"
                                  height="672px"
-                                 class="aspect-square object-cover" />
+                                 class="aspect-square object-cover rounded-2xl" />
                         </button>
                     </div>
                 </div>
