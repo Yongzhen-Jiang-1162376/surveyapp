@@ -53,7 +53,7 @@ def dashboard():
     
     categories = ["Invasive", "Non-Invasive"]
     values = [85, 15]
-    colors = ["#F15F36", "#19A0AA"]
+    colors = ["#FFC000", "#00B050"]
     
     total = sum(values)
     percentages = [v / total for v in values]
