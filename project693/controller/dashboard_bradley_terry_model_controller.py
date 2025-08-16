@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 import random
-from project693.data.mockdata import invasive_plants, non_invasive_plants
+from project693.data.mockdata import invasive_plants, non_invasive_plants, data, invasive_map
 
 
 @app.route("/dashboard/bradley-terry-model", methods=["GET", "POST"])
@@ -29,55 +29,55 @@ def bradley_terry_model():
     
    
     # number of total choices
-    total_round = 50
+    # total_round = 50
     # assumed propability of invasive plant choice
-    invasive_probability = 65
+    # invasive_probability = 65
 
 
-    data = pd.DataFrame({
-        'winner': [],
-        'loser': [],
-        'RT': [],
-        'invasive_winner': [],
-        'invasive_loser': []
-    })
+    # data = pd.DataFrame({
+    #     'winner': [],
+    #     'loser': [],
+    #     'RT': [],
+    #     'invasive_winner': [],
+    #     'invasive_loser': []
+    # })
 
-    invasive_map = {}
+    # invasive_map = {}
 
 
-    for n in range(total_round):
+    # for n in range(total_round):
         
-        invasive_plant = random.choice(invasive_plants)
-        non_invasive_plant = random.choice(non_invasive_plants)
+    #     invasive_plant = random.choice(invasive_plants)
+    #     non_invasive_plant = random.choice(non_invasive_plants)
 
-        invasive_selection = random.choices([1, 0], weights=[invasive_probability, 100 - invasive_probability])[0]
+    #     invasive_selection = random.choices([1, 0], weights=[invasive_probability, 100 - invasive_probability])[0]
         
-        new_row = pd.DataFrame({
-            'winner': [invasive_plant[0] if invasive_selection == 1 else non_invasive_plant[0]],
-            'loser': [non_invasive_plant[0] if invasive_selection == 1 else invasive_plant[0]],
-            'RT': [1],      # unweighted
-            'invasive_winner': [invasive_selection],
-            'invasive_loser': [1 - invasive_selection]
-        })
+    #     new_row = pd.DataFrame({
+    #         'winner': [invasive_plant[0] if invasive_selection == 1 else non_invasive_plant[0]],
+    #         'loser': [non_invasive_plant[0] if invasive_selection == 1 else invasive_plant[0]],
+    #         'RT': [1],      # unweighted
+    #         'invasive_winner': [invasive_selection],
+    #         'invasive_loser': [1 - invasive_selection]
+    #     })
         
-        data = pd.concat([data, new_row], ignore_index=True)
+    #     data = pd.concat([data, new_row], ignore_index=True)
         
-        invasive_map.update({
-            invasive_plant[0]: 1
-        })
+    #     invasive_map.update({
+    #         invasive_plant[0]: 1
+    #     })
         
-        invasive_map.update({
-            non_invasive_plant[0]: 0
-        })
+    #     invasive_map.update({
+    #         non_invasive_plant[0]: 0
+    #     })
         
     image_ids = sorted(set(data['winner']).union(set(data['loser'])))
     id_to_idx = {img_id: idx for idx, img_id in enumerate(image_ids)}
     idx_to_id = {idx: img_id for img_id, idx in id_to_idx.items()}
-
-    print(image_ids)
-
+    all_plants = {p[0]: p[1] for p in (invasive_plants + non_invasive_plants)}
     num_images = len(image_ids)
-
+    
+    
+    # calculate bradley-terry model
     def weighted_log_likelihood(betas, data):
         ll = 0.0
         for _, row in data.iterrows():
@@ -121,8 +121,6 @@ def bradley_terry_model():
     # print("\nMean beta (invasive):", np.mean(invasive_betas))
     # print("\nMean beta (non-invasive):", np.mean(non_invasive_betas))
 
-
-
     # Normalization of Betas
     beta_min = beta_estimates.min()
     beta_max = beta_estimates.max()
@@ -152,8 +150,6 @@ def bradley_terry_model():
 
     win_percentages = (wins / appearances).fillna(0)
 
-    all_plants = {p[0]: p[1] for p in (invasive_plants + non_invasive_plants)}
-
     plot_data = {
         'plant': [],
         'win_percentage': [],
@@ -167,7 +163,7 @@ def bradley_terry_model():
         plant_name = all_plants[idx_to_id[idx]]
         win_percentages = win_percentages_dict[idx_to_id[idx]]
         bradley_terry_beta = float(beta_normalized[idx])
-        color = 'red' if invasive_map[idx_to_id[idx]] == 1 else 'green'
+        color = '#FFC000' if invasive_map[idx_to_id[idx]] == 1 else '#00B050'
         
         plot_data['plant'].append(plant_name)
         plot_data['win_percentage'].append(win_percentages)
@@ -189,8 +185,6 @@ def bradley_terry_model():
         sizing_mode="stretch_width"
     )
 
-    # p.circle("win_percentage", "bradley_terry_beta", size=8, source=source, color="navy", alpha=0.6)
-
     plot.scatter("win_percentage", "bradley_terry_beta", size=8, marker="circle", source=source, color="navy", alpha=0.6)
 
     labels = LabelSet(x="win_percentage", y="bradley_terry_beta", text="plant", level="glyph",
@@ -200,8 +194,8 @@ def bradley_terry_model():
     # plot.xaxis.major_label_text_font_size = "12pt"
     # plot.yaxis.major_label_text_font_size = "12pt"
     
-    script, div = components(plot)
-    script2, div2 = components(plot)
+    beta_win_percentage_script, beta_win_percentage_div = components(plot)
+    beta_win_percentage_script2, beta_win_percentage_div2 = components(plot)
     
     
     
@@ -210,7 +204,7 @@ def bradley_terry_model():
     scores = beta_normalized
 
     colors = [
-        "red" if invasive_map[idx_to_id[idx]] == 1 else "green"
+        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
         for idx in range(len(beta_normalized))
     ]
 
@@ -247,20 +241,20 @@ def bradley_terry_model():
 
     type_hist_plot.quad(top=hist_invasive, bottom=0,
                         left=edges_invasive[:-1], right=edges_invasive[1:],
-                        fill_color="red", line_color="white", alpha=1,
+                        fill_color="#FFC000", line_color="white", alpha=1,
                         legend_label="Invasive")
 
     type_hist_plot.quad(top=hist_non_invasive, bottom=0,
                         left=edges_non_invasive[:-1], right=edges_non_invasive[1:],
-                        fill_color="green", line_color="white", alpha=1,
+                        fill_color="#00B050", line_color="white", alpha=1,
                         legend_label="Non-Invasive")
 
     mean_invasive = np.mean(normalized_invasive_betas)
     mean_non_invasive = np.mean(normalized_non_invasive_betas)
 
-    span_invasive = Span(location=mean_invasive, dimension="height", line_color="red",
+    span_invasive = Span(location=mean_invasive, dimension="height", line_color="#FFC000",
                         line_width=2, line_dash="dashed")
-    span_non_invasive = Span(location=mean_non_invasive, dimension="height", line_color="green",
+    span_non_invasive = Span(location=mean_non_invasive, dimension="height", line_color="#00B050",
                             line_width=2, line_dash="dashed")
 
     type_hist_plot.add_layout(span_invasive)
@@ -289,9 +283,9 @@ def bradley_terry_model():
     win_loss_plot = figure(x_range=images, height=600, sizing_mode="stretch_width", title="Wins/Losses per Image")
 
     win_loss_plot.vbar(x=dodge("images", -0.15, range=win_loss_plot.x_range), top="wins", width=0.3, source=source,
-        color="red", legend_label="Wins")
+        color="#FFC000", legend_label="Wins")
     win_loss_plot.vbar(x=dodge("images", 0.15, range=win_loss_plot.x_range), top="losses", width=0.3, source=source,
-        color="green", legend_label="Losses")
+        color="#00B050", legend_label="Losses")
 
     # Styling
     win_loss_plot.x_range.range_padding = 0.05
@@ -307,19 +301,13 @@ def bradley_terry_model():
     win_loss_script2, win_loss_div2 = components(win_loss_plot)
     
     
-    
-    
-    
-    
-    
-    
     return render_template(
         "dashboard/dashboard_bradley_terry_model.html",
         current_page="bt_model",
-        script=script, 
-        div=div,
-        script2=script2,
-        div2=div2,
+        beta_win_percentage_script=beta_win_percentage_script, 
+        beta_win_percentage_div=beta_win_percentage_div,
+        beta_win_percentage_script2=beta_win_percentage_script2,
+        beta_win_percentage_div2=beta_win_percentage_div2,
         hist_image_script=hist_image_script,
         hist_image_div=hist_image_div,
         hist_image_script2=hist_image_script2,
