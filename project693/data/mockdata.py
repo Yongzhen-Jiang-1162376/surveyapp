@@ -1,3 +1,13 @@
+import pandas as pd
+
+import random
+
+# number of total choices
+total_round = 50
+# assumed propability of invasive plant choice
+invasive_probability = 65
+
+
 dall_e_2_images_variations = [
     [1, "Akebia quinata", "Akebia quinata Weed.png",
         "Akebia quinata Weed 1.png", "Akebia quinata Weed 2.png"],
@@ -97,3 +107,117 @@ non_invasive_plants = [
     (48, "Sulphurea"),
     (49, "White Clematis")
 ]
+
+invasive_map = {}
+
+# generate mock data
+"""
+data = pd.DataFrame({
+    'winner': [],
+    'loser': [],
+    'RT': [],
+    'invasive_winner': [],
+    'invasive_loser': []
+})
+
+for n in range(total_round):
+
+    invasive_plant = random.choice(invasive_plants)
+    non_invasive_plant = random.choice(non_invasive_plants)
+
+    invasive_selection = random.choices(
+        [1, 0], weights=[invasive_probability, 100 - invasive_probability])[0]
+
+    new_row = pd.DataFrame({
+        'winner': [invasive_plant[0] if invasive_selection == 1 else non_invasive_plant[0]],
+        'loser': [non_invasive_plant[0] if invasive_selection == 1 else invasive_plant[0]],
+        'RT': [1],      # unweighted
+        'invasive_winner': [invasive_selection],
+        'invasive_loser': [1 - invasive_selection]
+    })
+
+    data = pd.concat([data, new_row], ignore_index=True)
+
+    invasive_map.update({
+        invasive_plant[0]: 1
+    })
+
+    invasive_map.update({
+        non_invasive_plant[0]: 0
+    })
+"""
+
+# print(data)
+# print(invasive_map)
+# print(data['winner'])
+# print(data.values.tolist())
+
+survey_data = [
+    [39.0, 17.0, 1.0, 0.0, 1.0],
+    [35.0, 25.0, 1.0, 0.0, 1.0],
+    [42.0, 3.0, 1.0, 0.0, 1.0],
+    [42.0, 1.0, 1.0, 0.0, 1.0],
+    [24.0, 37.0, 1.0, 1.0, 0.0],
+    [6.0, 40.0, 1.0, 1.0, 0.0],
+    [6.0, 49.0, 1.0, 1.0, 0.0],
+    [45.0, 17.0, 1.0, 0.0, 1.0],
+    [4.0, 48.0, 1.0, 1.0, 0.0],
+    [36.0, 34.0, 1.0, 0.0, 1.0],
+    [30.0, 47.0, 1.0, 1.0, 0.0],
+    [45.0, 2.0, 1.0, 0.0, 1.0],
+    [34.0, 40.0, 1.0, 1.0, 0.0],
+    [19.0, 38.0, 1.0, 1.0, 0.0],
+    [21.0, 37.0, 1.0, 1.0, 0.0],
+    [10.0, 40.0, 1.0, 1.0, 0.0],
+    [43.0, 4.0, 1.0, 0.0, 1.0],
+    [28.0, 39.0, 1.0, 1.0, 0.0],
+    [37.0, 18.0, 1.0, 0.0, 1.0],
+    [47.0, 33.0, 1.0, 0.0, 1.0],
+    [0.0, 41.0, 1.0, 1.0, 0.0],
+    [6.0, 45.0, 1.0, 1.0, 0.0],
+    [29.0, 44.0, 1.0, 1.0, 0.0], 
+    [30.0, 40.0, 1.0, 1.0, 0.0], 
+    [30.0, 42.0, 1.0, 1.0, 0.0], 
+    [26.0, 40.0, 1.0, 1.0, 0.0], 
+    [13.0, 47.0, 1.0, 1.0, 0.0], 
+    [42.0, 4.0, 1.0, 0.0, 1.0], 
+    [39.0, 25.0, 1.0, 0.0, 1.0], 
+    [14.0, 44.0, 1.0, 1.0, 0.0], 
+    [47.0, 3.0, 1.0, 0.0, 1.0], 
+    [19.0, 42.0, 1.0, 1.0, 0.0], 
+    [2.0, 47.0, 1.0, 1.0, 0.0], 
+    [21.0, 44.0, 1.0, 1.0, 0.0], 
+    [48.0, 33.0, 1.0, 0.0, 1.0], 
+    [41.0, 13.0, 1.0, 0.0, 1.0], 
+    [8.0, 35.0, 1.0, 1.0, 0.0], 
+    [43.0, 5.0, 1.0, 0.0, 1.0], 
+    [7.0, 37.0, 1.0, 1.0, 0.0], 
+    [11.0, 43.0, 1.0, 1.0, 0.0], 
+    [42.0, 25.0, 1.0, 0.0, 1.0], 
+    [27.0, 42.0, 1.0, 1.0, 0.0], 
+    [16.0, 46.0, 1.0, 1.0, 0.0], 
+    [49.0, 24.0, 1.0, 0.0, 1.0], 
+    [37.0, 23.0, 1.0, 0.0, 1.0], 
+    [43.0, 5.0, 1.0, 0.0, 1.0], 
+    [32.0, 36.0, 1.0, 1.0, 0.0], 
+    [8.0, 39.0, 1.0, 1.0, 0.0], 
+    [45.0, 6.0, 1.0, 0.0, 1.0], 
+    [4.0, 41.0, 1.0, 1.0, 0.0]
+]
+
+data = pd.DataFrame(survey_data, columns=['winner', 'loser', 'RT', 'invasive_winner', 'invasive_loser'])
+# print(data)
+
+
+for index, row in data.iterrows():
+    winner = int(row['winner'])
+    loser = int(row['loser'])
+    invasive_map.update({
+        winner: 1 if winner <= 34 else 0
+    })
+    invasive_map.update({
+        loser: 1 if loser <= 34 else 0
+    })
+
+
+# print(invasive_map)
