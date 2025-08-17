@@ -12,24 +12,31 @@
   {% endif %}
 {% endwith %}
 
-<div class="container mt-4">
-  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm">
-    <div class="container-fluid text-center">
-      <h1 class="display-4 text-center fw-bold">Welcome to Green or Mean</h1>
-      <p class="lead fs-4">
+<div class="w-full px-6 md:w-2/3 pt-4 md:pt-10 mx-auto">
+  <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-gray-800">Welcome to Green or Mean</h1>
+      <p class="mt-6 text-gray-700">
         The Green or Mean project is a short interactive survey designed to understand how everyday people choose plants, especially whether they are drawn more by appearance or environmental impact. 
         You'll be shown pairs of plants and asked which one you prefer, with a quick question at the end to understand your reasoning. Your choices will help researchers explore public preferences and raise awareness about the dangers of invasive species in Aotearoa New Zealand.
+      </p>
+
+      <p class="mt-6 text-gray-700">
         It is quick, anonymous and insightful, and at the end you will see a breakdown of how often you chose invasive versus non-invasive plants, helping you reflect on your own preferences and their potential ecological impact.
-        </p>
+      </p>
         
       {% if not g.user %}
-        <a href="{{ url_for('survey') }}" class="btn btn-success btn-lg mt-3">Take the Survey</a>
+        <a href="{{ url_for('survey') }}" class="btn btn-success btn-lg mt-3">
+          <button class="mt-10 py-3 px-4 inline-flex items-center gap-x-2 text-lg font-medium rounded-lg border text-white bg-teal-500 hover:bg-teal-600 cursor-pointer">
+            Take the Survey
+          </button>
+        </a>
       {% endif %}
     </div>
   </div>
 </div>
 
-<div class="container text-center" style="margin-top: 60px; margin-bottom: 40px;">
+<div class="container mx-auto flex justify-center" style="margin-top: 60px; margin-bottom: 40px;">
   <img src="{{ url_for('static', filename='img/plantmeinstead.png') }}" 
        alt="Green or Mean Banner" 
        class="img-fluid rounded shadow-sm" 
