@@ -15,6 +15,9 @@ survey_dao = SurveyDAO()
 def survey():
     if request.method == "GET":
         return render_template("survey_intro.html")
+    
+    
+    
 
     # POST method – user submitted intro form
     session["session_id"] = str(uuid.uuid4())  # new session
