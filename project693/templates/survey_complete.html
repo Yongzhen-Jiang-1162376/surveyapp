@@ -2,23 +2,23 @@
 {% block title %}Survey Complete{% endblock %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <div class="p-5 bg-light rounded-3 shadow-sm" style="max-width: 700px; margin: auto;">
-        <h1 class="display-4 text-success fw-bold">Thank You!</h1>
+<div class="w-full px-6 md:w-2/3 lg:w-1/2 pt-4 md:pt-12 mx-auto">
+    <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
+        <h1 class="text-xl font-bold text-gray-700 text-center">Thank You!</h1>
         <hr class="my-4">
-        <p class="fs-5 mb-4">Your preferences have been recorded. We truly appreciate your time and contribution to our research.</p>
+        <p class="mt-6">Your preferences have been recorded. We truly appreciate your time and contribution to our research.</p>
 
         <!-- Selection Summary -->
-        <div class="mt-4 mb-4">
-            <h5 class="fw-bold">Your Selection Summary</h5>
-            <div class="d-flex justify-content-center gap-4 mt-3">
-                <div class="border p-3 rounded bg-white shadow-sm">
-                    <p class="mb-1 text-muted">Non-Invasive Plants Chosen</p>
-                    <p class="fs-4 fw-semibold text-success">{{ non_invasive_percent }}%</p>
+        <div class="mt-6 mb-4">
+            <h5 class="font-bold">Your Selection Summary</h5>
+            <div class="flex flex-col md:flex-row justify-center gap-4 mt-3">
+                <div class="w-full md:w-1/2 border p-3 rounded bg-white shadow-md">
+                    <p class="mt-4 mb-6 text-center text-2xl">Invasive Plants Chosen</p>
+                    <p class="text-center text-red-700 text-3xl mb-6">{{ invasive_percent }}%</p>
                 </div>
-                <div class="border p-3 rounded bg-white shadow-sm">
-                    <p class="mb-1 text-muted">Invasive Plants Chosen</p>
-                    <p class="fs-4 fw-semibold text-danger">{{ invasive_percent }}%</p>
+                <div class="w-full md:w-1/2 border p-3 rounded bg-white shadow-md">
+                    <p class="mt-4 mb-6 text-center text-2xl">Non-Invasive Plants Chosen</p>
+                    <p class="text-center text-green-700 text-3xl mb-6">{{ non_invasive_percent }}%</p>
                 </div>
             </div>
         </div>
@@ -26,11 +26,15 @@
         <!-- Optional feedback message -->
         {% if message %}
         <div class="alert alert-info mt-4 mx-auto" style="max-width: 500px;">
-            {{ message }}
+            <!-- {{ message }} -->
         </div>
         {% endif %}
 
-        <a href="{{ url_for('site_home') }}" class="btn btn-primary btn-lg px-4 mt-4">Back to Home</a>
+        <div class="flex flex-col md:flex-row justify-between">
+            <a href="{{ url_for('site_home') }}" class="btn btn-primary btn-lg mt-4">Back to Home</a>
+            <a href="{{ url_for('site_home') }}" class="btn btn-primary btn-lg mt-4">Your choice detail</a>
+        </div>
+        
     </div>
 </div>
 {% endblock %}
