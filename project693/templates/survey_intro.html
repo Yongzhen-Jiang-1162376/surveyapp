@@ -2,45 +2,90 @@
 {% block title %}Before You Begin{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 720px;">
-    <div class="bg-light p-5 rounded shadow-sm">
-        <h2 class="text-center mb-4 fw-bold text-dark">Before You Start the Survey</h2>
-        <p class="text-center fs-5 mb-5">We’d Like to Know a Bit More About You.</p>
+<div class="w-full px-6 md:w-2/3 lg:w-1/2 pt-4 md:pt-12 mx-auto">
+    <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
+        <h2 class="text-xl font-bold text-gray-700 text-center">Before You Start the Survey</h2>
+        <p class="text-center mt-2">We’d Like to Know a Bit More About You.</p>
 
-        <form method="POST" action="{{ url_for('survey') }}">
+        <form method="POST" action="{{ url_for('survey') }}" id="introForm" novalidate>
 
             <!-- Garden question -->
-            <div class="mb-4">
-                <label class="form-label fs-5 fw-semibold">Do you have your own garden?</label>
-                <div class="d-flex gap-4 mt-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="has_garden" value="yes" id="gardenYes" required>
-                        <label class="form-check-label" for="gardenYes">Yes</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="has_garden" value="no" id="gardenNo" required>
-                        <label class="form-check-label" for="gardenNo">No</label>
-                    </div>
+            <div class="mt-8 mb-4 bg-gray-200 rounded-md px-4 py-4" id="has_garden">
+                <label class="text-lg">Do you have your own garden?</label>
+                <div class="flex gap-x-6 mt-2 mb-2">
+                    <label class="flex items-center">
+                        <input
+                            type="radio" 
+                            name="has_garden"
+                            value="yes" 
+                            class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500"
+                            required
+                        >
+                        <span class="text-base text-gray-700 ms-2">Yes</span>
+                    </label>
+
+                    <label class="flex items-center">
+                        <input 
+                            type="radio" 
+                            name="has_garden" 
+                            value="no"
+                            class="shrink-0 mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500"
+                            required
+                        >
+                        <span class="text-base text-gray-600 ms-2">No</span>
+                    </label>
                 </div>
             </div>
 
             <!-- Age range -->
-            <div class="mb-4">
-                <label for="age_range" class="form-label fs-5 fw-semibold">What age range are you in?</label>
-                <select class="form-select" name="age_range" id="age_range" required>
+            <div class="mt-8 mb-4 bg-gray-200 rounded-md px-4 py-4">
+                <label for="age_range" class="text-lg">What age range are you in?</label>
+                <select 
+                    class="py-3 ps-1 pe-9 mt-2 mb-2 block text-gray-700 bg-white border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500"
+                    id="age_range"
+                    required>
                     <option value="" disabled selected>Select your age range</option>
-                    <option value="18–29">18–29</option>
-                    <option value="30–49">30–49</option>
-                    <option value="50–64">50–64</option>
+                    <option value="18-29">18-29</option>
+                    <option value="30-49">30-49</option>
+                    <option value="50-64">50-64</option>
                     <option value="65+">65+</option>
                 </select>
             </div>
 
             <!-- Submit -->
             <div class="text-center mt-5">
-                <button type="submit" class="btn btn-success btn-lg px-5">Start Survey</button>
+                <button type="submit" class="py-2 px-4 inline-flex items-center gap-x-2 text-md cursor-pointer font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700">
+                    Start Survey
+                </button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+<script>
+const validation = new JustValidate('#introForm', {
+    errorFieldClass: 'border-red-500',
+    errorLabelCssClass: 'block text-red-600 text-sm mt-1'
+});
+
+validation
+    .addRequiredGroup('#has_garden', 'Please select an option')
+    .addField('#age_range', [
+        { rule: 'required', errorMessage: 'Please select an age range' }
+    ])
+    .onFail((fields) => {
+        console.log('failed')
+        console.log('Validation failed for:', fields)
+    })
+    .onSuccess((event) => {
+        console.log('here')
+        console.log(event)
+        event.target.submit();
+    })
+</script>
 {% endblock %}
