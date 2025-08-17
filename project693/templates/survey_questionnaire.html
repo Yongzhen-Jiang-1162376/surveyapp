@@ -2,42 +2,80 @@
 {% block title %}Survey Final Question{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 720px;">
-    <div class="bg-light p-5 rounded shadow-sm">
-        <h2 class="text-center text-dark fw-bold mb-4">Final Question</h2>
-        <p class="text-center fs-5 mb-4">What characteristics made you prefer certain plants over others?</p>
+<div class="w-full px-6 md:w-2/3 lg:w-1/2 pt-4 md:pt-12 mx-auto">
+    <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
+        <h2 class="text-xl font-bold text-gray-700 text-center">Final Question</h2>
+        <p class="text-lg mt-6">What characteristics made you prefer certain plants over others?</p>
 
         <form method="POST" action="{{ url_for('survey_questionnaire') }}">
-            <div class="d-grid gap-3">
+            <div class="mt-4">
 
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reasoning" value="Color" id="reasonColor" required>
-                    <label class="form-check-label fs-5" for="reasonColor">Color</label>
+                <div class="mb-1">
+                    <input 
+                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                        type="radio" 
+                        name="reasoning" 
+                        value="Color" 
+                        id="reasonColor" 
+                        required
+                    >
+                    <label class="text-gray-700 ms-1" for="reasonColor">Color</label>
                 </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reasoning" value="Shape" id="reasonShape">
-                    <label class="form-check-label fs-5" for="reasonShape">Shape</label>
+                <div class="mb-1">
+                    <input 
+                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                        type="radio" 
+                        name="reasoning" 
+                        value="Shape" 
+                        id="reasonShape" 
+                        required
+                    >
+                    <label class="text-gray-700 ms-1" for="reasonShape">Shape</label>
                 </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reasoning" value="Familiarity" id="reasonFamiliarity">
-                    <label class="form-check-label fs-5" for="reasonFamiliarity">Familiarity</label>
+                <div class="mb-1">
+                    <input 
+                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                        type="radio" 
+                        name="reasoning" 
+                        value="Familiarity" 
+                        id="reasonFamiliarity" 
+                        required
+                    >
+                    <label class="text-gray-700 ms-1" for="reasonFamiliarity">Familiarity</label>
                 </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reasoning" value="Novelty" id="reasonNovelty">
-                    <label class="form-check-label fs-5" for="reasonNovelty">Novelty</label>
+                <div class="mb-1">
+                    <input 
+                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                        type="radio" 
+                        name="reasoning" 
+                        value="Novelty" 
+                        id="reasonNovelty" 
+                        required
+                    >
+                    <label class="text-gray-700 ms-1" for="reasonNovelty">Novelty</label>
                 </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reasoning" value="General Plant Form" id="reasonForm">
-                    <label class="form-check-label fs-5" for="reasonForm">General Plant Form</label>
+                <div class="mb-1">
+                    <input 
+                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                        type="radio" 
+                        name="reasoning" 
+                        value="General Plant Form" 
+                        id="reasonForm" 
+                        required
+                    >
+                    <label class="text-gray-700 ms-1" for="reasonForm">General Plant Form</label>
                 </div>
             </div>
 
             <div class="text-center mt-5">
-                <button type="submit" class="btn btn-success btn-lg px-5">Submit</button>
+                <button 
+                    type="submit" 
+                    class="py-2 px-4 inline-flex items-center gap-x-2 text-md cursor-pointer font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700"
+                >Submit</button>
             </div>
         </form>
     </div>
