@@ -54,7 +54,6 @@
     Gardenning
   </a>
   <a class=" 
-             
             min-w-0 
             {% if current_page == 'bt_model' %}bg-gray-200{% else %}bg-white{% endif %}
             py-4 
@@ -67,7 +66,9 @@
             hover:bg-gray-200 
             focus:z-10 
             focus:outline-hidden 
-            cursor-pointer"
+            cursor-pointer
+            border-r 
+            border-gray-500"
       href="{{ url_for('bradley_terry_model') }}">
     Bradley-Terry Model
   </a>
