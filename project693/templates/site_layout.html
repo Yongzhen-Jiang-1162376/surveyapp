@@ -33,31 +33,85 @@
               >GreenMean</span
             >
           </a>
-          <div class="flex text-white font-medium lg:order-2 h-full bg-[#A9296A] hover:bg-[#C12F78]">
-            <a href="#" class="rounded-lg px-4 lg:px-5 h-full flex items-center">Login</a>
-          </div>
+          {%if not session.user|default('') %}
+            <div class="flex text-white font-medium lg:order-2 h-full bg-[#A9296A] hover:bg-[#C12F78]">
+              <a href="{{ url_for('login') }}" class="rounded-lg px-4 lg:px-5 h-full flex items-center">Login</a>
+            </div>
+          {% else %}
+            <div class="hidden h-full justify-between items-center w-full lg:flex lg:w-auto lg:order-1" id="mobile-menu-2">
+              <ul class="flex flex-col h-full mt-4 font-medium lg:flex-row lg:mt-0">
+                <li class="inline-flex">
+                  <div class="py-2 px-4 inline-flex items-center text-white hover:bg-[#C12F78] cursor-pointer">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                  </div>
+                </li>
+                <li class="hs-dropdown relative inline-flex">
+                  <div id="hs-dropdown-basic" 
+                          class="hs-dropdown-toggle py-2 px-4 inline-flex items-center gap-x-2 text-white hover:bg-[#C12F78] cursor-pointer">
+                    Site Management
+                    <svg class="hs-dropdown-open:rotate-180 w-4 h-4 text-white-600" 
+                      xmlns="http://www.w3.org/2000/svg" fill="none" 
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+
+                  <div class="hs-dropdown-menu transition-[opacity,margin] duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
+                    <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                       href="{{ url_for('add_plant') }}"
+                    >
+                      Add Plant
+                    </a>
+                    <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                       href="{{ url_for('list_plants') }}"
+                    >
+                      Plant List
+                    </a>
+                  </div>
+                </li>
+                
+                <li class="hs-dropdown relative inline-flex">
+                  <div id="hs-dropdown-basic" 
+                       class="hs-dropdown-toggle py-2 px-4 inline-flex items-center gap-x-2 text-white hover:bg-[#C12F78] cursor-pointer"
+                  >
+                    <img src="{{ url_for('static', filename='img/' ~ session.user.avatar) }}" alt="Avatar" class="rounded-full object-cover" width="30" height="30" />
+                    <svg class="hs-dropdown-open:rotate-180 w-4 h-4 text-white-600" 
+                      xmlns="http://www.w3.org/2000/svg" fill="none" 
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+
+                  <div class="hs-dropdown-menu transition-[opacity,margin] duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
+                    <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100" 
+                       href="{{ url_for('profile') }}">
+                      My Profile
+                    </a>
+                    <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100" 
+                       href="{{ url_for('logout') }}" 
+                       onclick="confirmLogout(event)"
+                    >
+                      Logout
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <script type="text/javascript">
+                function confirmLogout(event) {
+                    event.preventDefault();
+                    if (confirm("Are you sure you want to log out?")) {
+                        window.location.href = event.target.href;
+                    }
+                }
+            </script>
+          {% endif %}
             <!-- <a href="#" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">Get started</a>
                 <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                     <svg class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                 </button> -->
-          <div
-            class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
-            id="mobile-menu-2"
-          >
-            <ul
-              class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0"
-            >
-              <li>
-                <a
-                  href="{{ url_for('dashboard') }}"
-                  class="block py-2 pr-4 pl-3 text-white border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                  >Dashboard</a
-                >
-              </li>
-            </ul>
-          </div>
         </div>
       </nav>
     </header>
@@ -157,7 +211,6 @@
     </footer>
 
     {% block scripts %}
-    
       <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
     {% endblock %}
   </body>
