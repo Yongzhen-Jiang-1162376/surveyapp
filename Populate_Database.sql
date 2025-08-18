@@ -44,4 +44,28 @@ INSERT INTO `plants` (id, name, description, image, invasiveness) VALUES
 (30, 'Scarlet Rata', 'A native climber with bright red flowers.', 'rata.webp', 'non-invasive');
 
 
+
+insert into plants (name, description, image, invasiveness, ai_generated, is_variation)
+values ('Akebia quinata', 'Akebia quinata Weed', 'Akebia quinata.jpg', 'invasive', 0, 0),
+	   ('Aristea ecklonii', 'Aristea ecklonii Weed', 'Aristea ecklonii.png', 'invasive', 0, 0),
+       ('Berberis darwinii', 'Berberis darwinii Weed', 'Berberis darwinii.jpg', 'invasive', 0, 0),
+       ('Bomarea multiflora', 'Bomarea multiflora Weed', 'Bomarea multiflora.jpg', 'invasive', 0, 0),
+       ('Buddleja davidii', 'Buddleja davidii Weed', 'Buddleja davidii.jpg', 'invasive', 0, 0),
+       ('Cardiospermum grandiflorum', 'Cardiospermum grandiflorum Weed', 'Cardiospermum grandiflorum.jpg', 'invasive', 0, 0),
+       ('Catanospermum_australe', 'Catanospermum_australe_Weed', 'Catanospermum_australe.png', 'invasive', 0, 0),
+       ('Cestrum parqui', 'Cestrum parqui Weed', 'Cestrum parqui.png', 'invasive', 0, 0),
+       ('Cytisus scoparius', 'Cytisus scoparius Weed', 'Cytisus scoparius.jpg', 'invasive', 0, 0),
+       ('Erica cinerea', 'Erica cinerea Weed', 'Erica cinerea.jpg', 'invasive', 0, 0),
+       ('Fuchisia boliviana', 'Fuchisia boliviana Weed', 'Fuchisia boliviana.png', 'invasive', 0, 0),
+       ('Ipomoea indica', 'Ipomoea indica Weed', 'Ipomoea indica.png', 'invasive', 0, 0),
+       ('Kennedia rubicunda', 'Kennedia rubicunda Weed', 'Kennedia rubicunda.png', 'invasive', 0, 0),
+       ('Lamium galeobdolon', 'Lamium galeobdolon Weed', 'Lamium galeobdolon.jpg', 'invasive', 0, 0),
+       ('Passiflora caerulea', 'Passiflora caerulea Weed', 'Passiflora caerulea.jpg', 'invasive', 0, 0),
+       ('Sagittaria platyphylla', 'Sagittaria platyphylla Weed', 'Sagittaria platyphylla.png', 'invasive', 0, 0),
+       ('Senecio angulatus', 'Senecio angulatus Weed', 'Senecio angulatus.jpg', 'invasive', 0, 0),
+       ('Tropaeolum speciosum', 'Tropaeolum speciosum Weed', 'Tropaeolum speciosum.jpg', 'invasive', 0, 0),
+       ('Vincetoxicum nigrum', 'Vincetoxicum nigrum Weed', 'Vincetoxicum nigrum.jpg', 'invasive', 0, 0),
+       ('Zantedeschia aethiopica', 'Zantedeschia aethiopica Weed', 'Zantedeschia aethiopica.png', 'invasive', 0, 0)
+
+
 SET FOREIGN_KEY_CHECKS = 1;
