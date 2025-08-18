@@ -51,6 +51,8 @@
                                  class="aspect-square object-cover rounded-2xl" />
                         </button>
                     </div>
+                    <input type="hidden" name="image_1_id" value="{{ pair[0].id }}">
+                    <input type="hidden" name="image_2_id" value="{{ pair[1].id }}">
                 </div>
             </form>
             {% else %}
