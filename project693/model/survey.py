@@ -24,16 +24,20 @@ class SurveyMetadata:
 
 
 class SurveyAnswer:
-    def __init__(self, session_id, question_number, selected_plant_id):
+    def __init__(self, session_id, question_number, selected_plant_id, image_1_id, image_2_id):
         self.session_id = session_id
         self.question_number = question_number
         self.selected_plant_id = selected_plant_id
+        self.image_1_id = image_1_id
+        self.image_2_id = image_2_id
 
     def to_dict(self):
         return {
             "session_id": self.session_id,
             "question_number": self.question_number,
-            "selected_plant_id": self.selected_plant_id
+            "selected_plant_id": self.selected_plant_id,
+            "image_1_id": self.image_1_id,
+            "image_2_id": self.image_2_id
         }
 
     @staticmethod
@@ -41,5 +45,7 @@ class SurveyAnswer:
         return SurveyAnswer(
             session_id=data["session_id"],
             question_number=data["question_number"],
-            selected_plant_id=data["selected_plant_id"]
+            selected_plant_id=data["selected_plant_id"],
+            image_1_id=data["image_1_id"],
+            image_2_id=data["image_2_id"]
         )

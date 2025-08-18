@@ -1,4 +1,5 @@
 from project693.dao.base_dao import BaseDAO
+from project693.dao.plant_dao import PlantDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 
 
@@ -40,15 +41,46 @@ class SurveyDAO(BaseDAO):
         """
         Stores an answer to a survey question.
         """
+        
+        plantDao = PlantDAO()
+        plant = plantDao.get_plant_by_id(answer.selected_plant_id)
+        
+        if (plant.invasiveness == 'invasive'):
+            invasive_plant_id, non_invasive_plant_id = (answer.image_1_id, answer.image_2_id) if (answer.selected_plant_id == answer.image_1_id) else (answer.image_2_id, answer.image_1_id)
+        else:
+            invasive_plant_id, non_invasive_plant_id = (answer.image_2_id, answer.image_1_id) if (answer.selected_plant_id == answer.image_1_id) else (answer.image_1_id, answer.image_2_id)
+        
+        winner = answer.selected_plant_id
+        loser = answer.image_2_id if answer.selected_plant_id == answer.image_1_id else answer.image_1_id
+        
+        invasive_winner = 1 if (plant.invasiveness == 'invasive') else 0
+        invasive_loser = 0 if (plant.invasiveness == 'invasive') else 1
+
         query = """
-            INSERT INTO survey_results (session_id, question_seq, selected_plant_id)
-            VALUES (%s, %s, %s)
+            INSERT INTO survey_results (
+                session_id, 
+                question_seq, 
+                selected_plant_id, 
+                invasive_plant_id,
+                non_invasive_plant_id,
+                winner,
+                loser,
+                invasive_winner,
+                invasive_loser
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         self.execute_non_query(
             query,
             (
                 answer.session_id,
                 answer.question_number,
-                answer.selected_plant_id
+                answer.selected_plant_id,
+                invasive_plant_id,
+                non_invasive_plant_id,
+                winner,
+                loser,
+                invasive_winner,
+                invasive_loser
             )
         )
