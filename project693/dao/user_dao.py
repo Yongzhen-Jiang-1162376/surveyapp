@@ -49,7 +49,7 @@ class UserDao(BaseDAO):
                     "Your account has been deactivated. Please contact an admin.",
                 )
         else:
-            return None, "Invalid username or password, please try again!"
+            return None, "Invalid username or password. Please try again."
 
     def get_user_details(self, user_id):
         query = (
