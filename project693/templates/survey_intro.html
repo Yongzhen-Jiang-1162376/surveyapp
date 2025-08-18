@@ -79,12 +79,9 @@ validation
         { rule: 'required', errorMessage: 'Please select an age range' }
     ])
     .onFail((fields) => {
-        console.log('failed')
         console.log('Validation failed for:', fields)
     })
     .onSuccess((event) => {
-        console.log('here')
-        console.log(event)
         event.target.submit();
     })
 </script>
