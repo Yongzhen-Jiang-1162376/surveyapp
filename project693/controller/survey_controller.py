@@ -84,17 +84,24 @@ def survey_next():
     if "session_id" not in session:
         return redirect(url_for("survey"))
 
+    # Selected image id
     selected_id = request.form.get("selected_id")
     session_id = session.get("session_id")
+    
+    # 2 image ids in this choice
+    image_1_id = request.form.get("image_1_id")
+    image_2_id = request.form.get("image_2_id")
 
     # Current question number
     qn = session.get("question_number", 1)
 
     # Save answer
     answer = SurveyAnswer(
-    session_id=session_id,
-    question_number=qn,
-    selected_plant_id=selected_id
+        session_id=session_id,
+        question_number=qn,
+        selected_plant_id=selected_id,
+        image_1_id=image_1_id,
+        image_2_id=image_2_id
     )
     survey_dao.survey_answer(answer)
 
