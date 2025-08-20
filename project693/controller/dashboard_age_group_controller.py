@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 from project693.controller import app
 from werkzeug.utils import secure_filename
-from project693.dao.plant_dao import PlantDAO
+from project693.dao.analysis_dao import AnalysisDAO
 from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -10,6 +10,9 @@ from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter, FactorR
 from bokeh.resources import CDN
 from bokeh.transform import factor_cmap, dodge
 import pandas as pd
+
+
+analysis_dao = AnalysisDAO()
 
 @app.route("/dashboard/analysis-age-group/", methods=["GET", "POST"])
 def choices_by_age_group():
@@ -52,48 +55,70 @@ def choices_by_age_group():
     # Embed Bokeh in Flask
     # script, div = components(layout)
     
-    categories = ["18-29", "30-49", "50-64", "65+"]
-    types = ["Invasive", "Non-Invasive"]
     
-    x = [(category, type) for category in categories for type in types]
-    values = [65, 35, 78, 22, 0, 0, 0, 0]
+    # categories = ["18-29", "30-49", "50-64", "65+"]
+    # types = ["Invasive", "Non-Invasive"]
     
-    palette = ["#F15F36", "#19A0AA"] * len(categories)
+    # x = [(category, type) for category in categories for type in types]
+    # values = [65, 35, 78, 22, 0, 0, 0, 0]
     
-    total = sum(values)
-    percentages = [v / total for v in values]
+    age_group_values = analysis_dao.list_survey_age_group_count()
     
-    source = ColumnDataSource(data=dict(categories=categories, percentages=percentages))
+    invasive_count_list = []
+    non_invasive_count_list = []
+    invasive_percentage_list = []
+    non_invasive_percentage_list = []
     
-    plot = figure(x_range=FactorRange(*x), height=450, sizing_mode="stretch_width", toolbar_location="above")
-    plot.vbar(
-        x="categories", 
-        top="percentages", 
-        width=0.6, 
-        source=source,
-        fill_color=factor_cmap("categories", palette=palette, factors=types, start=1)
-    )
-    plot.yaxis.formatter = NumeralTickFormatter(format="0%")
+    for group in age_group_values:
+        invasive_count_list.append(int(group[0]))
+        non_invasive_count_list.append(int(group[1]))
+        
+        if int(group[0]) + int(group[1]) == 0:
+            invasive_percentage_list.append(0)
+            non_invasive_percentage_list.append(0)
+        else:
+            invasive_perc = float(round(100 * group[0] / (group[0] + group[1]), 2))
+            non_invasive_perc = float(round(100 * group[1] / (group[0] + group[1]), 2))
+            invasive_percentage_list.append(invasive_perc)
+            non_invasive_percentage_list.append(non_invasive_perc)
+        
+    # palette = ["#F15F36", "#19A0AA"] * len(categories)
+    
+    # total = sum(values)
+    # percentages = [v / total for v in values]
+    
+    # source = ColumnDataSource(data=dict(categories=categories, percentages=percentages))
+    
+    # plot = figure(x_range=FactorRange(*x), height=450, sizing_mode="stretch_width", toolbar_location="above")
+    # plot.vbar(
+    #     x="categories", 
+    #     top="percentages", 
+    #     width=0.6, 
+    #     source=source,
+    #     fill_color=factor_cmap("categories", palette=palette, factors=types, start=1)
+    # )
+    # plot.yaxis.formatter = NumeralTickFormatter(format="0%")
     
     # plot.xaxis.axis_label_text_font_size = "50pt"
     # plot.yaxis.axis_label_text_font_size = "50pt"
     
-    plot.xaxis.major_label_text_font_size = "12pt"
-    plot.yaxis.major_label_text_font_size = "12pt"
-    
-    
-    
-    
-    
-    
+    # plot.xaxis.major_label_text_font_size = "12pt"
+    # plot.yaxis.major_label_text_font_size = "12pt"
     
     
     age_group = ['18-29', '30-49', '50-66', '65+']
-    years = ['Invasive', 'Non-Invasive']
+    # years = ['Invasive', 'Non-Invasive']
 
+    # data = {'age_group' : age_group,
+    #         'Invasive'   : [64, 85, 0, 0],
+    #         'Non-Invasive'   : [36, 15, 0, 0],
+    #        }
+    
     data = {'age_group' : age_group,
-            'Invasive'   : [64, 85, 0, 0],
-            'Non-Invasive'   : [36, 15, 0, 0],
+            'Invasive'   : invasive_count_list,
+            'Non_Invasive'   : non_invasive_count_list,
+            'Invasive_Percentage': invasive_percentage_list,
+            'Non_Invasive_Percentage': non_invasive_percentage_list
            }
 
     source = ColumnDataSource(data=data)
@@ -101,12 +126,12 @@ def choices_by_age_group():
     p = figure(x_range=age_group, y_range=(0, 100), title="Invasive Choices by Age Group",
             height=450, sizing_mode="stretch_width", toolbar_location=None, tools="")
 
-    p.vbar(x=dodge('age_group', -0.25, range=p.x_range), top='Invasive', source=source,
+    p.vbar(x=dodge('age_group', -0.25, range=p.x_range), top='Invasive_Percentage', source=source,
         width=0.2, color="#FFC000", legend_label="Invasive")
 
-    p.vbar(x=dodge('age_group',  0.0,  range=p.x_range), top='Non-Invasive', source=source,
+    p.vbar(x=dodge('age_group',  0.0,  range=p.x_range), top='Non_Invasive_Percentage', source=source,
         width=0.2, color="#00B050", legend_label="Non-Invasive")    
     
     script, div = components(p)
     
-    return render_template("dashboard/dashboard_age_group.html", script=script, div=div, current_page="age_group")
+    return render_template("dashboard/dashboard_age_group.html", script=script, div=div, data=data, current_page="age_group")
