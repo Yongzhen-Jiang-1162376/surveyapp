@@ -30,10 +30,10 @@ def survey():
 
     # Save metadata with placeholder reasoning
     metadata = SurveyMetadata(
-    session_id=session["session_id"],
-    has_garden=has_garden,
-    age=age_range,
-    reasoning=None
+        session_id=session["session_id"],
+        has_garden=has_garden,
+        age=age_range,
+        reasoning=None
     )
     survey_dao.save_metadata(metadata)
 
