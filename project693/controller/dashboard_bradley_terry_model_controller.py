@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, ses
 from project693.controller import app
 from werkzeug.utils import secure_filename
 from project693.dao.plant_dao import PlantDAO
+from project693.dao.analysis_dao import AnalysisDAO
 from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -15,6 +16,8 @@ import pandas as pd
 
 import random
 from project693.data.mockdata import invasive_plants, non_invasive_plants, data, invasive_map
+
+analysis_dao = AnalysisDAO()
 
 
 @app.route("/dashboard/bradley-terry-model", methods=["GET", "POST"])
@@ -69,13 +72,53 @@ def bradley_terry_model():
     #     invasive_map.update({
     #         non_invasive_plant[0]: 0
     #     })
+    
+    all_plants_from_db = analysis_dao.list_survey_plants()
+    all_survey_result = analysis_dao.list_survey_result()
+    
+    print('all surveyed plants')
+    print(all_plants_from_db)
+    print(dict(all_plants_from_db))
+    print('all survey results')
+    print(all_survey_result)
+    
+    data = pd.DataFrame(all_survey_result, columns=['winner', 'loser', 'RT', 'invasive_winner', 'invasive_loser'])
+    print('panda data frame')
+    print(data)
+    
+    invasive_map = {}
+    
+    for index, row in data.iterrows():
+        winner = int(row['winner'])
+        loser = int(row['loser'])
+        invasive_winner = int(row['invasive_winner'])
+        invasive_map.update({
+            winner: 1 if invasive_winner else 0
+        })
+        invasive_map.update({
+            loser: 1 if not invasive_winner else 0
+        })
+    
+    print('invasive_map')
+    print(invasive_map)
         
     image_ids = sorted(set(data['winner']).union(set(data['loser'])))
     id_to_idx = {img_id: idx for idx, img_id in enumerate(image_ids)}
     idx_to_id = {idx: img_id for img_id, idx in id_to_idx.items()}
-    all_plants = {p[0]: p[1] for p in (invasive_plants + non_invasive_plants)}
+    # all_plants = {p[0]: p[1] for p in (invasive_plants + non_invasive_plants)}
+    all_plants = dict(all_plants_from_db)
     num_images = len(image_ids)
     
+    print('image_ids')
+    print(image_ids)
+    print('id_to_idx')
+    print(id_to_idx)
+    print('idx_to_id')
+    print(idx_to_id)
+    print('num_images')
+    print(num_images)
+    print('all_plants')
+    print(all_plants)
     
     # calculate bradley-terry model
     def weighted_log_likelihood(betas, data):
@@ -86,7 +129,7 @@ def bradley_terry_model():
             j = id_to_idx[row['loser']]
             # i, j = int(row['winner']), int(row['loser'])
             beta_i, beta_j = betas[i], betas[j]
-            weight = row['RT']
+            weight = 1 if not row['RT'] else row['RT']      # to avoid RT=0
             p = np.exp(beta_i) / (np.exp(beta_i) + np.exp(beta_j))
             ll += weight * np.log(p + 1e-9)
         return -ll
@@ -117,6 +160,11 @@ def bradley_terry_model():
     # compare invasive vs. non-invasive
     invasive_betas = [beta_estimates[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
     non_invasive_betas = [beta_estimates[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    
+    print('invasive_betas')
+    print(invasive_betas)
+    print('non_invasive_betas')
+    print(non_invasive_betas)
 
     # print("\nMean beta (invasive):", np.mean(invasive_betas))
     # print("\nMean beta (non-invasive):", np.mean(non_invasive_betas))
