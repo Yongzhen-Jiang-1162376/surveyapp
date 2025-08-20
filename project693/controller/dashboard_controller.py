@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 from project693.controller import app
 from werkzeug.utils import secure_filename
-from project693.dao.plant_dao import PlantDAO
+from project693.dao.analysis_dao import AnalysisDAO
 from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -9,6 +9,10 @@ from bokeh.layouts import row, column
 from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter
 from bokeh.resources import CDN
 import pandas as pd
+
+
+analysis_dao = AnalysisDAO()
+
 
 @app.route("/dashboard/", methods=["GET", "POST"])
 def dashboard():
@@ -51,12 +55,18 @@ def dashboard():
     # Embed Bokeh in Flask
     # script, div = components(layout)
     
+    
     categories = ["Invasive", "Non-Invasive"]
-    values = [85, 15]
+    # values = [85, 15]
+    values = [[int(r[0]), int(r[1])] for r in analysis_dao.list_choice_count()][0]
+    
+    print(values)
     colors = ["#FFC000", "#00B050"]
     
     total = sum(values)
     percentages = [v / total for v in values]
+    
+    percentages_display = [round(100 * percentages[0], 2), 100 - round(100 * percentages[0], 2)]
     
     source = ColumnDataSource(data=dict(categories=categories, percentages=percentages, colors=colors))
     plot = figure(x_range=categories, height=450, sizing_mode="stretch_width", toolbar_location="above")
@@ -71,4 +81,8 @@ def dashboard():
     
     script, div = components(plot)
     
-    return render_template("dashboard/dashboard.html", script=script, div=div, current_page="dashboard")
+    data = {
+        'percentages': percentages_display,
+        'count': values
+    }
+    return render_template("dashboard/dashboard.html", script=script, div=div, data=data, current_page="dashboard")
