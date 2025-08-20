@@ -1,0 +1,149 @@
+from project693.dao.base_dao import BaseDAO
+
+
+class AnalysisDAO(BaseDAO):
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def list_survey_plants(self):
+        """
+        list all plants which have been chosen for survey
+        """
+        
+        query = """
+            select
+                p.id,
+                p.name
+            from plants p
+            inner join
+            (
+                select distinct invasive_plant_id as plant_id from survey_results
+                union
+                select distinct non_invasive_plant_id as plant_id from survey_results
+            ) sr
+            on p.id = sr.plant_id
+            order by p.id;
+        """
+        
+        result = self.execute_query(query)
+        
+        return result if result else []
+    
+    def list_survey_result(self):
+        query = """
+            select
+                sr.winner,
+                sr.loser,
+                ifnull(sr.response_time, 0) as response_time,
+                sr.invasive_winner,
+                sr.invasive_loser
+            from survey_results sr
+            order by sr.id;
+        """
+        
+        result = self.execute_query(query)
+        
+        return result if result else []
+
+
+    def list_choice_count(self):
+        query = """
+            select
+                sum(invasive_winner = 1) as invasive_count,
+                sum(invasive_winner = 0) as non_invasive_count
+            from survey_results;
+        """
+        
+        result = self.execute_query(query)
+        
+        return result if result else []
+
+    def list_survey_age_group_count(self):
+        # query = """
+        #     select 
+        #         sum(age='18-29') as '18-29',
+        #         sum(age='30-49') as '30-49',
+        #         sum(age='50-64') as '50-64',
+        #         sum(age='65+') as '65+'
+        #     from survey_metadata
+        #     where session_id in
+        #     (
+        #         select distinct session_id from survey_results
+        #     );
+        # """
+        
+        query = """
+
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where age = '18-29'
+            )
+            
+            union all
+            
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where age = '30-49'
+            )
+            
+            union all
+            
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where age = '50-64'
+            )
+            
+            union all
+            
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where age = '65+'
+            )
+        """
+
+        result = self.execute_query(query)
+
+        return result if result else []
+    
+    def list_survey_gardening_count(self):
+        query = """
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where has_garden = 1
+            )
+
+            union all
+
+            select
+                ifnull(sum(invasive_winner=1), 0) as invasive,
+                ifnull(sum(invasive_winner=0), 0) as non_invasive
+            from survey_results
+            where session_id in
+            (
+                select session_id from survey_metadata where has_garden = 0
+            )
+                    """
+        
+        result = self.execute_query(query)
+        
+        return result if result else []
