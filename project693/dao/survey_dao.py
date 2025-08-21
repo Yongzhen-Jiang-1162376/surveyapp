@@ -60,7 +60,8 @@ class SurveyDAO(BaseDAO):
             INSERT INTO survey_results (
                 session_id, 
                 question_seq, 
-                selected_plant_id, 
+                selected_plant_id,
+                response_time, 
                 invasive_plant_id,
                 non_invasive_plant_id,
                 winner,
@@ -68,7 +69,7 @@ class SurveyDAO(BaseDAO):
                 invasive_winner,
                 invasive_loser
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         self.execute_non_query(
             query,
@@ -76,6 +77,7 @@ class SurveyDAO(BaseDAO):
                 answer.session_id,
                 answer.question_number,
                 answer.selected_plant_id,
+                answer.response_time,
                 invasive_plant_id,
                 non_invasive_plant_id,
                 winner,
