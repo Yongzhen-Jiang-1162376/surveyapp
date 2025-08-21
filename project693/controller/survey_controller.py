@@ -5,6 +5,7 @@ from project693.dao.plant_dao import PlantDAO
 from project693.dao.survey_dao import SurveyDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
+from datetime import datetime
 
 
 plant_dao = PlantDAO()
@@ -47,6 +48,11 @@ def survey():
         return redirect(url_for("list_plants"))
 
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
+    
+    # record page load time
+    current_time = datetime.now().isoformat()
+    SessionManager.set("page_load_time", current_time)
+    print(current_time)
 
     return render_template("survey.html", pair=pair, question_number=1)
 
@@ -76,6 +82,11 @@ def survey_next_get():
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
     
     print(qn)
+    
+    # record page load time
+    current_time = datetime.now().isoformat()
+    SessionManager.set("page_load_time", current_time)
+    print(current_time)
 
     return render_template("survey.html", pair=pair, question_number=qn)
 
@@ -83,6 +94,15 @@ def survey_next_get():
 def survey_next():
     if "session_id" not in session:
         return redirect(url_for("survey"))
+    
+    load_time = datetime.fromisoformat(SessionManager.get("page_load_time"))
+    submit_time = datetime.now()
+    elapsed = (submit_time - load_time).total_seconds()
+    
+    print('---------------- timing ----------------')
+    print(load_time)
+    print(submit_time)
+    print(elapsed)
 
     # Selected image id
     selected_id = request.form.get("selected_id")
@@ -101,7 +121,8 @@ def survey_next():
         question_number=qn,
         selected_plant_id=selected_id,
         image_1_id=image_1_id,
-        image_2_id=image_2_id
+        image_2_id=image_2_id,
+        response_time=elapsed
     )
     survey_dao.survey_answer(answer)
 
@@ -141,8 +162,8 @@ def survey_questionnaire():
 
     # Save reasoning as question 10
     survey_dao.update_reasoning(
-    session_id=session_id,
-    reasoning=reasoning
+        session_id=session_id,
+        reasoning=reasoning
     )
 
     # Get all selected answers from session
