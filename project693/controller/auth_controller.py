@@ -95,6 +95,7 @@ def login():
             if request.referrer != url_for("login")
             else None
         )
+        
         login_username = session.get("login_username", "")
         login_password = session.get("login_password", "")
         SessionManager.set(SessionManager.ACTIVE_PAGE, SessionManager.Page.LOGIN.value)
@@ -119,10 +120,10 @@ def login():
             session["user_id"] = result.id
             session["env"] = app.env
 
-            previous_page = session.get("previous_page") or session.pop(
-                "next_url", url_for("site_home")
-            )
-            return redirect(previous_page)
+            # previous_page = session.get("previous_page") or session.pop(
+            #     "next_url", url_for("site_home")
+            # )
+            return redirect(url_for("site_home"))
 
 
 @app.route("/logout/", methods=["GET"])
