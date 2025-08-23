@@ -29,19 +29,37 @@ class AnalysisDAO(BaseDAO):
         
         return result if result else []
     
-    def list_survey_result(self):
+    def get_average_response_time(self):
+        query = """
+            select round(avg(response_time), 6) as avg_response_time from survey_results;
+        """
+        
+        result = self.execute_query(query)
+        return result[0][0] if result else 0
+    
+    
+    
+    def list_survey_results(self):
+        
+        avg_response_time = self.get_average_response_time()
+        # print('average response time')
+        # print(avg_response_time)
+        
+        # if the response time is null, then set it as the average response time
+        # Theoretically speaking, null response time is very much unlikely 
+        # because the timing is only recorded after user submits
         query = """
             select
                 sr.winner,
                 sr.loser,
-                ifnull(sr.response_time, 0) as response_time,
+                ifnull(sr.response_time, %s) as response_time,
                 sr.invasive_winner,
                 sr.invasive_loser
             from survey_results sr
             order by sr.id;
         """
         
-        result = self.execute_query(query)
+        result = self.execute_query(query, (avg_response_time,))
         
         return result if result else []
 
