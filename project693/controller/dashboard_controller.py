@@ -81,6 +81,11 @@ def dashboard():
     
     script, div = components(plot)
     
+    
+    # data table
+    datatable = analysis_dao.list_survey_results()
+    
+    
     data = {
         'percentages': percentages_display,
         'count': values
