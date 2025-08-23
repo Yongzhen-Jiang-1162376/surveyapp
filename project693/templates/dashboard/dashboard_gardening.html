@@ -4,13 +4,13 @@
 <div>
   {% include "dashboard/dashboard_nav.html" %}
 
-  <div class="p-4 py-0 bg-gray-100">
+  <div class="p-4 py-0 bg-white">
     <h1 class="text-4xl py-6 text-center">
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
     <div class="flex p-4 gap-4">
       <div
-        class="basis-1/2 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+        class="basis-1/2 flex flex-col bg-white border border-gray-200 shadow-xl rounded-xl"
       >
         <div class="bg-gray-100 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5">
           <p class="mt-1 text-2xl text-center text-gray-900">
@@ -59,7 +59,7 @@
         </div>
       </div>
       <div
-        class="basis-1/2 w-full bg-white border border-gray-200 shadow-2xs rounded-xl"
+        class="basis-1/2 w-full p-4 bg-white border border-gray-200 shadow-xl rounded-xl"
       >
         {{ div | safe }}
       </div>
