@@ -17,8 +17,6 @@ def survey():
     if request.method == "GET":
         return render_template("survey_intro.html")
     
-    
-    
 
     # POST method – user submitted intro form
     session["session_id"] = str(uuid.uuid4())  # new session
@@ -52,7 +50,6 @@ def survey():
     # record page load time
     current_time = datetime.now().isoformat()
     SessionManager.set("page_load_time", current_time)
-    print(current_time)
 
     return render_template("survey.html", pair=pair, question_number=1)
 
@@ -81,12 +78,11 @@ def survey_next_get():
 
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
     
-    print(qn)
+    # print(qn)
     
     # record page load time
     current_time = datetime.now().isoformat()
     SessionManager.set("page_load_time", current_time)
-    print(current_time)
 
     return render_template("survey.html", pair=pair, question_number=qn)
 
@@ -97,13 +93,8 @@ def survey_next():
     
     load_time = datetime.fromisoformat(SessionManager.get("page_load_time"))
     submit_time = datetime.now()
-    elapsed = (submit_time - load_time).total_seconds()
+    elapsed = round((submit_time - load_time).total_seconds(), 6)
     
-    print('---------------- timing ----------------')
-    print(load_time)
-    print(submit_time)
-    print(elapsed)
-
     # Selected image id
     selected_id = request.form.get("selected_id")
     session_id = session.get("session_id")
