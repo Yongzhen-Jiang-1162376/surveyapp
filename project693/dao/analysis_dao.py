@@ -17,9 +17,9 @@ class AnalysisDAO(BaseDAO):
             from plants p
             inner join
             (
-                select distinct invasive_plant_id as plant_id from survey_results
+                select distinct invasive_plant_id as plant_id from survey_results where active = 1
                 union
-                select distinct non_invasive_plant_id as plant_id from survey_results
+                select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
             ) sr
             on p.id = sr.plant_id
             order by p.id;
@@ -31,7 +31,7 @@ class AnalysisDAO(BaseDAO):
     
     def get_average_response_time(self):
         query = """
-            select round(avg(response_time), 6) as avg_response_time from survey_results;
+            select round(avg(response_time), 6) as avg_response_time from survey_results where active = 1;
         """
         
         result = self.execute_query(query)
@@ -56,6 +56,7 @@ class AnalysisDAO(BaseDAO):
                 sr.invasive_winner,
                 sr.invasive_loser
             from survey_results sr
+            where sr.active = 1
             order by sr.id;
         """
         
@@ -69,7 +70,8 @@ class AnalysisDAO(BaseDAO):
             select
                 sum(invasive_winner = 1) as invasive_count,
                 sum(invasive_winner = 0) as non_invasive_count
-            from survey_results;
+            from survey_results
+            where active = 1;
         """
         
         result = self.execute_query(query)
@@ -100,6 +102,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '18-29'
             )
+            and active = 1
             
             union all
             
@@ -111,6 +114,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '30-49'
             )
+            and active = 1
             
             union all
             
@@ -122,6 +126,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '50-64'
             )
+            and active = 1
             
             union all
             
@@ -133,6 +138,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '65+'
             )
+            and active = 1
         """
 
         result = self.execute_query(query)
@@ -149,6 +155,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where has_garden = 1
             )
+            and active = 1
 
             union all
 
@@ -160,7 +167,8 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where has_garden = 0
             )
-                    """
+            and active = 1
+        """
         
         result = self.execute_query(query)
         
