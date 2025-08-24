@@ -9,6 +9,7 @@ from bokeh.layouts import row, column
 from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter
 from bokeh.resources import CDN
 import pandas as pd
+import json
 
 
 analysis_dao = AnalysisDAO()
@@ -48,11 +49,32 @@ def dashboard():
     
     
     # data table
-    datatable = analysis_dao.list_survey_results()
-    
+    rows = analysis_dao.list_current_survey_results_with_plant_name()
+    print(rows)
+    columns = [
+        'session_id',
+        'question_seq',
+        'submission_time',
+        'response_time',
+        'invasive_plant_id',
+        'invasive_plant_name',
+        'non_invasive_plant_id',
+        'non_invasive_plant_name',
+        'selected_plant_id',
+        'selected_plant_name',
+        'has_garden',
+        'age_group',
+        'reasoning',
+        'invasive_win'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
     
     data = {
         'percentages': percentages_display,
-        'count': values
+        'count': values,
+        'datatable': json.dumps(datatable)
     }
+    
+    print(datatable)
+    
     return render_template("dashboard/dashboard.html", script=script, div=div, data=data, current_page="dashboard")
