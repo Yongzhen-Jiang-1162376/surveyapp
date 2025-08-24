@@ -92,4 +92,10 @@ add (
   `invasive_loser` int
 )
 
+-- add an active column to servey result table to support survey period
+-- by default it is true (active)
+alter table survey_results
+add column active bool default 1;
+
+
 SET FOREIGN_KEY_CHECKS = 1;
