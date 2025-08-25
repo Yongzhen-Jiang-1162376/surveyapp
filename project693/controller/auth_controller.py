@@ -27,7 +27,7 @@ exempt_routes_patterns = [
     r"^/survey/questionnaire/$",
     r"^/favicon.ico$",
     r"^/misc/.*$",
-    r"^/dashboard/.*$",
+    # r"^/dashboard/.*$",
 ]
 
 
@@ -39,6 +39,8 @@ def is_exempt_route(path):
 role_permissions = {
     "siteadmin": [
         r"^/siteadmin/.*$",
+        r"^/dashboard/.*$",         # dashboard page
+        r"^/api/.*$",               # api
     ],
 }
 
