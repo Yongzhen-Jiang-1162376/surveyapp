@@ -124,7 +124,7 @@ def choices_by_age_group():
     source = ColumnDataSource(data=data)
 
     p = figure(x_range=age_group, y_range=(0, 100), title="Invasive Choices by Age Group",
-            height=450, sizing_mode="stretch_width", toolbar_location=None, tools="")
+            height=450, sizing_mode="stretch_width")
 
     p.vbar(x=dodge('age_group', -0.25, range=p.x_range), top='Invasive_Percentage', source=source,
         width=0.2, color="#FFC000", legend_label="Invasive")
