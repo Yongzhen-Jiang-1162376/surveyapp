@@ -29,7 +29,7 @@ class AnalysisDAO(BaseDAO):
         
         return result if result else []
     
-    def get_average_response_time(self):
+    def get_current_average_response_time(self):
         query = """
             select round(avg(response_time), 6) as avg_response_time from survey_results where active = 1;
         """
@@ -37,11 +37,20 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
     
+    def get_current_total_survey_results(self):
+        query = """
+            select
+                count(1) as total
+            from survey_results sr
+            where sr.active = 1    
+        """
+        result = self.execute_query(query)
+        return result[0][0] if result else 0
     
     
     def list_survey_results(self):
         
-        avg_response_time = self.get_average_response_time()
+        avg_response_time = self.get_current_average_response_time()
         # print('average response time')
         # print(avg_response_time)
         
@@ -175,7 +184,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
     def list_current_survey_results_with_plant_name(self):
-        avg_response_time = self.get_average_response_time()
+        avg_response_time = self.get_current_average_response_time()
         
         query = """
             select
@@ -203,4 +212,37 @@ class AnalysisDAO(BaseDAO):
         """
 
         result = self.execute_query(query, (avg_response_time,))        
+        return result if result else []
+
+
+    def list_current_survey_results_with_plant_name_paginated(self, limit, offset):
+        avg_response_time = self.get_current_average_response_time()
+        
+        query = """
+            select
+                sr.session_id,
+                sr.question_seq,
+                date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
+                ifnull(round(sr.response_time, 5), %s) as response_time,
+                sr.invasive_plant_id,
+                p.name as invasive_plant_name,
+                sr.non_invasive_plant_id,
+                p1.name as non_invasive_plant_name,
+                sr.selected_plant_id,
+                p2.name as selected_plant_name,
+                if(sm.has_garden = 1, 'Yes', 'No') as has_garden,
+                sm.age as age_group,
+                sm.reasoning as reasoning,
+                sr.invasive_winner as invasive_win
+            from survey_results sr
+            inner join plants p on sr.invasive_plant_id = p.id
+            inner join plants p1 on sr.non_invasive_plant_id = p1.id
+            inner join plants p2 on sr.selected_plant_id = p2.id
+            left join survey_metadata sm on sr.session_id = sm.session_id
+            where sr.active = 1
+            order by sr.submission_time, sr.question_seq
+            limit %s offset %s;
+        """
+
+        result = self.execute_query(query, (avg_response_time, limit, offset))        
         return result if result else []
