@@ -144,12 +144,13 @@
 <script type="module">
   import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
-  const datatable = {{ data['datatable'] | safe }};
+  // const datatable = {{ data['datatable'] | safe }}
+  // console.log(datatable)
 
-  console.log(datatable)
+
 
   new DataTable({
-    data: datatable,
+    apiUrl: "/api/current-survey-data",
     tableBodyId: "tableBodyId",
     prevBtnId: "prevBtn",
     nextBtnId: "nextBtn",
@@ -157,7 +158,23 @@
     rangeInfoId: "rangeInfo",
     rowsPerPageSelectId: "rowsPerPageSelect",
     downloadBtnId: "downloadBtn",
-    rowsPerPage: 10
+    rowsPerPage: 10,
+    columns: [
+      'session_id',
+      'question_seq',
+      'submission_time',
+      'response_time',
+      'invasive_plant_id',
+      'invasive_plant_name',
+      'non_invasive_plant_id',
+      'non_invasive_plant_name',
+      'selected_plant_id',
+      'selected_plant_name',
+      'has_garden',
+      'age_group',
+      'reasoning',
+      'invasive_win'
+    ]
   });
 </script>
 {% endblock %}

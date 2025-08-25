@@ -29,7 +29,7 @@ def dashboard():
     # values = [85, 15]
     values = [[int(r[0]), int(r[1])] for r in analysis_dao.list_choice_count()][0]
     
-    print(values)
+    # print(values)
     colors = ["#FFC000", "#00B050"]
     
     total = sum(values)
@@ -38,7 +38,7 @@ def dashboard():
     percentages_display = [round(100 * percentages[0], 2), 100 - round(100 * percentages[0], 2)]
     
     source = ColumnDataSource(data=dict(categories=categories, percentages=percentages, colors=colors))
-    plot = figure(x_range=categories, height=450, sizing_mode="stretch_width", toolbar_location="above")
+    plot = figure(x_range=categories, height=450, sizing_mode="stretch_width")
     plot.vbar(x="categories", top="percentages", width=0.6, source=source, color="colors")
     plot.yaxis.formatter = NumeralTickFormatter(format="0%")
     
@@ -49,32 +49,32 @@ def dashboard():
     
     
     # data table
-    rows = analysis_dao.list_current_survey_results_with_plant_name()
-    print(rows)
-    columns = [
-        'session_id',
-        'question_seq',
-        'submission_time',
-        'response_time',
-        'invasive_plant_id',
-        'invasive_plant_name',
-        'non_invasive_plant_id',
-        'non_invasive_plant_name',
-        'selected_plant_id',
-        'selected_plant_name',
-        'has_garden',
-        'age_group',
-        'reasoning',
-        'invasive_win'
-    ]
-    datatable = [dict(zip(columns, row)) for row in rows]
+    # rows = analysis_dao.list_current_survey_results_with_plant_name()
+    # # print(rows)
+    # columns = [
+    #     'session_id',
+    #     'question_seq',
+    #     'submission_time',
+    #     'response_time',
+    #     'invasive_plant_id',
+    #     'invasive_plant_name',
+    #     'non_invasive_plant_id',
+    #     'non_invasive_plant_name',
+    #     'selected_plant_id',
+    #     'selected_plant_name',
+    #     'has_garden',
+    #     'age_group',
+    #     'reasoning',
+    #     'invasive_win'
+    # ]
+    # datatable = [dict(zip(columns, row)) for row in rows]
     
     data = {
         'percentages': percentages_display,
-        'count': values,
-        'datatable': json.dumps(datatable)
+        'count': values
+        # 'datatable': json.dumps(datatable)
     }
     
-    print(datatable)
+    # print(datatable)
     
     return render_template("dashboard/dashboard.html", script=script, div=div, data=data, current_page="dashboard")
