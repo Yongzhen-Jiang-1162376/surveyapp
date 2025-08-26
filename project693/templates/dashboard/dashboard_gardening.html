@@ -64,15 +64,122 @@
         {{ div | safe }}
       </div>
     </div>
-    <!-- <div class="grid sm:grid-cols-1 gap-2 md:grid-cols-2">
-            <div>
-                
-            </div>
-            <div>
-                {{ div2 | safe }}
-            </div>
-        </div> -->
+
+
+    <!-- survey data table -->
+    <div class="p-4 py-0 mb-6">
+      <!-- Card -->
+      <div class="bg-white p-4 border border-gray-300 shadow-xl rounded-xl overflow-hidden">
+        <!-- Action Bar -->
+        <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+          <!-- Left actions -->
+          <div class="flex items-center gap-2 ">
+            <button 
+              id="downloadBtn" 
+              type="button" 
+              class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+            >
+              Download Data
+            </button>
+          </div>
+
+
+          <!-- Right controls -->
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+              Rows per page
+              <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                <option>5</option>
+                <option selected>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+
+        <!-- Table wrapper -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full border border-gray-300 border-collapse text-sm" id="dataTable">
+            <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Survey Data</caption>
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Session Id</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Question Seq</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Submission Time</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Response Time</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive Plant Id</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive Plant Name</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Non-Invasive Plant Id</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Non-Invasive Plant Name</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Selected Plant Id</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Selected Plant Name</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Has Garden</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Age Group</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Reasoning</th>
+                <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive Win</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyId">
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer / Pagination -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-t border-gray-200">
+          <div id="rangeInfo" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+          <div class="flex items-center gap-2">
+            <button id="prevBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+            <span id="pageInfo" class="text-sm text-gray-700">Page 1 of 1</span>
+            <button id="nextBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-{{ script | safe }} {% endblock %}
+{{ script | safe }} 
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/datatable.js')}}" type="module"></script>
+
+
+<script type="module">
+  import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
+
+  new DataTable({
+    apiUrl: "/api/current-survey-data",
+    tableBodyId: "tableBodyId",
+    prevBtnId: "prevBtn",
+    nextBtnId: "nextBtn",
+    pageInfoId: "pageInfo",
+    rangeInfoId: "rangeInfo",
+    rowsPerPageSelectId: "rowsPerPageSelect",
+    downloadBtnId: "downloadBtn",
+    rowsPerPage: 10,
+    columns: [
+      'session_id',
+      'question_seq',
+      'submission_time',
+      'response_time',
+      'invasive_plant_id',
+      'invasive_plant_name',
+      'non_invasive_plant_id',
+      'non_invasive_plant_name',
+      'selected_plant_id',
+      'selected_plant_name',
+      'has_garden',
+      'age_group',
+      'reasoning',
+      'invasive_win'
+    ]
+  });
+</script>
+{% endblock %}
+
