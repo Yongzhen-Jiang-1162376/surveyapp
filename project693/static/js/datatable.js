@@ -41,39 +41,34 @@ export class DataTable {
     }
     
     async fetchData() {
-        const params = new URLSearchParams({
+        // const params = new URLSearchParams({
+        //     page: this.currentPage,
+        //     limit: this.rowsPerPage
+        // });
+
+        const payload = {
             page: this.currentPage,
             limit: this.rowsPerPage
-        });
+        }
 
-        const res = await fetch(`${this.apiUrl}?${params}`);
+        const res = await fetch(this.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
         const json = await res.json();
 
         this.datatable = json.datatable;
         this.total = json.total;
 
-        console.log('-------------- data fetched -----------------')
-        console.log(this.datatable)
-        console.log(this.total)
+        // console.log('-------------- data fetched -----------------')
+        // console.log(this.datatable)
+        // console.log(this.total)
 
         this.renderTable();
     }
-
-    // paginate() {
-    //     const total = this.data.length;
-    //     const totalPages = Math.max(1, Math.ceil(total / this.rowsPerPage));
-    //     const clampedPage = Math.min(Math.max(this.currentPage, 1), totalPages);
-    //     const start = (clampedPage - 1) * this.rowsPerPage;
-    //     const end = Math.min(start + this.rowsPerPage, total);
-    //     return {
-    //         slice: this.data.slice(start, end),
-    //         start,
-    //         end,
-    //         total,
-    //         totalPages,
-    //         page: clampedPage
-    //     }
-    // }
 
     gotoPage(page) {
         this.currentPage = page;
