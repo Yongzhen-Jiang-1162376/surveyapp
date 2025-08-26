@@ -108,20 +108,37 @@ export class DataTable {
     //     this.rangeInfo.textContent = total ? `Showing ${start + 1} to ${end} entries` : `No entries to show`;
     // }
 
-    downloadCSV() {
-        if (!this.data.length) return;
+    async downloadCSV() {
+        try {
+            // fetch data from backend
+            const response = await fetch("/api/all-current-survey-data", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (!response.ok) throw new Error("Something wrong please check with admin.");
 
-        const header = Object.keys(this.data[0]);
-        const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
-        const csv = [header.join(','), ...this.data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'data.csv';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+            const res = await response.json();
+            const data = res.datatable;
+            
+            if (!data.length) return;
+
+            const header = Object.keys(data[0]);
+            const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+            const csv = [header.join(','), ...data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
+
+            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_result.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
     }
 }
