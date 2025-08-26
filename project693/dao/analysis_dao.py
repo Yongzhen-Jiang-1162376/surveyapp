@@ -246,3 +246,35 @@ class AnalysisDAO(BaseDAO):
 
         result = self.execute_query(query, (avg_response_time, limit, offset))        
         return result if result else []
+    
+    
+    def list_all_current_survey_results_with_plant_name(self):
+        avg_response_time = self.get_current_average_response_time()
+        
+        query = """
+            select
+                sr.session_id,
+                sr.question_seq,
+                date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
+                ifnull(round(sr.response_time, 5), %s) as response_time,
+                sr.invasive_plant_id,
+                p.name as invasive_plant_name,
+                sr.non_invasive_plant_id,
+                p1.name as non_invasive_plant_name,
+                sr.selected_plant_id,
+                p2.name as selected_plant_name,
+                if(sm.has_garden = 1, 'Yes', 'No') as has_garden,
+                sm.age as age_group,
+                sm.reasoning as reasoning,
+                sr.invasive_winner as invasive_win
+            from survey_results sr
+            inner join plants p on sr.invasive_plant_id = p.id
+            inner join plants p1 on sr.non_invasive_plant_id = p1.id
+            inner join plants p2 on sr.selected_plant_id = p2.id
+            left join survey_metadata sm on sr.session_id = sm.session_id
+            where sr.active = 1
+            order by sr.submission_time, sr.question_seq;
+        """
+
+        result = self.execute_query(query, (avg_response_time))        
+        return result if result else []
