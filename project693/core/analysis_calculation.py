@@ -8,8 +8,8 @@ from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.layouts import row, column
-from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter, LabelSet, Span
-from bokeh.transform import dodge
+from bokeh.models import ColumnDataSource, LabelSet, Span, ColorBar, LinearColorMapper, BasicTicker, PrintfTickFormatter
+from bokeh.transform import dodge, transform
 from bokeh.resources import CDN
 from scipy.optimize import minimize
 import numpy as np
@@ -116,6 +116,19 @@ def calc_normalized_betas(betas):
 weighted_beta_normalized = calc_normalized_betas(weighted_betas)
 unweighted_beta_normalized = calc_normalized_betas(unweighted_betas)
 
+# calculate probability matrix
+def probability_matrix(betas):
+    n = len(betas)
+    prob_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                prob_matrix[i, j] = np.exp(betas[i]) / (np.exp(betas[i]) + np.exp(betas[j]))
+            else:
+                prob_matrix[i, j] = np.nan
+    return prob_matrix
+
+
 # 1. scatter chart win percentage vs beta 
 def beta_vs_win_percentage(weighted=1):
     
@@ -165,9 +178,11 @@ def beta_vs_win_percentage(weighted=1):
     x_min = min(plot_data['win_percentage']) - 0.1
     x_max = max(plot_data['win_percentage']) + 0.3
 
+    title = "Bradley-Terry beta vs. Win % (weighted)" if weighted else "Bradley-Terry beta vs. Win%"
+
     plot = figure(
         x_range=(x_min, x_max),
-        title="Bradley-Terry beta vs. Win %",
+        title=title,
         x_axis_label="Win percentage",
         y_axis_label="Bradley-Terry beta",
         height=600,
@@ -201,9 +216,11 @@ def beta_scores_by_image(weighted=1):
         color=colors
     ))
     
+    title = "Normalized Attractiveness Score per Plant (weighted)" if weighted else "Normalized Attractiveness Score per Plant"
+    
     plot = figure(
         x_range=image_names, height=600, sizing_mode="stretch_width",
-        title="Normalized Attractiveness Score per Plant",
+        title=title,
         x_axis_label="Plant Name", y_axis_label="Score [-1, +1]"
     )
 
@@ -226,8 +243,10 @@ def beta_scores_by_plant_type(weighted=1):
     hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
     hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
     
+    title = "Histogram of Normalized Attractiveness Scores (weighted)" if weighted else "Histogram of Normalized Attractiveness Scores"
+    
     plot = figure(height=600, sizing_mode="stretch_width",
-            title="Histogram of Normalized Attractiveness Scores",
+            title=title,
             x_axis_label="Normalized Score", y_axis_label="Count")
 
     plot.quad(top=hist_invasive, bottom=0,
@@ -270,7 +289,9 @@ def win_loss_by_image(weighted=1):
         losses=losses
     ))
     
-    plot = figure(x_range=images, height=600, sizing_mode="stretch_width", title="Wins/Losses per Image")
+    title = "Wins/Losses per Image (weighted)" if weighted else "Wins/Losses per Image"
+    
+    plot = figure(x_range=images, height=600, sizing_mode="stretch_width", title=title)
 
     plot.vbar(x=dodge("images", -0.15, range=plot.x_range), top="wins", width=0.3, source=source,
         color="#FFC000", legend_label="Wins")
@@ -288,3 +309,128 @@ def win_loss_by_image(weighted=1):
     plot.xaxis.major_label_orientation = 0.785
     
     return plot
+
+
+# 5. Attractive beta score heat map
+def beta_scores_heat_map(weighted=1):
+    betas = weighted_beta_normalized if weighted else unweighted_beta_normalized
+    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    
+    matrix = probability_matrix(betas)
+    
+    mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+    
+    n = len(plant_names)
+    xname, yname, value = [], [], []
+    
+    for i in range(n):
+        for j in range(n):
+            if not np.isnan(matrix[i, j]):
+                xname.append(plant_names[j])
+                yname.append(plant_names[i])
+                value.append(matrix[i, j])
+    
+    title = "Attractiveness Score Heat Map (weighted)" if weighted else "Attractiveness Score Heat Map"
+    
+    plot = figure(title=title, x_range=plant_names, y_range=list(reversed(plant_names)),
+                  x_axis_location="below", height=700, sizing_mode="stretch_width")
+    
+    plot.rect(x="x", y="y", width=1, height=1, source=dict(x=xname, y=yname, value=value),
+              fill_color=transform('value', mapper), line_color=None)
+    
+    color_bar = ColorBar(color_mapper=mapper, ticker=BasicTicker(desired_num_ticks=10),
+                         formatter=PrintfTickFormatter(format="%.2f"),
+                         label_standoff=12, border_line_color=None, location=(0, 0))
+    plot.add_layout(color_bar, "right")
+    
+    # plot.xaxis.major_label_orientation = np.pi/4
+    plot.xaxis.major_label_orientation = "vertical"
+    
+    
+    # plot.xaxis.visible = False
+    # plot.yaxis.visible = False
+    
+    colors = [
+        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
+        for idx in range(len(betas))
+    ]
+    
+    x_source = ColumnDataSource(dict(
+        x=plant_names,
+        y=[plant_names[0]] * len(plant_names),
+        name=plant_names,
+        color=colors
+    ))
+    x_labels = LabelSet(
+        x="x", y=0, text="name", text_color="color",
+        source=x_source, y_offset=-5, text_align="center", text_baseline="top"
+    )
+    plot.add_layout(x_labels)
+    
+    y_source = ColumnDataSource(dict(
+        x=[plant_names[0]] * len(plant_names),
+        y=list(reversed(plant_names)),
+        name=list(reversed(plant_names)),
+        color=list(reversed(colors))
+    ))
+    y_labels = LabelSet(
+        x=0, y="y", text="name", text_color="color",
+        source=y_source, x_offset=-5, text_align="right", text_baseline="middle"
+    )
+    # plot.add_layout(y_labels)
+    
+    return plot
+
+
+# 6. Ranking of beta scores
+def beta_scores_ranking(weighted=1):
+    betas = weighted_beta_normalized if weighted else unweighted_beta_normalized
+    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    
+    df = pd.DataFrame({
+        "plant": plant_names,
+        "beta": betas
+    })
+    df["rank"] = df["beta"].rank(ascending=False, method="min").astype(int)
+    df["color"] = [
+        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
+        for idx in range(len(betas))
+    ]
+    
+    df = df.sort_values("beta", ascending=True)
+    
+    source = ColumnDataSource(df)
+    
+    title = "Plant Attractiveness Ranking (weighted)" if weighted else "Plant Attractiveness Ranking"
+    
+    plot = figure(
+        y_range=list(df["plant"]),
+        x_axis_label="Normalized Beta Score",
+        y_axis_label="Plant",
+        height=600,
+        sizing_mode="stretch_width",
+        title=title
+    )
+    
+    plot.hbar(
+        y="plant",
+        right="beta",
+        height=0.6,
+        color="color",
+        source=source
+    )
+    
+    labels = LabelSet(
+        x="beta",
+        y="plant",
+        text="rank",
+        x_offset=5,
+        y_offset=-8,
+        text_font_size="10pt",
+        text_color="black"
+    )
+    
+    plot.add_layout(labels)
+    
+    return plot
+    
