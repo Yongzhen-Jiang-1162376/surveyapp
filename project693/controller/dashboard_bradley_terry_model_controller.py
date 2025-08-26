@@ -8,7 +8,9 @@ from project693.core.analysis_calculation import (
     beta_vs_win_percentage,
     beta_scores_by_image,
     beta_scores_by_plant_type,
-    win_loss_by_image
+    win_loss_by_image,
+    beta_scores_heat_map,
+    beta_scores_ranking
 )
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -311,6 +313,18 @@ def bradley_terry_model():
     win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
     win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
     
+    # 5. heat map of beta scores
+    beta_scores_heat_map_uw = beta_scores_heat_map(weighted=0)
+    beta_scores_heat_map_w = beta_scores_heat_map(weighted=1)
+    beta_scores_heat_map_by_image_uw_script, beta_scores_heat_map_by_image_uw_div = components(beta_scores_heat_map_uw)
+    beta_scores_heat_map_by_image_w_script, beta_scores_heat_map_by_image_w_div = components(beta_scores_heat_map_w)
+    
+    # 6. beta scores ranking
+    beta_scores_ranking_uw = beta_scores_ranking(weighted=0)
+    beta_scores_ranking_w = beta_scores_ranking(weighted=1)
+    beta_scores_ranking_uw_script, beta_scores_ranking_uw_div = components(beta_scores_ranking_uw)
+    beta_scores_ranking_w_script, beta_scores_ranking_w_div = components(beta_scores_ranking_w)
+    
     plots = {
         'win_percentage_beta_uw_script': win_percentage_beta_uw_script,
         'win_percentage_beta_uw_div': win_percentage_beta_uw_div,
@@ -327,7 +341,15 @@ def bradley_terry_model():
         'win_loss_by_image_uw_script': win_loss_by_image_uw_script,
         'win_loss_by_image_uw_div': win_loss_by_image_uw_div,
         'win_loss_by_image_w_script': win_loss_by_image_w_script,
-        'win_loss_by_image_w_div': win_loss_by_image_w_div
+        'win_loss_by_image_w_div': win_loss_by_image_w_div,
+        'beta_scores_heat_map_by_image_uw_script': beta_scores_heat_map_by_image_uw_script,
+        'beta_scores_heat_map_by_image_uw_div': beta_scores_heat_map_by_image_uw_div,
+        'beta_scores_heat_map_by_image_w_script': beta_scores_heat_map_by_image_w_script,
+        'beta_scores_heat_map_by_image_w_div': beta_scores_heat_map_by_image_w_div,
+        'beta_scores_ranking_uw_script': beta_scores_ranking_uw_script,
+        'beta_scores_ranking_uw_div': beta_scores_ranking_uw_div,
+        'beta_scores_ranking_w_script': beta_scores_ranking_w_script,
+        'beta_scores_ranking_w_div': beta_scores_ranking_w_div,
     }
     
     return render_template(
