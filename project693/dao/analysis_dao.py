@@ -276,5 +276,5 @@ class AnalysisDAO(BaseDAO):
             order by sr.submission_time, sr.question_seq;
         """
 
-        result = self.execute_query(query, (avg_response_time))        
+        result = self.execute_query(query, (avg_response_time,))        
         return result if result else []
