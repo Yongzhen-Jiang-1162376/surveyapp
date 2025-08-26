@@ -10,6 +10,7 @@
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
 
+    <!-- win percentage beta chart -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -24,6 +25,7 @@
       </div>
     </div>
 
+    <!-- beta score by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -38,6 +40,37 @@
       </div>
     </div>
 
+    <!-- heat map of beta scores by each image -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_uw_div'] | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_w_div'] | safe }}</div>
+      </div>
+    </div>
+
+    <!-- ranking of beta scores by each image -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_ranking_uw_div'] | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_ranking_w_div'] | safe }}</div>
+      </div>
+    </div>
+
+    <!-- beta scores by plant type -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -51,21 +84,8 @@
         <div class="w-full">{{ plots['beta_scores_by_plant_type_w_div'] | safe }}</div>
       </div>
     </div>
-<!-- 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-      <div
-        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
-      >
-        <div class="w-full">{{ hist_type_div | safe }}</div>
-      </div>
 
-      <div
-        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
-      >
-        <div class="w-full">{{ hist_type_div2 | safe }}</div>
-      </div>
-    </div> -->
-
+    <!-- win loss by image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -91,5 +111,11 @@
 {{ plots['beta_scores_by_plant_type_w_script'] | safe }}
 {{ plots['win_loss_by_image_uw_script'] | safe }}
 {{ plots['win_loss_by_image_w_script'] | safe }}
+{{ plots['beta_scores_heat_map_by_image_uw_script'] | safe }}
+{{ plots['beta_scores_heat_map_by_image_w_script'] | safe }}
+{{ plots['beta_scores_ranking_uw_script'] | safe }}
+{{ plots['beta_scores_ranking_w_script'] | safe }}
+
+
 
 {% endblock %}
