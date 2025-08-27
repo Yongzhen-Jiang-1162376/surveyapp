@@ -21,6 +21,7 @@ analysis_dao = AnalysisDAO()
 
 
 all_plants_from_db = analysis_dao.list_survey_plants()
+all_plants_invasiveness_from_db = analysis_dao.list_survey_plants_invasiveness()
 all_survey_results = analysis_dao.list_survey_results()
 
 data = pd.DataFrame(all_survey_results, columns=[
@@ -48,6 +49,7 @@ image_ids = sorted(set(data['winner']).union(set(data['loser'])))
 id_to_idx = {img_id: idx for idx, img_id in enumerate(image_ids)}
 idx_to_id = {idx: img_id for img_id, idx in id_to_idx.items()}
 all_plants = dict(all_plants_from_db)
+all_plants_invasiveness = dict(all_plants_invasiveness_from_db)
 num_images = len(image_ids)
 betas_init = np.zeros(num_images)
 
@@ -129,29 +131,16 @@ def probability_matrix(betas):
     return prob_matrix
 
 
-# 1. scatter chart win percentage vs beta 
+# 1. scatter chart beta vs win percentage 
 def beta_vs_win_percentage(weighted=1):
     
     beta_normalized = weighted_beta_normalized if weighted else unweighted_beta_normalized
-    
-    # # Normalization of Betas
-    # beta_min = beta_estimates.min()
-    # beta_max = beta_estimates.max()
-    
-    # # Min-max scale to [0, 1]
-    # beta_scale_0_1 = (beta_estimates - beta_min) / (beta_max - beta_min)
-    
-    # # rescale to [-1, +1]
-    # beta_normalized = beta_scale_0_1 * 2 - 1
-    
-    # compare normalized invasive vs. non-invasive
-    # normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
-    # normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
     
     # percentage calculation
     wins = data['winner'].value_counts()
     appearances = pd.concat([data['winner'], data['loser']]).value_counts()
     win_percentages = (wins / appearances).fillna(0)
+    win_percentages_dict = win_percentages.to_dict()
     
     plot_data = {
         'plant': [],
@@ -159,8 +148,6 @@ def beta_vs_win_percentage(weighted=1):
         'bradley_terry_beta': [],
         'label_color': []
     }
-    
-    win_percentages_dict = win_percentages.to_dict()
     
     for idx in range(num_images):
         plant_name = all_plants[idx_to_id[idx]]
@@ -172,6 +159,7 @@ def beta_vs_win_percentage(weighted=1):
         plot_data['win_percentage'].append(win_percentages)
         plot_data['bradley_terry_beta'].append(bradley_terry_beta)
         plot_data['label_color'].append(color)
+
     
     source = ColumnDataSource(data=plot_data)
     
@@ -196,6 +184,37 @@ def beta_vs_win_percentage(weighted=1):
     plot.add_layout(labels)
     
     return plot
+
+
+# 1-1 beta vs win percentage datat table
+def beta_vs_win_percentage_datatable():
+    rows = []
+    
+    # percentage calculation
+    wins = data['winner'].value_counts()
+    appearances = pd.concat([data['winner'], data['loser']]).value_counts()
+    win_percentages = (wins / appearances).fillna(0)
+    win_percentages_dict = win_percentages.to_dict()
+    
+    for idx in range(num_images):
+        plant_name = all_plants[idx_to_id[idx]]
+        invasive = all_plants_invasiveness[idx_to_id[idx]]
+        win_percentage = win_percentages_dict[idx_to_id[idx]]
+        bt_beta = float(unweighted_beta_normalized[idx])
+        bt_beta_weighted = float(weighted_beta_normalized[idx])
+        
+        rows.append({
+            'plant': plant_name,
+            'invasive': invasive,
+            'win_percentage': round(win_percentage, 4),
+            'bt_beta_score': round(bt_beta, 4),
+            'bt_beta_score_weighted': round(bt_beta_weighted, 4)
+        })
+    
+    rows = sorted(rows, key=lambda r: r['win_percentage'], reverse=True)
+    
+    return rows
+
 
 
 # 2. Histogram of attractiveness scores by each image
