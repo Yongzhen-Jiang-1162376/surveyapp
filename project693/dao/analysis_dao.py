@@ -28,6 +28,33 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query)
         
         return result if result else []
+
+
+    def list_survey_plants_invasiveness(self):
+        """
+        list all plants which have been chosen for survey
+        """
+        
+        query = """
+            select
+                p.id,
+                p.invasiveness
+            from plants p
+            inner join
+            (
+                select distinct invasive_plant_id as plant_id from survey_results where active = 1
+                union
+                select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
+            ) sr
+            on p.id = sr.plant_id
+            order by p.id;
+        """
+        
+        result = self.execute_query(query)
+        
+        return result if result else []
+    
+    
     
     def get_current_average_response_time(self):
         query = """
