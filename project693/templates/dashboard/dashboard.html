@@ -14,21 +14,21 @@
     <div
       class="basis-1/2 flex flex-col bg-white border border-gray-300 shadow-xl rounded-xl"
     >
-      <div class="bg-gray-300 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5 mb-12">
+      <div class="bg-gray-300 border-b border-gray-200 rounded-t-xl py-4 px-4 md:py-4 md:px-5 mb-18">
         <p class="mt-1 text-2xl text-center text-gray-900">
           Overall proportion of choices
         </p>
       </div>
-      <div class="px-4 py-8 md:p-5 grid grid-cols-2 gap-4">
-        <div class="bg-gray-300 rounded text-center py-6">
-          <div class="font-bold mb-6">Invasive Choices</div>
+      <div class="px-4 py-12 md:p-5 grid grid-cols-2 gap-4">
+        <div class="bg-gray-300 rounded text-center pt-8 pb-12">
+          <div class="text-2xl mb-8">Invasive Choices</div>
           <div class="flex justify-between lg:px-8 md:px-4">
             <div class="text-3xl text-red-800">{{ data['percentages'][0] ~ '%' }}</div>
             <div class="text-3xl text-red-800">{{ data['count'][0] }}</div>
           </div>
         </div>
-        <div class="bg-gray-300 rounded text-center py-6">
-          <div class="font-bold mb-6">Non-Invasive Choices</div>
+        <div class="bg-gray-300 rounded text-center pt-8 pb-12">
+          <div class="text-2xl mb-8">Non-Invasive Choices</div>
           <div class="flex justify-between lg:px-8 md:px-4">
             <div class="text-3xl text-green-800">{{ data['percentages'][1] ~ '%' }}</div>
             <div class="text-3xl text-green-800">{{ data['count'][1] }}</div>
@@ -123,18 +123,13 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/datatable.js')}}" type="module"></script>
+<!-- <script src="{{ url_for('static', filename='js/datatable.js')}}" type="module"></script> -->
 
 
 <script type="module">
-  import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
+  import { AjaxDataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
-  // const datatable = {{ data['datatable'] | safe }}
-  // console.log(datatable)
-
-
-
-  new DataTable({
+  new AjaxDataTable({
     apiUrl: "/api/current-survey-data",
     tableBodyId: "tableBodyId",
     prevBtnId: "prevBtn",
