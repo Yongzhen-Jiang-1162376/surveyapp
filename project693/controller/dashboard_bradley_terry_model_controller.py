@@ -113,8 +113,6 @@ def bradley_terry_model():
         'win_percentage_beta_datatable': win_percentage_beta_datatable,
     }
     
-    print(data)
-    
     return render_template(
         "dashboard/dashboard_bradley_terry_model.html",
         current_page="bt_model",
