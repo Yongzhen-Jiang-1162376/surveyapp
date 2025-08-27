@@ -75,3 +75,38 @@ def get_all_survey_data():
     return jsonify({
         "datatable": datatable
     })
+
+
+@app.route("/api/current-beta-vs-win-percentage", methods=["POST"])
+def get_current_beta_vs_win_percentage_data():
+    req = request.get_json()
+    page = int(req.get("page", 1))
+    limit = int(req.get("limit", 10))
+    
+    offset = (page - 1) * limit
+    
+    total = analysis_dao.get_current_total_survey_results()
+    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(limit, offset)
+    
+    columns = [
+        'session_id',
+        'question_seq',
+        'submission_time',
+        'response_time',
+        'invasive_plant_id',
+        'invasive_plant_name',
+        'non_invasive_plant_id',
+        'non_invasive_plant_name',
+        'selected_plant_id',
+        'selected_plant_name',
+        'has_garden',
+        'age_group',
+        'reasoning',
+        'invasive_win'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable,
+        "total": total
+    })
