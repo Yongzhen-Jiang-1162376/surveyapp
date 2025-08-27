@@ -190,14 +190,10 @@
 
 
 <script type="module">
-  import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
-
-  // const datatable = {{ data['datatable'] | safe }}
-  // console.log(datatable)
+  import { AjaxDataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
 
-
-  new DataTable({
+  new AjaxDataTable({
     apiUrl: "/api/current-survey-data",
     tableBodyId: "tableBodyId",
     prevBtnId: "prevBtn",
