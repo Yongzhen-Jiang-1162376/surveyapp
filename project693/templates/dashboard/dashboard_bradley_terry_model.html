@@ -10,8 +10,10 @@
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
 
+    <h1 class="text-xl py-2">Bradley-Terry Beta vs Win Percentage</h1>
+
     <!-- win percentage beta chart -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
       >
@@ -25,6 +27,65 @@
       </div>
     </div>
 
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="win_percentage_beta_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Win Percentage</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta score</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta socre (weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="win_percentage_beta_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2 mt-6">Bradley-Terry Beta By Each Plant</h1>
     <!-- beta score by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -40,6 +101,7 @@
       </div>
     </div>
 
+    <h1 class="text-xl py-2">Heat map of Bradley-Terry Beta by Each Plant</h1>
     <!-- heat map of beta scores by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -55,6 +117,7 @@
       </div>
     </div>
 
+    <h1 class="text-xl py-2">Ranking of Bradley-Terry Beta By Each Plant</h1>
     <!-- ranking of beta scores by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -70,6 +133,7 @@
       </div>
     </div>
 
+    <h1 class="text-xl py-2">Bradley-Terry Beta By Invasive Type</h1>
     <!-- beta scores by plant type -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -85,6 +149,7 @@
       </div>
     </div>
 
+    <h1 class="text-xl py-2">Win/Loss By Each Plant</h1>
     <!-- win loss by image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -99,7 +164,6 @@
         <div class="w-full">{{ plots['win_loss_by_image_w_div'] | safe }}</div>
       </div>
     </div>
-
     
   </div>
 
@@ -116,6 +180,38 @@
 {{ plots['beta_scores_ranking_uw_script'] | safe }}
 {{ plots['beta_scores_ranking_w_script'] | safe }}
 
+{% endblock %}
 
+
+{% block scripts %}
+
+<script type="module">
+import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
+
+
+const win_percentage_beta_datatable = {{ data['win_percentage_beta_datatable']|tojson }};
+
+new DataTable({
+    data: win_percentage_beta_datatable,
+    tableBodyId: "win_percentage_beta_table_body",
+    prevBtnId: "prevBtn",
+    nextBtnId: "nextBtn",
+    pageInfoId: "pageInfo",
+    rangeInfoId: "rangeInfo",
+    rowsPerPageSelectId: "rowsPerPageSelect",
+    downloadBtnId: "downloadBtn",
+    rowsPerPage: 10,
+    columns: [
+      'plant',
+      'invasive',
+      'win_percentage',
+      'bt_beta_score',
+      'bt_beta_score_weighted'
+    ],
+    downloadFileName: 'beta_vs_win_percentage.csv'
+  });
+
+
+</script>
 
 {% endblock %}
