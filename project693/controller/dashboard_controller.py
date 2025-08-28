@@ -51,7 +51,7 @@ def dashboard():
         text_baseline="middle"
     )
     
-    plot = figure(x_range=categories, height=450, sizing_mode="stretch_width")
+    plot = figure(x_range=categories, height=450, y_range=(0, 1), sizing_mode="stretch_width")
     plot.vbar(x="categories", top="percentages", width=0.5, source=source, color="colors")
     plot.yaxis.formatter = NumeralTickFormatter(format="0%")
     
