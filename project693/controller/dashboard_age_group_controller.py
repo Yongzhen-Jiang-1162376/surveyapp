@@ -25,7 +25,9 @@ def choices_by_age_group():
     invasive_count_list = []
     non_invasive_count_list = []
     invasive_percentage_list = []
+    invasive_percentage_display_list = []
     non_invasive_percentage_list = []
+    non_invasive_percentage_display_list = []
     
     for group in age_group_values:
         invasive_count_list.append(int(group[0]))
@@ -34,62 +36,42 @@ def choices_by_age_group():
         if int(group[0]) + int(group[1]) == 0:
             invasive_percentage_list.append(0)
             non_invasive_percentage_list.append(0)
+            invasive_percentage_display_list.append(0)
+            non_invasive_percentage_display_list.append(0)
         else:
-            invasive_perc = float(round(100 * group[0] / (group[0] + group[1]), 2))
-            non_invasive_perc = float(round(100 * group[1] / (group[0] + group[1]), 2))
+            invasive_perc = float(round(group[0] / (group[0] + group[1]), 4))
+            non_invasive_perc = float(round(group[1] / (group[0] + group[1]), 4))
             invasive_percentage_list.append(invasive_perc)
             non_invasive_percentage_list.append(non_invasive_perc)
-        
-    # palette = ["#F15F36", "#19A0AA"] * len(categories)
-    
-    # total = sum(values)
-    # percentages = [v / total for v in values]
-    
-    # source = ColumnDataSource(data=dict(categories=categories, percentages=percentages))
-    
-    # plot = figure(x_range=FactorRange(*x), height=450, sizing_mode="stretch_width", toolbar_location="above")
-    # plot.vbar(
-    #     x="categories", 
-    #     top="percentages", 
-    #     width=0.6, 
-    #     source=source,
-    #     fill_color=factor_cmap("categories", palette=palette, factors=types, start=1)
-    # )
-    # plot.yaxis.formatter = NumeralTickFormatter(format="0%")
-    
-    # plot.xaxis.axis_label_text_font_size = "50pt"
-    # plot.yaxis.axis_label_text_font_size = "50pt"
-    
-    # plot.xaxis.major_label_text_font_size = "12pt"
-    # plot.yaxis.major_label_text_font_size = "12pt"
-    
-    
-    age_group = ['18-29', '30-49', '50-66', '65+']
-    # years = ['Invasive', 'Non-Invasive']
+            invasive_percentage_display_list.append("{:.2f}%".format(100 * invasive_perc))
+            non_invasive_percentage_display_list.append("{:.2f}%".format(100 * non_invasive_perc))
 
-    # data = {'age_group' : age_group,
-    #         'Invasive'   : [64, 85, 0, 0],
-    #         'Non-Invasive'   : [36, 15, 0, 0],
-    #        }
+    age_group = ['18-29', '30-49', '50-66', '65+']
     
     data = {'age_group' : age_group,
             'Invasive'   : invasive_count_list,
             'Non_Invasive'   : non_invasive_count_list,
             'Invasive_Percentage': invasive_percentage_list,
-            'Non_Invasive_Percentage': non_invasive_percentage_list
+            'Invasive_Percentage_Display': invasive_percentage_display_list,
+            'Non_Invasive_Percentage': non_invasive_percentage_list,
+            'Non_Invasive_Percentage_Display': non_invasive_percentage_display_list
            }
-
+    
     source = ColumnDataSource(data=data)
 
-    p = figure(x_range=age_group, y_range=(0, 100), title="Invasive Choices by Age Group",
+    plot = figure(x_range=age_group, y_range=(0, 1), title="Invasive Choices by Age Group",
             height=450, sizing_mode="stretch_width")
+    plot.yaxis.formatter = NumeralTickFormatter(format="0%")
 
-    p.vbar(x=dodge('age_group', -0.25, range=p.x_range), top='Invasive_Percentage', source=source,
-        width=0.2, color="#FFC000", legend_label="Invasive")
+    plot.vbar(x=dodge('age_group', -0.2, range=plot.x_range), top='Invasive_Percentage', source=source,
+        width=0.4, color="#FFC000", legend_label="Invasive")
 
-    p.vbar(x=dodge('age_group',  0.0,  range=p.x_range), top='Non_Invasive_Percentage', source=source,
-        width=0.2, color="#00B050", legend_label="Non-Invasive")    
+    plot.vbar(x=dodge('age_group',  0.2,  range=plot.x_range), top='Non_Invasive_Percentage', source=source,
+        width=0.4, color="#00B050", legend_label="Non-Invasive")
     
-    script, div = components(p)
+    plot.xaxis.major_label_text_font_size = "11pt"  
+    plot.yaxis.major_label_text_font_size = "11pt"  
+    
+    script, div = components(plot)
     
     return render_template("dashboard/dashboard_age_group.html", script=script, div=div, data=data, current_page="age_group")
