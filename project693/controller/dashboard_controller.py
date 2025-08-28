@@ -45,14 +45,14 @@ def dashboard():
         x_offset=0,
         y_offset=0,
         source=source,
-        text_font_size="32pt",
+        text_font_size="28pt",
         text_color="RoyalBlue",
         text_align="center",
         text_baseline="middle"
     )
     
     plot = figure(x_range=categories, height=450, sizing_mode="stretch_width")
-    plot.vbar(x="categories", top="percentages", width=0.6, source=source, color="colors")
+    plot.vbar(x="categories", top="percentages", width=0.5, source=source, color="colors")
     plot.yaxis.formatter = NumeralTickFormatter(format="0%")
     
     plot.xaxis.major_label_text_font_size = "11pt"
