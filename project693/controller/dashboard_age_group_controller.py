@@ -6,7 +6,7 @@ from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.layouts import row, column
-from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter, FactorRange
+from bokeh.models import ColumnDataSource, Select, NumeralTickFormatter, FactorRange, LabelSet
 from bokeh.resources import CDN
 from bokeh.transform import factor_cmap, dodge
 import pandas as pd
@@ -58,7 +58,11 @@ def choices_by_age_group():
            }
     
     source = ColumnDataSource(data=data)
-
+    
+    # add label position (centered in the bar)
+    source.data['Invasive_Label_Y'] = [p / 2 for p in invasive_percentage_list]
+    source.data["Non_Invasive_Label_Y"] = [p / 2 for p in non_invasive_percentage_list]
+    
     plot = figure(x_range=age_group, y_range=(0, 1), title="Invasive Choices by Age Group",
             height=450, sizing_mode="stretch_width")
     plot.yaxis.formatter = NumeralTickFormatter(format="0%")
@@ -70,7 +74,36 @@ def choices_by_age_group():
         width=0.4, color="#00B050", legend_label="Non-Invasive")
     
     plot.xaxis.major_label_text_font_size = "11pt"  
-    plot.yaxis.major_label_text_font_size = "11pt"  
+    plot.yaxis.major_label_text_font_size = "11pt"
+    
+    # Invasive Labels
+    labels_invasive = LabelSet(
+        x=dodge("age_group", -0.2, range=plot.x_range),
+        y="Invasive_Label_Y",
+        text="Invasive_Percentage_Display",
+        level="glyph",
+        source=source,
+        text_font_size="14pt",
+        text_color="RoyalBlue",
+        text_align="center",
+        text_baseline="middle"
+    )
+    plot.add_layout(labels_invasive)
+    
+    # Non-Invasive Labels
+    labels_non_invasive = LabelSet(
+        x=dodge("age_group", 0.2, range=plot.x_range),
+        y="Non_Invasive_Label_Y",
+        text="Non_Invasive_Percentage_Display",
+        level="glyph",
+        source=source,
+        text_font_size="14pt",
+        text_color="RoyalBlue",
+        text_align="center",
+        text_baseline="middle"
+    )
+    plot.add_layout(labels_non_invasive)
+
     
     script, div = components(plot)
     
