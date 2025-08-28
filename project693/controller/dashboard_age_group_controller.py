@@ -14,53 +14,11 @@ import pandas as pd
 
 analysis_dao = AnalysisDAO()
 
-@app.route("/dashboard/analysis-age-group/", methods=["GET", "POST"])
+@app.route("/dashboard/analysis-age-group/", methods=["GET"])
 def choices_by_age_group():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
-
-    if request.method == "POST":
-        pass
-        return redirect(url_for("list_plants"))
-    
-    # Sample dataset
-    # df = pd.DataFrame({
-    #     "category": ["A", "A", "A", "B", "B", "B"],
-    #     "x": [1, 2, 3, 1, 2, 3],
-    #     "y": [4, 5, 6, 7, 6, 5]
-    # })
-
-    # Selected category from form
-    # selected_category = request.form.get("category", "A")
-    # selected_category = "A"
-    # filtered_df = df[df["category"] == selected_category]
-
-    # source1 = ColumnDataSource(filtered_df)
-    # source2 = ColumnDataSource(filtered_df)
-
-    # Plot 1: Line chart
-    # plot = figure(height=450, sizing_mode="stretch_width", title=f"Line Plot - Category {selected_category}")
-    # plot.line("x", "y", source=source1, line_width=2)
-
-    # Plot 2: Scatter plot
-    # plot2 = figure(height=450, sizing_mode="stretch_width", title="Scatter Plot")
-    # plot2.circle("x", "y", source=source2, size=10, color="green")
-
-    # Layout
-    # layout = column(
-    #     row(plot1, plot2)
-    # )
-
-    # Embed Bokeh in Flask
-    # script, div = components(layout)
-    
-    
-    # categories = ["18-29", "30-49", "50-64", "65+"]
-    # types = ["Invasive", "Non-Invasive"]
-    
-    # x = [(category, type) for category in categories for type in types]
-    # values = [65, 35, 78, 22, 0, 0, 0, 0]
     
     age_group_values = analysis_dao.list_survey_age_group_count()
     
