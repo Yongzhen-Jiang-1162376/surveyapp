@@ -25,8 +25,8 @@ def choices_by_age_group():
     invasive_count_list = []
     non_invasive_count_list = []
     invasive_percentage_list = []
-    invasive_percentage_display_list = []
     non_invasive_percentage_list = []
+    invasive_percentage_display_list = []
     non_invasive_percentage_display_list = []
     
     for group in age_group_values:
@@ -43,8 +43,8 @@ def choices_by_age_group():
             non_invasive_perc = float(round(group[1] / (group[0] + group[1]), 4))
             invasive_percentage_list.append(invasive_perc)
             non_invasive_percentage_list.append(non_invasive_perc)
-            invasive_percentage_display_list.append("{:.2f}%".format(100 * invasive_perc))
-            non_invasive_percentage_display_list.append("{:.2f}%".format(100 * non_invasive_perc))
+            invasive_percentage_display_list.append("{:.2f}".format(100 * invasive_perc))
+            non_invasive_percentage_display_list.append("{:.2f}".format(100 * non_invasive_perc))
 
     age_group = ['18-29', '30-49', '50-66', '65+']
     
@@ -52,15 +52,19 @@ def choices_by_age_group():
             'Invasive'   : invasive_count_list,
             'Non_Invasive'   : non_invasive_count_list,
             'Invasive_Percentage': invasive_percentage_list,
-            'Invasive_Percentage_Display': invasive_percentage_display_list,
             'Non_Invasive_Percentage': non_invasive_percentage_list,
+            'Invasive_Percentage_Display': invasive_percentage_display_list,
             'Non_Invasive_Percentage_Display': non_invasive_percentage_display_list
            }
     
     source = ColumnDataSource(data=data)
     
+    print(invasive_percentage_list)
+    
     # add label position (centered in the bar)
+    source.data['Invasive_Labels'] = [f"{100 * p:.2f}%" if p > 0 else "" for p in invasive_percentage_list]
     source.data['Invasive_Label_Y'] = [p / 2 for p in invasive_percentage_list]
+    source.data['Non_Invasive_Labels'] = [f"{100 * p:.2f}%" if p > 0 else "" for p in non_invasive_percentage_list]
     source.data["Non_Invasive_Label_Y"] = [p / 2 for p in non_invasive_percentage_list]
     
     plot = figure(x_range=age_group, y_range=(0, 1), title="Invasive Choices by Age Group",
@@ -80,7 +84,7 @@ def choices_by_age_group():
     labels_invasive = LabelSet(
         x=dodge("age_group", -0.2, range=plot.x_range),
         y="Invasive_Label_Y",
-        text="Invasive_Percentage_Display",
+        text="Invasive_Labels",
         level="glyph",
         source=source,
         text_font_size="14pt",
@@ -94,7 +98,7 @@ def choices_by_age_group():
     labels_non_invasive = LabelSet(
         x=dodge("age_group", 0.2, range=plot.x_range),
         y="Non_Invasive_Label_Y",
-        text="Non_Invasive_Percentage_Display",
+        text="Non_Invasive_Labels",
         level="glyph",
         source=source,
         text_font_size="14pt",
