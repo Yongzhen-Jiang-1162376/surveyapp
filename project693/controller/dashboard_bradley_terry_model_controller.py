@@ -92,9 +92,6 @@ def bradley_terry_model():
         'rows': rows
     }
     
-    print(rows)
-    print(win_vs_loss_by_plant_datatable)
-    
     # 5. heat map of beta scores
     beta_scores_heat_map_uw = beta_scores_heat_map(weighted=0)
     beta_scores_heat_map_w = beta_scores_heat_map(weighted=1)

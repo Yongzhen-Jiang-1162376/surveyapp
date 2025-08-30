@@ -59,8 +59,6 @@ def choices_by_age_group():
     
     source = ColumnDataSource(data=data)
     
-    print(invasive_percentage_list)
-    
     # add label position (centered in the bar)
     source.data['Invasive_Labels'] = [f"{100 * p:.2f}%" if p > 0 else "" for p in invasive_percentage_list]
     source.data['Invasive_Label_Y'] = [p / 2 for p in invasive_percentage_list]
