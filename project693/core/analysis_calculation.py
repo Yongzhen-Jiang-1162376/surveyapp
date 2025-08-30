@@ -206,12 +206,13 @@ def beta_vs_win_percentage_datatable():
         rows.append({
             'plant': plant_name,
             'invasive': invasive,
-            'win_percentage': round(win_percentage, 4),
+            'win_percentage_origin': win_percentage,
+            'win_percentage': str(round(win_percentage * 100, 2)) + '%',
             'bt_beta_score': round(bt_beta, 4),
             'bt_beta_score_weighted': round(bt_beta_weighted, 4)
         })
     
-    rows = sorted(rows, key=lambda r: r['win_percentage'], reverse=True)
+    rows = sorted(rows, key=lambda r: r['win_percentage_origin'], reverse=True)
     
     return rows
 
