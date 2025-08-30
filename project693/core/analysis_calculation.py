@@ -276,13 +276,19 @@ def beta_score_by_plant_datatable():
 def beta_scores_by_plant_type(weighted=1):
     beta_normalized = weighted_beta_normalized if weighted else unweighted_beta_normalized
 
-    bins = np.linspace(min(beta_normalized), max(beta_normalized), 10)
+    # generate 10 bins for histogram
+    bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
+    
+    # print(bins)
     
     normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
     normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
     
     hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
     hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
+    
+    # print(hist_invasive, edges_invasive)
+    # print(hist_non_invasive, edges_non_invasive)
     
     title = "Histogram of Normalized Attractiveness Scores (weighted)" if weighted else "Histogram of Normalized Attractiveness Scores"
     
@@ -315,6 +321,45 @@ def beta_scores_by_plant_type(weighted=1):
     plot.legend.click_policy = "hide"
     
     return plot
+
+# 3-1 beta score by plant type
+def beta_scores_by_plant_type_datatable():
+    rows = []
+    
+    beta_normalized = unweighted_beta_normalized
+    beta_normalized_weighted = weighted_beta_normalized
+
+    # generate 10 bins for histogram
+    bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
+    bins_weighted = np.linspace(min(beta_normalized_weighted), max(beta_normalized_weighted), 11)
+    
+    normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
+    normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    
+    normalized_invasive_betas_weighted = [beta_normalized_weighted[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
+    normalized_non_invasive_betas_weighted = [beta_normalized_weighted[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    
+    hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
+    hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
+    
+    hist_invasive_weighted, edges_invasive_weighted = np.histogram(normalized_invasive_betas_weighted, bins=bins_weighted)
+    hist_non_invasive_weighted, edges_non_invasive_weighted = np.histogram(normalized_non_invasive_betas_weighted, bins=bins_weighted)
+    
+    for k in range(10):
+        rows.append({
+            'Bin_Number': k+1,
+            'Bin_Left': round(float(bins[k]), 2),
+            'Bin_Right': round(float(bins[k+1]), 2),
+            'Invasive_Count': int(hist_invasive[k]),
+            'Non_Invasive_Count': int(hist_non_invasive[k]),
+            'Bin_Number_Weighted': k+1,
+            'Bin_Left_Weighted': round(float(bins_weighted[k]), 2),
+            'Bin_Right_Weighted': round(float(bins_weighted[k+1]), 2),
+            'Invasive_Count_Weighted': int(hist_invasive_weighted[k]),
+            'Non_Invasive_Count_Weighted': int(hist_non_invasive_weighted[k])
+        })
+    
+    return rows
 
 
 # 4. Wins/Losses bar chart
