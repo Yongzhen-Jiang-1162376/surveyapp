@@ -206,7 +206,7 @@ def beta_vs_win_percentage_datatable():
         
         rows.append({
             'plant': plant_name,
-            'invasive': invasive,
+            'invasiveness': invasive,
             'win_percentage_origin': win_percentage,
             'win_percentage': str(round(win_percentage * 100, 2)) + '%',
             'bt_beta_score': round(bt_beta, 4),
@@ -267,7 +267,7 @@ def beta_score_by_plant_datatable():
         
         rows.append({
             'plant': plant_name,
-            'invasive': invasive,
+            'invasiveness': invasive,
             'bt_beta_score': round(bt_beta, 4),
             'bt_beta_score_weighted': round(bt_beta_weighted, 4)
         })
@@ -352,18 +352,6 @@ def beta_scores_by_plant_type_datatable():
     hist_non_invasive_weighted, edges_non_invasive_weighted = np.histogram(normalized_non_invasive_betas_weighted, bins=bins_weighted)
     
     for k in range(10):
-        # row = OrderedDict([
-        #     ('Bin_Number', k+1),
-        #     ('Bin_Left', round(float(bins[k]), 2)),
-        #     ('Bin_Right', round(float(bins[k+1]), 2)),
-        #     ('Invasive_Count', int(hist_invasive[k])),
-        #     ('Non_Invasive_Count', int(hist_non_invasive[k])),
-        #     ('Bin_Number_Weighted', k+1),
-        #     ('Bin_Left_Weighted', round(float(bins_weighted[k]), 2)),
-        #     ('Bin_Right_Weighted', round(float(bins_weighted[k+1]), 2)),
-        #     ('Invasive_Count_Weighted', int(hist_invasive_weighted[k])),
-        #     ('Non_Invasive_Count_Weighted', int(hist_non_invasive_weighted[k]))
-        # ])
         row = {
             'Bin_Number': k+1,
             'Bin_Left': round(float(bins[k]), 2),
@@ -377,20 +365,7 @@ def beta_scores_by_plant_type_datatable():
             'Non_Invasive_Count_Weighted': int(hist_non_invasive_weighted[k])
         }
         rows.append(row)
-        # rows.append({
-        #     'Bin_Number': k+1,
-        #     'Bin_Left': round(float(bins[k]), 2),
-        #     'Bin_Right': round(float(bins[k+1]), 2),
-        #     'Invasive_Count': int(hist_invasive[k]),
-        #     'Non_Invasive_Count': int(hist_non_invasive[k]),
-        #     'Bin_Number_Weighted': k+1,
-        #     'Bin_Left_Weighted': round(float(bins_weighted[k]), 2),
-        #     'Bin_Right_Weighted': round(float(bins_weighted[k+1]), 2),
-        #     'Invasive_Count_Weighted': int(hist_invasive_weighted[k]),
-        #     'Non_Invasive_Count_Weighted': int(hist_non_invasive_weighted[k])
-        # })
-    
-    # print(rows)
+
     return rows
 
 
@@ -427,6 +402,31 @@ def win_loss_by_image(weighted=1):
     plot.xaxis.major_label_orientation = 0.785
     
     return plot
+
+
+# 4-1 Win/Loss by plant datatable
+def win_loss_by_plant_datatable():
+    rows = []
+    
+    images = [all_plants[id] for id in image_ids]
+    
+    wins = [int((data['winner'] == id).sum()) for id in image_ids]
+    losses = [int((data['loser'] == id).sum()) for id in image_ids]
+    
+    for idx in range(num_images):
+        plant_name = images[idx]
+        invasive = all_plants_invasiveness[idx_to_id[idx]]
+        win = wins[idx]
+        loss = losses[idx]
+        
+        rows.append({
+            'plant': plant_name,
+            'invasiveness': invasive,
+            'win': win,
+            'loss': loss
+        })
+    
+    return rows
 
 
 # 5. Attractive beta score heat map
@@ -551,4 +551,3 @@ def beta_scores_ranking(weighted=1):
     plot.add_layout(labels)
     
     return plot
-    
