@@ -186,7 +186,7 @@ def beta_vs_win_percentage(weighted=1):
     return plot
 
 
-# 1-1 beta vs win percentage datat table
+# 1-1 datatable for beta vs win percentage
 def beta_vs_win_percentage_datatable():
     rows = []
     
@@ -250,6 +250,27 @@ def beta_scores_by_image(weighted=1):
     
     return plot
 
+# 2-1 datatable for attractiveness beta by each plant
+def beta_score_by_plant_datatable():
+    rows = []
+    
+    for idx in range(num_images):
+        plant_name = all_plants[idx_to_id[idx]]
+        invasive = all_plants_invasiveness[idx_to_id[idx]]
+        bt_beta = float(unweighted_beta_normalized[idx])
+        bt_beta_weighted = float(weighted_beta_normalized[idx])
+        
+        rows.append({
+            'plant': plant_name,
+            'invasive': invasive,
+            'bt_beta_score': round(bt_beta, 4),
+            'bt_beta_score_weighted': round(bt_beta_weighted, 4)
+        })
+    
+    # rows = sorted(rows, key=lambda r: r['bt_beta_score'], reverse=True)
+    return rows
+
+    
 
 # 3. Histogram of attractiveness scores by plant type
 def beta_scores_by_plant_type(weighted=1):

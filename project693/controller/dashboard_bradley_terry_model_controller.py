@@ -8,6 +8,7 @@ from project693.core.analysis_calculation import (
     beta_vs_win_percentage,
     beta_vs_win_percentage_datatable,
     beta_scores_by_image,
+    beta_score_by_plant_datatable,
     beta_scores_by_plant_type,
     win_loss_by_image,
     beta_scores_heat_map,
@@ -51,6 +52,8 @@ def bradley_terry_model():
     beta_scores_by_image_uw_script, beta_scores_by_image_uw_div = components(beta_scores_by_image_uw)
     beta_scores_by_image_w_script, beta_scores_by_image_w_div = components(beta_scores_by_image_w)
     
+    beta_scores_by_plant_datatable = beta_score_by_plant_datatable()
+    
     # 3. histogram of beta scores by plant type
     beta_scores_by_plant_type_uw = beta_scores_by_plant_type(weighted=0)
     beta_scores_by_plant_type_w = beta_scores_by_plant_type(weighted=1)
@@ -76,6 +79,9 @@ def bradley_terry_model():
     beta_scores_ranking_w = beta_scores_ranking(weighted=1)
     beta_scores_ranking_uw_script, beta_scores_ranking_uw_div = components(beta_scores_ranking_uw)
     beta_scores_ranking_w_script, beta_scores_ranking_w_div = components(beta_scores_ranking_w)
+    
+    beta_scores_ranking_datatable = beta_score_by_plant_datatable()
+    beta_scores_ranking_datatable = sorted(beta_scores_ranking_datatable, key=lambda r: r['bt_beta_score'], reverse=True)
     
     plots = {
         'win_percentage_beta_uw_script': win_percentage_beta_uw_script,
@@ -111,6 +117,8 @@ def bradley_terry_model():
     
     data = {
         'win_percentage_beta_datatable': win_percentage_beta_datatable,
+        'beta_score_by_plant_datatable': beta_scores_by_plant_datatable,
+        'beta_scores_ranking_datatable': beta_scores_ranking_datatable
     }
     
     return render_template(
