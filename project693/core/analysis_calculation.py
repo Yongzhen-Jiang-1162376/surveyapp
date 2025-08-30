@@ -14,6 +14,7 @@ from bokeh.resources import CDN
 from scipy.optimize import minimize
 import numpy as np
 import pandas as pd
+from collections import OrderedDict
 
 
 
@@ -214,6 +215,10 @@ def beta_vs_win_percentage_datatable():
     
     rows = sorted(rows, key=lambda r: r['win_percentage_origin'], reverse=True)
     
+    # delete 'win_percentage_origin' column, to keep consistent when downloading data
+    for row in rows:
+        del row['win_percentage_origin']
+    
     return rows
 
 
@@ -268,6 +273,7 @@ def beta_score_by_plant_datatable():
         })
     
     # rows = sorted(rows, key=lambda r: r['bt_beta_score'], reverse=True)
+    
     return rows
 
     
@@ -346,7 +352,19 @@ def beta_scores_by_plant_type_datatable():
     hist_non_invasive_weighted, edges_non_invasive_weighted = np.histogram(normalized_non_invasive_betas_weighted, bins=bins_weighted)
     
     for k in range(10):
-        rows.append({
+        # row = OrderedDict([
+        #     ('Bin_Number', k+1),
+        #     ('Bin_Left', round(float(bins[k]), 2)),
+        #     ('Bin_Right', round(float(bins[k+1]), 2)),
+        #     ('Invasive_Count', int(hist_invasive[k])),
+        #     ('Non_Invasive_Count', int(hist_non_invasive[k])),
+        #     ('Bin_Number_Weighted', k+1),
+        #     ('Bin_Left_Weighted', round(float(bins_weighted[k]), 2)),
+        #     ('Bin_Right_Weighted', round(float(bins_weighted[k+1]), 2)),
+        #     ('Invasive_Count_Weighted', int(hist_invasive_weighted[k])),
+        #     ('Non_Invasive_Count_Weighted', int(hist_non_invasive_weighted[k]))
+        # ])
+        row = {
             'Bin_Number': k+1,
             'Bin_Left': round(float(bins[k]), 2),
             'Bin_Right': round(float(bins[k+1]), 2),
@@ -357,8 +375,22 @@ def beta_scores_by_plant_type_datatable():
             'Bin_Right_Weighted': round(float(bins_weighted[k+1]), 2),
             'Invasive_Count_Weighted': int(hist_invasive_weighted[k]),
             'Non_Invasive_Count_Weighted': int(hist_non_invasive_weighted[k])
-        })
+        }
+        rows.append(row)
+        # rows.append({
+        #     'Bin_Number': k+1,
+        #     'Bin_Left': round(float(bins[k]), 2),
+        #     'Bin_Right': round(float(bins[k+1]), 2),
+        #     'Invasive_Count': int(hist_invasive[k]),
+        #     'Non_Invasive_Count': int(hist_non_invasive[k]),
+        #     'Bin_Number_Weighted': k+1,
+        #     'Bin_Left_Weighted': round(float(bins_weighted[k]), 2),
+        #     'Bin_Right_Weighted': round(float(bins_weighted[k+1]), 2),
+        #     'Invasive_Count_Weighted': int(hist_invasive_weighted[k]),
+        #     'Non_Invasive_Count_Weighted': int(hist_non_invasive_weighted[k])
+        # })
     
+    # print(rows)
     return rows
 
 

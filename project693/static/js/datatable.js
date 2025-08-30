@@ -123,7 +123,7 @@ export class AjaxDataTable {
 
 export class DataTable {
     constructor(options) {
-        this.data = options.data || [];
+        this.data = options.data.rows || [];
         this.rowsPerPage = options.rowsPerPage || 10;
         this.currentPage = 1;
         this.total = this.data.length;
@@ -137,6 +137,7 @@ export class DataTable {
         this.downloadBtn = document.getElementById(options.downloadBtnId);
 
         this.columns = options.columns;
+        this.dataColumns = options.data.columns;
 
         this.downloadFileName = options.downloadFileName;
 
@@ -192,9 +193,11 @@ export class DataTable {
                     
             if (!this.data.length) return;
 
-            const header = Object.keys(this.data[0]);
+            const header = this.columns;
+            const data_header = this.dataColumns;
+
             const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
-            const csv = [header.join(','), ...this.data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
+            const csv = [header.join(','), ...this.data.map(r => data_header.map(h => escape(r[h])).join(','))].join('\n');
 
             const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
             const url = URL.createObjectURL(blob);

@@ -44,7 +44,11 @@ def bradley_terry_model():
     win_percentage_beta_uw_script, win_percentage_beta_uw_div = components(win_percentage_beta_plot_uw)
     win_percentage_beta_w_script, win_percentage_beta_w_div = components(win_percentage_beta_plot_w)
     
-    win_percentage_beta_datatable = beta_vs_win_percentage_datatable()
+    rows = beta_vs_win_percentage_datatable()
+    win_percentage_beta_datatable = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
     
     # 2. histogram of beta scores by each image
     beta_scores_by_image_uw = beta_scores_by_image(weighted=0)
@@ -53,7 +57,11 @@ def bradley_terry_model():
     beta_scores_by_image_uw_script, beta_scores_by_image_uw_div = components(beta_scores_by_image_uw)
     beta_scores_by_image_w_script, beta_scores_by_image_w_div = components(beta_scores_by_image_w)
     
-    beta_scores_by_plant_datatable = beta_score_by_plant_datatable()
+    rows = beta_score_by_plant_datatable()
+    beta_scores_by_plant_datatable = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
     
     # 3. histogram of beta scores by plant type
     beta_scores_by_plant_type_uw = beta_scores_by_plant_type(weighted=0)
@@ -62,7 +70,11 @@ def bradley_terry_model():
     beta_scores_by_plant_type_uw_script, beta_scores_by_plant_type_uw_div = components(beta_scores_by_plant_type_uw)
     beta_scores_by_plant_type_w_script, beta_scores_by_plant_type_w_div = components(beta_scores_by_plant_type_w)
     
-    beta_scores_by_plant_type_hist_datatable = beta_scores_by_plant_type_datatable()
+    rows = beta_scores_by_plant_type_datatable()
+    beta_scores_by_plant_type_hist_datatable = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
     
     
     # 4. wins/Losses bar chart
@@ -84,8 +96,12 @@ def bradley_terry_model():
     beta_scores_ranking_uw_script, beta_scores_ranking_uw_div = components(beta_scores_ranking_uw)
     beta_scores_ranking_w_script, beta_scores_ranking_w_div = components(beta_scores_ranking_w)
     
-    beta_scores_ranking_datatable = beta_score_by_plant_datatable()
-    beta_scores_ranking_datatable = sorted(beta_scores_ranking_datatable, key=lambda r: r['bt_beta_score'], reverse=True)
+    rows = beta_score_by_plant_datatable()
+    rows = sorted(rows, key=lambda r: r['bt_beta_score'], reverse=True)
+    beta_scores_ranking_datatable = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
     
     plots = {
         'win_percentage_beta_uw_script': win_percentage_beta_uw_script,
