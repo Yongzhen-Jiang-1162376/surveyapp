@@ -12,6 +12,7 @@ from project693.core.analysis_calculation import (
     beta_scores_by_plant_type,
     beta_scores_by_plant_type_datatable,
     win_loss_by_image,
+    win_loss_by_plant_datatable,
     beta_scores_heat_map,
     beta_scores_ranking
 )
@@ -84,6 +85,16 @@ def bradley_terry_model():
     win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
     win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
     
+    rows = win_loss_by_plant_datatable()
+    
+    win_vs_loss_by_plant_datatable = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
+    
+    print(rows)
+    print(win_vs_loss_by_plant_datatable)
+    
     # 5. heat map of beta scores
     beta_scores_heat_map_uw = beta_scores_heat_map(weighted=0)
     beta_scores_heat_map_w = beta_scores_heat_map(weighted=1)
@@ -139,7 +150,8 @@ def bradley_terry_model():
         'win_percentage_beta_datatable': win_percentage_beta_datatable,
         'beta_score_by_plant_datatable': beta_scores_by_plant_datatable,
         'beta_scores_ranking_datatable': beta_scores_ranking_datatable,
-        'beta_scores_by_plant_type_hist_datatable': beta_scores_by_plant_type_hist_datatable
+        'beta_scores_by_plant_type_hist_datatable': beta_scores_by_plant_type_hist_datatable,
+        'win_vs_loss_by_plant_datatable': win_vs_loss_by_plant_datatable
     }
     
     return render_template(
