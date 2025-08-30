@@ -363,6 +363,64 @@
         <div class="w-full">{{ plots['win_loss_by_image_w_div'] | safe }}</div>
       </div>
     </div>
+
+
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn6" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect6" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="win_loss_by_plant_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasiveness</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Win</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Loss</th>
+            </tr>
+          </thead>
+          <tbody id="win_loss_by_plant_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo6" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn6" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo6" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn6" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
     
   </div>
 
@@ -392,7 +450,9 @@ const win_percentage_beta_datatable = {{ data['win_percentage_beta_datatable']|t
 const beta_score_by_plant_datatable = {{ data['beta_score_by_plant_datatable']|tojson }};
 const beta_scores_ranking_datatable = {{ data['beta_scores_ranking_datatable']|tojson }};
 const beta_scores_by_plant_type_hist_datatable = {{ data['beta_scores_by_plant_type_hist_datatable']|tojson }};
+const win_vs_loss_by_plant_datatable = {{ data['win_vs_loss_by_plant_datatable']|tojson }};
 
+console.log(win_vs_loss_by_plant_datatable)
 
 new DataTable({
   data: win_percentage_beta_datatable,
@@ -406,7 +466,7 @@ new DataTable({
   rowsPerPage: 10,
   columns: [
     'plant',
-    'invasive',
+    'invasiveness',
     'win_percentage',
     'bt_beta_score',
     'bt_beta_score_weighted'
@@ -426,7 +486,7 @@ new DataTable({
   rowsPerPage: 10,
   columns: [
     'plant',
-    'invasive',
+    'invasiveness',
     'bt_beta_score',
     'bt_beta_score_weighted'
   ],
@@ -445,7 +505,7 @@ new DataTable({
   rowsPerPage: 10,
   columns: [
     'plant',
-    'invasive',
+    'invasiveness',
     'bt_beta_score',
     'bt_beta_score_weighted'
   ],
@@ -478,6 +538,26 @@ new DataTable({
     'Non_Invasive_Count_Weighted'
   ],
   downloadFileName: 'beta_score_by_plant_histogram.csv'
+});
+
+
+new DataTable({
+  data: win_vs_loss_by_plant_datatable,
+  tableBodyId: "win_loss_by_plant_table_body",
+  prevBtnId: "prevBtn6",
+  nextBtnId: "nextBtn6",
+  pageInfoId: "pageInfo6",
+  rangeInfoId: "rangeInfo6",
+  rowsPerPageSelectId: "rowsPerPageSelect6",
+  downloadBtnId: "downloadBtn6",
+  rowsPerPage: 10,
+  columns: [
+    'plant',
+    'invasiveness',
+    'win',
+    'loss'
+  ],
+  downloadFileName: 'win_loss_by_plant.csv'
 });
 
 </script>
