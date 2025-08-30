@@ -10,6 +10,7 @@ from project693.core.analysis_calculation import (
     beta_scores_by_image,
     beta_score_by_plant_datatable,
     beta_scores_by_plant_type,
+    beta_scores_by_plant_type_datatable,
     win_loss_by_image,
     beta_scores_heat_map,
     beta_scores_ranking
@@ -60,6 +61,9 @@ def bradley_terry_model():
     
     beta_scores_by_plant_type_uw_script, beta_scores_by_plant_type_uw_div = components(beta_scores_by_plant_type_uw)
     beta_scores_by_plant_type_w_script, beta_scores_by_plant_type_w_div = components(beta_scores_by_plant_type_w)
+    
+    beta_scores_by_plant_type_hist_datatable = beta_scores_by_plant_type_datatable()
+    
     
     # 4. wins/Losses bar chart
     win_loss_by_image_uw = win_loss_by_image(weighted=0)
@@ -118,7 +122,8 @@ def bradley_terry_model():
     data = {
         'win_percentage_beta_datatable': win_percentage_beta_datatable,
         'beta_score_by_plant_datatable': beta_scores_by_plant_datatable,
-        'beta_scores_ranking_datatable': beta_scores_ranking_datatable
+        'beta_scores_ranking_datatable': beta_scores_ranking_datatable,
+        'beta_scores_by_plant_type_hist_datatable': beta_scores_by_plant_type_hist_datatable
     }
     
     return render_template(
