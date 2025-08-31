@@ -249,6 +249,63 @@
     </div>
 
     
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn4" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect4" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="beta_score_heat_map_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant A</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant B</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">A Beats B</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">A Beats B (Weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="beta_score_heat_map_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo4" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn4" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo4" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn4" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
 
     <h1 class="text-xl py-2">Histogram of Bradley-Terry Beta By Invasive Type</h1>
     <!-- beta scores by plant type -->
@@ -448,11 +505,10 @@ import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
 const win_percentage_beta_datatable = {{ data['win_percentage_beta_datatable']|tojson }};
 const beta_score_by_plant_datatable = {{ data['beta_score_by_plant_datatable']|tojson }};
-const beta_scores_ranking_datatable = {{ data['beta_scores_ranking_datatable']|tojson }};
-const beta_scores_by_plant_type_hist_datatable = {{ data['beta_scores_by_plant_type_hist_datatable']|tojson }};
+const beta_score_ranking_datatable = {{ data['beta_score_ranking_datatable']|tojson }};
+const beta_score_by_plant_type_hist_datatable = {{ data['beta_score_by_plant_type_hist_datatable']|tojson }};
 const win_vs_loss_by_plant_datatable = {{ data['win_vs_loss_by_plant_datatable']|tojson }};
-
-console.log(win_vs_loss_by_plant_datatable)
+const beta_score_heat_map_datatable = {{ data['beta_score_heat_map_datatable']|tojson }};
 
 new DataTable({
   data: win_percentage_beta_datatable,
@@ -494,7 +550,7 @@ new DataTable({
 });
 
 new DataTable({
-  data: beta_scores_ranking_datatable,
+  data: beta_score_ranking_datatable,
   tableBodyId: "beta_score_by_plant_ranking_table_body",
   prevBtnId: "prevBtn3",
   nextBtnId: "nextBtn3",
@@ -513,10 +569,28 @@ new DataTable({
 });
 
 
+new DataTable({
+  data: beta_score_heat_map_datatable,
+  tableBodyId: "beta_score_heat_map_table_body",
+  prevBtnId: "prevBtn4",
+  nextBtnId: "nextBtn4",
+  pageInfoId: "pageInfo4",
+  rangeInfoId: "rangeInfo4",
+  rowsPerPageSelectId: "rowsPerPageSelect4",
+  downloadBtnId: "downloadBtn4",
+  rowsPerPage: 10,
+  columns: [
+    'Plant_A',
+    'Plant_B',
+    'A_Beats_B',
+    'A_Beats_B_Weighted'
+  ],
+  downloadFileName: 'beta_score_heat_map.csv'
+});
 
 
 new DataTable({
-  data: beta_scores_by_plant_type_hist_datatable,
+  data: beta_score_by_plant_type_hist_datatable,
   tableBodyId: "beta_score_by_plant_type_table_body",
   prevBtnId: "prevBtn5",
   nextBtnId: "nextBtn5",
