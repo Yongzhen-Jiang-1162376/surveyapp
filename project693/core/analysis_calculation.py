@@ -436,7 +436,8 @@ def beta_scores_heat_map(weighted=1):
     
     matrix = probability_matrix(betas)
     
-    mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+    # mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+    mapper = LinearColorMapper(palette="RdBu11", low=0, high=1)
     
     n = len(plant_names)
     xname, yname, value = [], [], []
@@ -495,9 +496,33 @@ def beta_scores_heat_map(weighted=1):
         x=0, y="y", text="name", text_color="color",
         source=y_source, x_offset=-5, text_align="right", text_baseline="middle"
     )
-    # plot.add_layout(y_labels)
     
     return plot
+
+
+# 5-1 beta score heat map datatable
+def beta_score_heat_map_datatable():
+    rows = []
+    betas = unweighted_beta_normalized
+    betas_weighted = weighted_beta_normalized
+    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    
+    matrix = probability_matrix(betas)
+    matrix_weighted = probability_matrix(betas_weighted)
+    
+    n = len(plant_names)
+    
+    for i in range(n):
+        for j in range(n):
+            row = {
+                'Plant_A': plant_names[i],
+                'Plant_B': plant_names[j],
+                'A_Beats_B': 'NA' if np.isnan(matrix[i, j]) else round(float(matrix[i, j]), 5),
+                'A_Beats_B_Weighted': 'NA' if np.isnan(matrix_weighted[i, j]) else round(float(matrix_weighted[i, j]), 5),
+            }
+            rows.append(row)
+
+    return rows
 
 
 # 6. Ranking of beta scores
