@@ -14,6 +14,7 @@ from project693.core.analysis_calculation import (
     win_loss_by_image,
     win_loss_by_plant_datatable,
     beta_scores_heat_map,
+    beta_score_heat_map_datatable,
     beta_scores_ranking
 )
 from bokeh.plotting import figure
@@ -46,7 +47,7 @@ def bradley_terry_model():
     win_percentage_beta_w_script, win_percentage_beta_w_div = components(win_percentage_beta_plot_w)
     
     rows = beta_vs_win_percentage_datatable()
-    win_percentage_beta_datatable = {
+    beta_vs_win_percentage_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
     }
@@ -59,7 +60,7 @@ def bradley_terry_model():
     beta_scores_by_image_w_script, beta_scores_by_image_w_div = components(beta_scores_by_image_w)
     
     rows = beta_score_by_plant_datatable()
-    beta_scores_by_plant_datatable = {
+    beta_score_by_plant_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
     }
@@ -72,7 +73,7 @@ def bradley_terry_model():
     beta_scores_by_plant_type_w_script, beta_scores_by_plant_type_w_div = components(beta_scores_by_plant_type_w)
     
     rows = beta_scores_by_plant_type_datatable()
-    beta_scores_by_plant_type_hist_datatable = {
+    beta_scores_by_plant_type_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
     }
@@ -87,7 +88,7 @@ def bradley_terry_model():
     
     rows = win_loss_by_plant_datatable()
     
-    win_vs_loss_by_plant_datatable = {
+    win_loss_by_plant_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
     }
@@ -98,6 +99,12 @@ def bradley_terry_model():
     beta_scores_heat_map_by_image_uw_script, beta_scores_heat_map_by_image_uw_div = components(beta_scores_heat_map_uw)
     beta_scores_heat_map_by_image_w_script, beta_scores_heat_map_by_image_w_div = components(beta_scores_heat_map_w)
     
+    rows = beta_score_heat_map_datatable()
+    beta_score_heat_map_dt = {
+        'columns': list(rows[0].keys()),
+        'rows': rows
+    }
+    
     # 6. beta scores ranking
     beta_scores_ranking_uw = beta_scores_ranking(weighted=0)
     beta_scores_ranking_w = beta_scores_ranking(weighted=1)
@@ -106,7 +113,7 @@ def bradley_terry_model():
     
     rows = beta_score_by_plant_datatable()
     rows = sorted(rows, key=lambda r: r['bt_beta_score'], reverse=True)
-    beta_scores_ranking_datatable = {
+    beta_score_by_plant_ranking_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
     }
@@ -144,11 +151,12 @@ def bradley_terry_model():
     }
     
     data = {
-        'win_percentage_beta_datatable': win_percentage_beta_datatable,
-        'beta_score_by_plant_datatable': beta_scores_by_plant_datatable,
-        'beta_scores_ranking_datatable': beta_scores_ranking_datatable,
-        'beta_scores_by_plant_type_hist_datatable': beta_scores_by_plant_type_hist_datatable,
-        'win_vs_loss_by_plant_datatable': win_vs_loss_by_plant_datatable
+        'win_percentage_beta_datatable': beta_vs_win_percentage_dt,
+        'beta_score_by_plant_datatable': beta_score_by_plant_dt,
+        'beta_score_ranking_datatable': beta_score_by_plant_ranking_dt,
+        'beta_score_by_plant_type_hist_datatable': beta_scores_by_plant_type_dt,
+        'win_vs_loss_by_plant_datatable': win_loss_by_plant_dt,
+        'beta_score_heat_map_datatable': beta_score_heat_map_dt
     }
     
     return render_template(
