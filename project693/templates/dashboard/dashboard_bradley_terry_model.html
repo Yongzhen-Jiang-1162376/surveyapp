@@ -5,12 +5,80 @@
 {% block content %}
   {% include "dashboard/dashboard_nav.html" %}
 
-  <div class="p-4 px-6 py-0 bg-white">
+  <div class="p-4 px-6 py-0 bg-white relative">
     <h1 class="text-4xl py-6 text-center">
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
 
-    <h1 class="text-xl py-2">Bradley-Terry Beta vs Win Percentage</h1>
+    <div class="fixed top-[120px] right-0 z-50 group inline-block">
+      <button 
+        type="button" 
+        class="py-3 px-4 rounded-l-xl inline-flex items-center gap-x-2 font-medium bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+        data-hs-overlay="#hs-offcanvas-nav">
+        <i data-lucide="square-menu"></i>
+      </button>
+    </div>
+
+    <div id="hs-offcanvas-nav" class="hs-overlay hs-overlay-open:translate-x-0 hs-overlay-backdrop-open:bg-blue-950/50 hidden translate-x-full fixed top-0 end-0 transition-all duration-300 transform h-full max-w-sm w-full z-80 bg-white border-e border-gray-200">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
+        <h3 id="hs-offcanvas-example-label" class="font-bold text-gray-800">
+          Charts Navigation
+        </h3>
+        <button type="button" class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200" data-hs-overlay="#hs-offcanvas-nav">
+          <span class="sr-only">Close</span>
+          <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section1"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >1. Bradley-Terry Beta vs Win Percentage
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section2"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >2. Bradley-Terry Beta By Plant
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section3"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >3. Bradley-Terry Beta By Plant (Ranking)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section4"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >4. Bradley-Terry Beta By Plant (Heatmap)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section5"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >5. Bradley-Terry Beta By Invasive Type (Histogram)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section6"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >6. Win/Loss By Plant
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2" id="section1">Bradley-Terry Beta vs Win Percentage</h1>
 
     <!-- win percentage beta chart -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -85,7 +153,7 @@
       </div>
     </div>
 
-    <h1 class="text-xl py-2 mt-6">Bradley-Terry Beta By Each Plant</h1>
+    <h1 class="text-xl py-2 mt-6" id="section2">Bradley-Terry Beta By Each Plant</h1>
     <!-- beta score by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -158,7 +226,7 @@
       </div>
     </div>
 
-    <h1 class="text-xl py-2">Ranking of Bradley-Terry Beta By Each Plant</h1>
+    <h1 class="text-xl py-2" id="section3">Ranking of Bradley-Terry Beta By Each Plant</h1>
     <!-- ranking of beta scores by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -232,7 +300,7 @@
       </div>
     </div>
 
-    <h1 class="text-xl py-2">Heat map of Bradley-Terry Beta by Each Plant</h1>
+    <h1 class="text-xl py-2" id="section4">Heat map of Bradley-Terry Beta by Each Plant</h1>
     <!-- heat map of beta scores by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -307,7 +375,7 @@
     </div>
 
 
-    <h1 class="text-xl py-2">Histogram of Bradley-Terry Beta By Invasive Type</h1>
+    <h1 class="text-xl py-2" id="section5">Histogram of Bradley-Terry Beta By Invasive Type</h1>
     <!-- beta scores by plant type -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -387,8 +455,8 @@
       </div>
     </div>
 
-    <h1 class="text-xl py-2">Heat map of Bradley-Terry Beta by Each Plant</h1>
-    <!-- heat map of beta scores by each image -->
+    <!-- <h1 class="text-xl py-2">Heat map of Bradley-Terry Beta by Each Plant</h1>
+    heat map of beta scores by each image
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -401,11 +469,11 @@
       >
         <div class="w-full">{{ plots['beta_scores_heat_map_by_image_w_div'] | safe }}</div>
       </div>
-    </div>
+    </div> -->
 
 
 
-    <h1 class="text-xl py-2">Win/Loss By Each Plant</h1>
+    <h1 class="text-xl py-2" id="section6">Win/Loss By Each Plant</h1>
     <!-- win loss by image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
@@ -636,4 +704,7 @@ new DataTable({
 
 </script>
 
+<script>
+lucide.createIcons();
+</script>
 {% endblock %}
