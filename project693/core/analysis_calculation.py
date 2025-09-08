@@ -85,6 +85,9 @@ def constraint(betas):
 
 
 def calc_weighted_beta_estimates():
+    if data is None or len(data) == 0:
+        return np.array(betas_init)
+    
     result = minimize(
         fun=weighted_log_likelihood,
         x0=betas_init,
@@ -95,6 +98,9 @@ def calc_weighted_beta_estimates():
     return result.x
 
 def calc_unweighted_beta_estimates():
+    if data is None or len(data) == 0:
+        return np.array(betas_init)
+    
     result = minimize(
         fun=unweighted_log_likelihood,
         x0=betas_init,
@@ -108,8 +114,16 @@ weighted_betas = calc_weighted_beta_estimates()
 unweighted_betas = calc_unweighted_beta_estimates()
 
 def calc_normalized_betas(betas):
+    betas = np.array(betas)
+    
+    if betas.size == 0:
+        return np.array([])
+    
     beta_min = betas.min()
     beta_max = betas.max()
+    
+    if beta_max == beta_min:
+        return np.zeros_like(betas, dtype=float)
     
     beta_scale_0_1 = (betas - beta_min) / (beta_max - beta_min)
     beta_normalized = beta_scale_0_1 * 2 - 1

@@ -112,7 +112,7 @@ class AnalysisDAO(BaseDAO):
         
         result = self.execute_query(query)
         
-        return result if result else []
+        return result if result[0][0] is not None else []
 
     def list_survey_age_group_count(self):
         # query = """
