@@ -21,6 +21,9 @@ def dashboard():
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
     
+    if len(analysis_dao.list_choice_count()) == 0:
+        return render_template("dashboard/dashboard_empty.html", current_page="dashboard")
+    
     categories = ["Invasive", "Non-Invasive"]
     # values = [85, 15]
     values = [[int(r[0]), int(r[1])] for r in analysis_dao.list_choice_count()][0]
