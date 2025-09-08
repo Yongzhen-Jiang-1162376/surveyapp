@@ -58,7 +58,7 @@
                     </svg>
                   </div>
 
-                  <div class="hs-dropdown-menu transition-[opacity,margin] duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
+                  <div class="hs-dropdown-menu transition-[opacity,margin] z-100 duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
                     <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100"
                        href="{{ url_for('add_plant') }}"
                     >
@@ -68,6 +68,11 @@
                        href="{{ url_for('list_plants') }}"
                     >
                       Plant List
+                    </a>
+                    <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                       href="{{ url_for('survey_cycle') }}"
+                    >
+                      Survey Cycle
                     </a>
                   </div>
                 </li>
@@ -84,7 +89,7 @@
                     </svg>
                   </div>
 
-                  <div class="hs-dropdown-menu transition-[opacity,margin] duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
+                  <div class="hs-dropdown-menu transition-[opacity,margin] z-100 duration-150 hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[10rem] bg-white shadow-md rounded-lg p-2 mt-2 border border-gray-100">
                     <a class="flex items-center gap-x-2 py-2 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-100" 
                        href="{{ url_for('profile') }}">
                       My Profile
