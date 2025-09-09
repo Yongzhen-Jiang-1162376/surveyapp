@@ -75,8 +75,7 @@ alter table survey_results
 add (
 	`response_time`	float,
 	`invasive_plant_id` int,
-  `non_invasive_plant_id` int,
-  `invasive_plant_selected` bool
+  `non_invasive_plant_id` int
 );
 
 -- rename question_number to question_seq 
@@ -92,15 +91,15 @@ add (
   `invasive_loser` int
 )
 
--- add an active column to servey result table to support survey period
+-- add an active column to servey result table to support survey cycle
 -- by default it is true (active)
 alter table survey_results
 add column active bool default 1;
 
 
--- add survery period table to support survey cycle
-DROP TABLE IF EXISTS `survey_periods`;
-CREATE TABLE `survey_periods` (
+-- add survey cycle table to support survey cycle
+DROP TABLE IF EXISTS `survey_cycle`;
+CREATE TABLE `survey_cycle` (
   `id` INT AUTO_INCREMENT,
   `start_time` TIMESTAMP,
   `end_time` TIMESTAMP,
@@ -109,20 +108,20 @@ CREATE TABLE `survey_periods` (
   PRIMARY KEY (`id`)
 );
 
--- add period id column to link to survey period table
+-- add cycle id column to link to survey cycle table
 alter table survey_results
-add column period_id int;
+add column cycle_id int;
 
 alter table survey_results
-add CONSTRAINT fk_period_id
-FOREIGN KEY (period_id) REFERENCES suvery_periods(id);
+add CONSTRAINT fk_cycle_id
+FOREIGN KEY (cycle_id) REFERENCES suvery_cycle(id);
 
 
 -- add bradley-terry beta score with win percentage table
 DROP TABLE IF EXISTS `bt_beta_score_win_percentage`;
 CREATE TABLE `bt_beta_score_win_percentage` (
   `id` INT AUTO_INCREMENT,
-  `period_id` INT NOT NULL,
+  `cycle_id` INT NOT NULL,
   `plant_id` INT NOT NULL,
   `plant_name` VARCHAR(255) NOT NULL,
   `invasiveness` VARCHAR(50) NOT NULL,
@@ -130,15 +129,15 @@ CREATE TABLE `bt_beta_score_win_percentage` (
   `bt_beta_score` float not null,
   `bt_beta_socre_weighted` float not null,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_period_id_bt_beta_win_percentage`
-    FOREIGN KEY (`period_id`) REFERENCES `survey_periods`(`id`)
+  CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
+    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
 );
 
 -- add bradley-terry beta score heat map table
 DROP TABLE IF EXISTS `bt_beta_score_heat_map`;
 CREATE TABLE `bt_beta_score_heat_map` (
   `id` INT AUTO_INCREMENT,
-  `period_id` INT NOT NULL,
+  `cycle_id` INT NOT NULL,
   `plant_a_id` INT NOT NULL,
   `plant_a_name` VARCHAR(255) NOT NULL,
   `plant_b_id` INT NOT NULL,
@@ -146,15 +145,15 @@ CREATE TABLE `bt_beta_score_heat_map` (
   `plant_a_beats_b` float,
   `plant_a_beats_b_weighted` float,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_period_id_bt_beta_heat_map`
-    FOREIGN KEY (`period_id`) REFERENCES `survey_periods`(`id`)
+  CONSTRAINT `fk_cycle_id_bt_beta_heat_map`
+    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
 );
 
 -- add bradley-terry beta score by invasive type histogram table
 DROP TABLE IF EXISTS `bt_beta_score_by_invasive_type_histogram`;
 CREATE TABLE `bt_beta_score_by_invasive_type_histogram` (
   `id` INT AUTO_INCREMENT,
-  `period_id` INT NOT NULL,
+  `cycle_id` INT NOT NULL,
   `bin_no` INT NOT NULL,
   `bin_left` float NOT NULL,
   `bin_right` float NOT NULL,
@@ -165,23 +164,23 @@ CREATE TABLE `bt_beta_score_by_invasive_type_histogram` (
   `invasive_count_weighted` int NOT NULL,
   `non_invasive_count_weighted` int not null,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_period_id_bt_beta_histogram`
-    FOREIGN KEY (`period_id`) REFERENCES `survey_periods`(`id`)
+  CONSTRAINT `fk_cycle_id_bt_beta_histogram`
+    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
 );
 
 -- add win/loss by plant table
 DROP TABLE IF EXISTS `win_loss_by_plant`;
 CREATE TABLE `win_loss_by_plant` (
   `id` INT AUTO_INCREMENT,
-  `period_id` INT NOT NULL,
+  `cycle_id` INT NOT NULL,
   `plant_id` INT NOT NULL,
   `plant_name` VARCHAR(255) NOT NULL,
   `invasiveness` VARCHAR(50) NOT NULL,
   `win` INT NOT NULL,
   `loss` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_period_id_win_loss`
-    FOREIGN KEY (`period_id`) REFERENCES `survey_periods`(`id`)
+  CONSTRAINT `fk_cycle_id_win_loss`
+    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
