@@ -16,51 +16,75 @@ import numpy as np
 import pandas as pd
 from collections import OrderedDict
 
+config = {
+    'id_to_idx': None,
+    'idx_to_id': None,
+    'data': None,
+    'all_plants': None,
+    'betas_init': None,
+    'invasive_map': {},
+    'num_images': None,
+    'all_plants_invasiveness': None,
+    'weighted_betas': None,
+    'unweighted_betas': None,
+    'weighted_beta_normalized': None,
+    'unweighted_beta_normalized': None,
+    'num_images': None,
+    'image_ids': None
+}
 
 
-analysis_dao = AnalysisDAO()
+def initialize():
+    analysis_dao = AnalysisDAO()
 
+    all_plants_from_db = analysis_dao.list_survey_plants()
+    all_plants_invasiveness_from_db = analysis_dao.list_survey_plants_invasiveness()
+    all_survey_results = analysis_dao.list_survey_results()
 
-all_plants_from_db = analysis_dao.list_survey_plants()
-all_plants_invasiveness_from_db = analysis_dao.list_survey_plants_invasiveness()
-all_survey_results = analysis_dao.list_survey_results()
+    config['data'] = pd.DataFrame(all_survey_results, columns=[
+        'winner',
+        'loser',
+        'RT',   # response time
+        'invasive_winner',
+        'invasive_loser'
+    ])
 
-data = pd.DataFrame(all_survey_results, columns=[
-    'winner',
-    'loser',
-    'RT',   # response time
-    'invasive_winner',
-    'invasive_loser'
-])
+    # invasive_map = {}
 
-invasive_map = {}
+    for index, row in config['data'].iterrows():
+        winner = int(row['winner'])
+        loser = int(row['loser'])
+        invasive_winner = int(row['invasive_winner'])
+        config['invasive_map'].update({
+            winner: 1 if invasive_winner else 0
+        })
+        config['invasive_map'].update({
+            loser: 1 if not invasive_winner else 0
+        })
 
-for index, row in data.iterrows():
-    winner = int(row['winner'])
-    loser = int(row['loser'])
-    invasive_winner = int(row['invasive_winner'])
-    invasive_map.update({
-        winner: 1 if invasive_winner else 0
-    })
-    invasive_map.update({
-        loser: 1 if not invasive_winner else 0
-    })
-
-image_ids = sorted(set(data['winner']).union(set(data['loser'])))
-id_to_idx = {img_id: idx for idx, img_id in enumerate(image_ids)}
-idx_to_id = {idx: img_id for img_id, idx in id_to_idx.items()}
-all_plants = dict(all_plants_from_db)
-all_plants_invasiveness = dict(all_plants_invasiveness_from_db)
-num_images = len(image_ids)
-betas_init = np.zeros(num_images)
+    config['image_ids'] = sorted(set(config['data']['winner']).union(set(config['data']['loser'])))
+    config['id_to_idx'] = {img_id: idx for idx, img_id in enumerate(config['image_ids'])}
+    config['idx_to_id'] = {idx: img_id for img_id, idx in config['id_to_idx'].items()}
+    config['all_plants'] = dict(all_plants_from_db)
+    config['all_plants_invasiveness'] = dict(all_plants_invasiveness_from_db)
+    config['num_images'] = len(config['image_ids'])
+    config['betas_init'] = np.zeros(config['num_images'])
+    
+    
+    
+    config['weighted_betas'] = calc_weighted_beta_estimates()
+    config['unweighted_betas'] = calc_unweighted_beta_estimates()
+    
+    config['weighted_beta_normalized'] = calc_normalized_betas(config['weighted_betas'])
+    config['unweighted_beta_normalized'] = calc_normalized_betas(config['unweighted_betas'])
 
 
 def weighted_log_likelihood(betas, data):
     ll = 0.0
     for _, row in data.iterrows():
         # mapping image id to index
-        i= id_to_idx[row['winner']]
-        j = id_to_idx[row['loser']]
+        i= config['id_to_idx'][row['winner']]
+        j = config['id_to_idx'][row['loser']]
         beta_i, beta_j = betas[i], betas[j]
         weight = row['RT']       # weight
         p = np.exp(beta_i) / (np.exp(beta_i) + np.exp(beta_j))
@@ -72,8 +96,8 @@ def unweighted_log_likelihood(betas, data):
     ll = 0.0
     for _, row in data.iterrows():
         # mapping image id to index
-        i= id_to_idx[row['winner']]
-        j = id_to_idx[row['loser']]
+        i= config['id_to_idx'][row['winner']]
+        j = config['id_to_idx'][row['loser']]
         beta_i, beta_j = betas[i], betas[j]
         weight = 1      # un-weighted
         p = np.exp(beta_i) / (np.exp(beta_i) + np.exp(beta_j))
@@ -85,33 +109,33 @@ def constraint(betas):
 
 
 def calc_weighted_beta_estimates():
-    if data is None or len(data) == 0:
-        return np.array(betas_init)
+    if config['data'] is None or len(config['data']) == 0:
+        return np.array(config['betas_init'])
     
     result = minimize(
         fun=weighted_log_likelihood,
-        x0=betas_init,
-        args=(data,),
+        x0=config['betas_init'],
+        args=(config['data'],),
         constraints={'type': 'eq', 'fun': constraint},
         method='SLSQP'
     )
     return result.x
 
 def calc_unweighted_beta_estimates():
-    if data is None or len(data) == 0:
-        return np.array(betas_init)
+    if config['data'] is None or len(config['data']) == 0:
+        return np.array(config['betas_init'])
     
     result = minimize(
         fun=unweighted_log_likelihood,
-        x0=betas_init,
-        args=(data,),
+        x0=config['betas_init'],
+        args=(config['data'],),
         constraints={'type': 'eq', 'fun': constraint},
         method='SLSQP'
     )
     return result.x
 
-weighted_betas = calc_weighted_beta_estimates()
-unweighted_betas = calc_unweighted_beta_estimates()
+# weighted_betas = calc_weighted_beta_estimates()
+# unweighted_betas = calc_unweighted_beta_estimates()
 
 def calc_normalized_betas(betas):
     betas = np.array(betas)
@@ -130,8 +154,8 @@ def calc_normalized_betas(betas):
     
     return beta_normalized
 
-weighted_beta_normalized = calc_normalized_betas(weighted_betas)
-unweighted_beta_normalized = calc_normalized_betas(unweighted_betas)
+# weighted_beta_normalized = calc_normalized_betas(weighted_betas)
+# unweighted_beta_normalized = calc_normalized_betas(unweighted_betas)
 
 # calculate probability matrix
 def probability_matrix(betas):
@@ -149,11 +173,11 @@ def probability_matrix(betas):
 # 1. scatter chart beta vs win percentage 
 def beta_vs_win_percentage(weighted=1):
     
-    beta_normalized = weighted_beta_normalized if weighted else unweighted_beta_normalized
+    beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
     
     # percentage calculation
-    wins = data['winner'].value_counts()
-    appearances = pd.concat([data['winner'], data['loser']]).value_counts()
+    wins = config['data']['winner'].value_counts()
+    appearances = pd.concat([config['data']['winner'], config['data']['loser']]).value_counts()
     win_percentages = (wins / appearances).fillna(0)
     win_percentages_dict = win_percentages.to_dict()
     
@@ -164,11 +188,11 @@ def beta_vs_win_percentage(weighted=1):
         'label_color': []
     }
     
-    for idx in range(num_images):
-        plant_name = all_plants[idx_to_id[idx]]
-        win_percentages = win_percentages_dict[idx_to_id[idx]]
+    for idx in range(config['num_images']):
+        plant_name = config['all_plants'][config['idx_to_id'][idx]]
+        win_percentages = win_percentages_dict[config['idx_to_id'][idx]]
         bradley_terry_beta = float(beta_normalized[idx])
-        color = '#FFC000' if invasive_map[idx_to_id[idx]] == 1 else '#00B050'
+        color = '#FFC000' if config['invasive_map'][config['idx_to_id'][idx]] == 1 else '#00B050'
         
         plot_data['plant'].append(plant_name)
         plot_data['win_percentage'].append(win_percentages)
@@ -206,17 +230,17 @@ def beta_vs_win_percentage_datatable():
     rows = []
     
     # percentage calculation
-    wins = data['winner'].value_counts()
-    appearances = pd.concat([data['winner'], data['loser']]).value_counts()
+    wins = config['data']['winner'].value_counts()
+    appearances = pd.concat([config['data']['winner'], config['data']['loser']]).value_counts()
     win_percentages = (wins / appearances).fillna(0)
     win_percentages_dict = win_percentages.to_dict()
     
-    for idx in range(num_images):
-        plant_name = all_plants[idx_to_id[idx]]
-        invasive = all_plants_invasiveness[idx_to_id[idx]]
-        win_percentage = win_percentages_dict[idx_to_id[idx]]
-        bt_beta = float(unweighted_beta_normalized[idx])
-        bt_beta_weighted = float(weighted_beta_normalized[idx])
+    for idx in range(config['num_images']):
+        plant_name = config['all_plants'][config['idx_to_id'][idx]]
+        invasive = config['all_plants_invasiveness'][config['idx_to_id'][idx]]
+        win_percentage = win_percentages_dict[config['idx_to_id'][idx]]
+        bt_beta = float(config['unweighted_beta_normalized'][idx])
+        bt_beta_weighted = float(config['weighted_beta_normalized'][idx])
         
         rows.append({
             'plant': plant_name,
@@ -239,13 +263,13 @@ def beta_vs_win_percentage_datatable():
 
 # 2. Histogram of attractiveness scores by each image
 def beta_scores_by_image(weighted=1):
-    beta_normalized = weighted_beta_normalized if weighted else unweighted_beta_normalized
+    beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
     
-    image_names = [all_plants[idx_to_id[idx]] for idx in range(len(beta_normalized))]
+    image_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(beta_normalized))]
     scores = beta_normalized
     
     colors = [
-        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
+        "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
         for idx in range(len(beta_normalized))
     ]
 
@@ -273,11 +297,11 @@ def beta_scores_by_image(weighted=1):
 def beta_score_by_plant_datatable():
     rows = []
     
-    for idx in range(num_images):
-        plant_name = all_plants[idx_to_id[idx]]
-        invasive = all_plants_invasiveness[idx_to_id[idx]]
-        bt_beta = float(unweighted_beta_normalized[idx])
-        bt_beta_weighted = float(weighted_beta_normalized[idx])
+    for idx in range(config['num_images']):
+        plant_name = config['all_plants'][config['idx_to_id'][idx]]
+        invasive = config['all_plants_invasiveness'][config['idx_to_id'][idx]]
+        bt_beta = float(config['unweighted_beta_normalized'][idx])
+        bt_beta_weighted = float(config['weighted_beta_normalized'][idx])
         
         rows.append({
             'plant': plant_name,
@@ -294,15 +318,15 @@ def beta_score_by_plant_datatable():
 
 # 3. Histogram of attractiveness scores by plant type
 def beta_scores_by_plant_type(weighted=1):
-    beta_normalized = weighted_beta_normalized if weighted else unweighted_beta_normalized
+    beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
 
     # generate 10 bins for histogram
     bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
     
     # print(bins)
     
-    normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
-    normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    normalized_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
+    normalized_non_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
     
     hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
     hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
@@ -346,18 +370,18 @@ def beta_scores_by_plant_type(weighted=1):
 def beta_scores_by_plant_type_datatable():
     rows = []
     
-    beta_normalized = unweighted_beta_normalized
-    beta_normalized_weighted = weighted_beta_normalized
+    beta_normalized = config['unweighted_beta_normalized']
+    beta_normalized_weighted = config['weighted_beta_normalized']
 
     # generate 10 bins for histogram
     bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
     bins_weighted = np.linspace(min(beta_normalized_weighted), max(beta_normalized_weighted), 11)
     
-    normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
-    normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    normalized_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
+    normalized_non_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
     
-    normalized_invasive_betas_weighted = [beta_normalized_weighted[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
-    normalized_non_invasive_betas_weighted = [beta_normalized_weighted[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
+    normalized_invasive_betas_weighted = [beta_normalized_weighted[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
+    normalized_non_invasive_betas_weighted = [beta_normalized_weighted[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
     
     hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
     hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
@@ -385,10 +409,10 @@ def beta_scores_by_plant_type_datatable():
 
 # 4. Wins/Losses bar chart
 def win_loss_by_image(weighted=1):
-    images = [all_plants[id] for id in image_ids]
+    images = [config['all_plants'][id] for id in config['image_ids']]
     
-    wins = [int((data['winner'] == id).sum()) for id in image_ids]
-    losses = [int((data['loser'] == id).sum()) for id in image_ids]
+    wins = [int((config['data']['winner'] == id).sum()) for id in config['image_ids']]
+    losses = [int((config['data']['loser'] == id).sum()) for id in config['image_ids']]
 
     source = ColumnDataSource(data=dict(
         images=images,
@@ -422,14 +446,14 @@ def win_loss_by_image(weighted=1):
 def win_loss_by_plant_datatable():
     rows = []
     
-    images = [all_plants[id] for id in image_ids]
+    images = [config['all_plants'][id] for id in config['image_ids']]
     
-    wins = [int((data['winner'] == id).sum()) for id in image_ids]
-    losses = [int((data['loser'] == id).sum()) for id in image_ids]
+    wins = [int((config['data']['winner'] == id).sum()) for id in config['image_ids']]
+    losses = [int((config['data']['loser'] == id).sum()) for id in config['image_ids']]
     
-    for idx in range(num_images):
+    for idx in range(config['num_images']):
         plant_name = images[idx]
-        invasive = all_plants_invasiveness[idx_to_id[idx]]
+        invasive = config['all_plants_invasiveness'][config['idx_to_id'][idx]]
         win = wins[idx]
         loss = losses[idx]
         
@@ -445,8 +469,8 @@ def win_loss_by_plant_datatable():
 
 # 5. Attractive beta score heat map
 def beta_scores_heat_map(weighted=1):
-    betas = weighted_beta_normalized if weighted else unweighted_beta_normalized
-    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    betas = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
     
     matrix = probability_matrix(betas)
     
@@ -484,7 +508,7 @@ def beta_scores_heat_map(weighted=1):
     # plot.yaxis.visible = False
     
     colors = [
-        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
+        "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
         for idx in range(len(betas))
     ]
     
@@ -517,9 +541,9 @@ def beta_scores_heat_map(weighted=1):
 # 5-1 beta score heat map datatable
 def beta_score_heat_map_datatable():
     rows = []
-    betas = unweighted_beta_normalized
-    betas_weighted = weighted_beta_normalized
-    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    betas = config['unweighted_beta_normalized']
+    betas_weighted = config['weighted_beta_normalized']
+    plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
     
     matrix = probability_matrix(betas)
     matrix_weighted = probability_matrix(betas_weighted)
@@ -541,8 +565,8 @@ def beta_score_heat_map_datatable():
 
 # 6. Ranking of beta scores
 def beta_scores_ranking(weighted=1):
-    betas = weighted_beta_normalized if weighted else unweighted_beta_normalized
-    plant_names = [all_plants[idx_to_id[idx]] for idx in range(len(betas))]
+    betas = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
     
     df = pd.DataFrame({
         "plant": plant_names,
@@ -550,7 +574,7 @@ def beta_scores_ranking(weighted=1):
     })
     df["rank"] = df["beta"].rank(ascending=False, method="min").astype(int)
     df["color"] = [
-        "#FFC000" if invasive_map[idx_to_id[idx]] == 1 else "#00B050"
+        "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
         for idx in range(len(betas))
     ]
     
