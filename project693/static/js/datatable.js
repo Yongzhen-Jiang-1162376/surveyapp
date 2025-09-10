@@ -36,7 +36,9 @@ export class AjaxDataTable {
             this.rowsPerPage = parseInt(e.target.value, 10);
             this.gotoPage(1);
         });
-        this.downloadBtn.addEventListener('click', () => this.downloadCSV());
+        if (this.downloadBtn) {
+            this.downloadBtn.addEventListener('click', () => this.downloadCSV());
+        }
     }
     
     async fetchData() {
@@ -72,7 +74,15 @@ export class AjaxDataTable {
 
         this.tableBody.innerHTML = this.datatable.map(row => `
             <tr class="odd:bg-white even:bg-gray-50">
-                ${this.columns.map(col => `<td class="border border-gray-300 px-3 py-2">${row[col] ?? ''}</td>`).join('')}
+                ${this.columns.map(col => {
+                    if (col.key) {
+                        return `<td class="border border-gray-300 px-3 py-2">${row[col.key] ?? ''}</td>`
+                    } else if (col.render) {
+                        return `<td class="border border-gray-300 px-3 py-2">${col.render(row)}</td>`
+                    } else {
+                        return `<td class="border border-gray-300 px-3 py-2">${row[col] ?? ''}</td>`
+                    }
+                }).join('')}
             </tr>
         `).join('');
 
@@ -82,6 +92,16 @@ export class AjaxDataTable {
         this.rangeInfo.textContent = this.total 
             ? `Showing ${start + 1} to ${end} of ${this.total} entries` 
             : `No entries to show`;
+        
+        this.tableBody.querySelectorAll('.close-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                console.log(row.cycle_id);
+                this.closeSurvey(row.cycle_id);
+            });
+        });
+        
+        lucide.createIcons();
     }
 
     async downloadCSV() {
@@ -115,6 +135,33 @@ export class AjaxDataTable {
             URL.revokeObjectURL(url);
         } catch (err) {
             console.error(err);
+        }
+    }
+
+    async closeSurvey(cycle_id) {
+        if (!confirm("Are you sure to close this survey?")) return;
+
+        try {
+            const res = await fetch('/api/close-survey', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                alert(data.message);
+            } else {
+                alert(data.message);
+                window.location.reload();
+            }
+            
+            // if (!res.ok) throw new Error('Failed to close survey');
+
+            // alert('Survey closed');
+        } catch (err) {
+            console.error(err);
+            alert('Something went wrong');
         }
     }
 }
@@ -160,7 +207,9 @@ export class DataTable {
             this.rowsPerPage = parseInt(e.target.value, 10);
             this.gotoPage(1);
         });
-        this.downloadBtn.addEventListener('click', () => this.downloadCSV());
+        if (this.downloadBtn) {
+            this.downloadBtn.addEventListener('click', () => this.downloadCSV());
+        }
     }
 
     gotoPage(page) {
