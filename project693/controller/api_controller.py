@@ -110,3 +110,53 @@ def get_current_beta_vs_win_percentage_data():
         "datatable": datatable,
         "total": total
     })
+
+
+@app.route("/api/survey-cycle-data", methods=["POST"])
+def get_survey_cycle_data():
+    req = request.get_json()
+    page = int(req.get("page", 1))
+    limit = int(req.get("limit", 10))
+    
+    offset = (page - 1) * limit
+    
+    survey_dao = SurveyDAO()
+    total = survey_dao.get_total_survey_cycles()
+    rows = survey_dao.list_survey_cycle_paginated(limit, offset)
+    
+    columns = [
+        'cycle_id',
+        'start_time',
+        'end_time',
+        'survey_participants',
+        'total_choices',
+        'status',
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable,
+        "total": total
+    })
+
+
+
+@app.route("/api/close-survey", methods=["POST"])
+def close_survey():
+    
+    survey_dao = SurveyDAO()
+    
+    active_survey_result = survey_dao.active_survey_result_existed()
+    
+    if not active_survey_result:
+        return jsonify({
+            'success': False,
+            'message': 'No survey results in this cycle.\nPlease fill out some surveys.'
+        }), 404
+    
+    survey_dao.start_survey_cyle()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Survey cycle closed successfully.\nA new suvey cycle is started.'
+    })
