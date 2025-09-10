@@ -43,18 +43,41 @@ CREATE TABLE `survey_metadata` (
   UNIQUE KEY (`session_id`)
 );
 
+-- add survey cycle table to support survey cycle
+DROP TABLE IF EXISTS `survey_cycle`;
+CREATE TABLE `survey_cycle` (
+  `id` INT AUTO_INCREMENT,
+  `start_time` TIMESTAMP,
+  `end_time` TIMESTAMP,
+  `survey_participants` INT,
+  `total_choices` INT,
+  `active` INT default 1,
+  PRIMARY KEY (`id`)
+);
+
 DROP TABLE IF EXISTS `survey_results`;
 CREATE TABLE `survey_results` (
   `id` INT AUTO_INCREMENT,
   `session_id` VARCHAR(255) NOT NULL,       -- stores UUID string
-  `question_number` INT NOT NULL,           -- 1 to 10
+  `question_seq` INT NOT NULL,           -- 1 to 10
   `selected_plant_id` INT NOT NULL,    -- which plant they chose
   `submission_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- auto logs each click time
+  `response_time`	float,
+	`invasive_plant_id` int,
+  `non_invasive_plant_id` int,
+  `winner` int,
+  `loser` int,
+  `invasive_winner` int,
+  `invasive_loser` int,
+  `active` bool default 1,
+  `cycle_id` int,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_selected_plant`
     FOREIGN KEY (`selected_plant_id`) REFERENCES `plants`(`id`),
   CONSTRAINT `fk_session_id`
-    FOREIGN KEY (`session_id`) REFERENCES `survey_metadata`(`session_id`)
+    FOREIGN KEY (`session_id`) REFERENCES `survey_metadata`(`session_id`),
+  CONSTRAINT `fk_cycle_id`
+    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -71,50 +94,38 @@ add (
 );
 
 -- add fields in survey results table
-alter table survey_results
-add (
-	`response_time`	float,
-	`invasive_plant_id` int,
-  `non_invasive_plant_id` int
-);
+-- alter table survey_results
+-- add (
+-- 	`response_time`	float,
+-- 	`invasive_plant_id` int,
+--   `non_invasive_plant_id` int
+-- );
 
 -- rename question_number to question_seq 
-alter table survey_results
-change question_number question_seq int;
+-- alter table survey_results
+-- change question_number question_seq int;
 
 -- rename survey result column names to support statistical analysis
-alter table survey_results
-add (
-  `winner` int,
-  `loser` int,
-  `invasive_winner` int,
-  `invasive_loser` int
-)
+-- alter table survey_results
+-- add (
+--   `winner` int,
+--   `loser` int,
+--   `invasive_winner` int,
+--   `invasive_loser` int
+-- )
 
 -- add an active column to servey result table to support survey cycle
 -- by default it is true (active)
-alter table survey_results
-add column active bool default 1;
+-- 1: active (current cycle)
+-- 0: inactive (history cycle)
+-- alter table survey_results
+-- add column active bool default 1;     
 
 
--- add survey cycle table to support survey cycle
-DROP TABLE IF EXISTS `survey_cycle`;
-CREATE TABLE `survey_cycle` (
-  `id` INT AUTO_INCREMENT,
-  `start_time` TIMESTAMP,
-  `end_time` TIMESTAMP,
-  `survey_participants` INT,
-  `total_choices` INT,
-  PRIMARY KEY (`id`)
-);
+
 
 -- add cycle id column to link to survey cycle table
-alter table survey_results
-add column cycle_id int;
 
-alter table survey_results
-add CONSTRAINT fk_cycle_id
-FOREIGN KEY (cycle_id) REFERENCES suvery_cycle(id);
 
 
 -- add bradley-terry beta score with win percentage table
