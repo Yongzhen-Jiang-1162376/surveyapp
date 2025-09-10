@@ -15,7 +15,8 @@ from project693.core.analysis_calculation import (
     win_loss_by_plant_datatable,
     beta_scores_heat_map,
     beta_score_heat_map_datatable,
-    beta_scores_ranking
+    beta_scores_ranking,
+    initialize
 )
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -30,7 +31,7 @@ import pandas as pd
 import random
 from project693.data.mockdata import invasive_plants, non_invasive_plants, data, invasive_map
 
-analysis_dao = AnalysisDAO()
+
 
 
 @app.route("/dashboard/bradley-terry-model", methods=["GET"])
@@ -38,6 +39,9 @@ def bradley_terry_model():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
+    
+    # analysis_dao = AnalysisDAO()
+    initialize()
     
     # 1. win percentage vs beta scatter plot
     win_percentage_beta_plot_uw = beta_vs_win_percentage(weighted=0)
