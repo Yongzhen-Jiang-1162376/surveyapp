@@ -100,6 +100,14 @@ export class AjaxDataTable {
                 this.closeSurvey(row.cycle_id);
             });
         });
+
+        this.tableBody.querySelectorAll('.download-cycle-raw-data-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                console.log(row.cycle_id);
+                this.downloadCycleResultsCSV(row.cycle_id);
+            });
+        });
         
         lucide.createIcons();
     }
@@ -112,6 +120,43 @@ export class AjaxDataTable {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+            });
+            if (!response.ok) throw new Error("Something wrong please check with admin.");
+
+            const res = await response.json();
+            const data = res.datatable;
+            
+            if (!data.length) return;
+
+            const header = Object.keys(data[0]);
+            const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+            const csv = [header.join(','), ...data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
+
+            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_result.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async downloadCycleResultsCSV(cycle_id) {
+        try {
+            // fetch data from backend
+            const response = await fetch("/api/all-survey-data-by-cycle-id", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cycle_id
+                })
             });
             if (!response.ok) throw new Error("Something wrong please check with admin.");
 

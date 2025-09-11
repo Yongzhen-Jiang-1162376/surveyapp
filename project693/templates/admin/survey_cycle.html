@@ -193,7 +193,7 @@ new AjaxDataTable({
         if (row.status === 'Closed') {
 
           return `
-            <button onclick="donwloadRow(${row.id})" class="p-1 text-blue-600 hover:text-blue-800">
+            <button class="p-1 text-blue-600 hover:text-blue-800 download-cycle-raw-data-btn">
               <i data-lucide="download"></i>
             </button>
           `;
@@ -208,7 +208,7 @@ new AjaxDataTable({
         if (row.status === 'Closed') {
 
           return `
-            <button onclick="donwloadRow(${row.id})" class="p-1 text-blue-600 hover:text-blue-800">
+            <button onclick="downloadCycleResultsCSV(${row.cycle_id})" class="p-1 text-blue-600 hover:text-blue-800">
               <i data-lucide="download"></i>
             </button>
           `;

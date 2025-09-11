@@ -77,6 +77,35 @@ def get_all_survey_data():
     })
 
 
+@app.route("/api/all-survey-data-by-cycle-id", methods=["POST"])
+def get_all_survey_data_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(cycle_id)
+    
+    columns = [
+        'session_id',
+        'question_seq',
+        'submission_time',
+        'response_time',
+        'invasive_plant_id',
+        'invasive_plant_name',
+        'non_invasive_plant_id',
+        'non_invasive_plant_name',
+        'selected_plant_id',
+        'selected_plant_name',
+        'has_garden',
+        'age_group',
+        'reasoning',
+        'invasive_win'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
 @app.route("/api/current-beta-vs-win-percentage", methods=["POST"])
 def get_current_beta_vs_win_percentage_data():
     req = request.get_json()
