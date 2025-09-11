@@ -7,11 +7,14 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-200: oklch(88.5% 0.062 18.334);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-red-700: oklch(50.5% 0.213 27.518);
     --color-red-800: oklch(44.4% 0.177 26.899);
+    --color-red-900: oklch(39.6% 0.141 25.723);
     --color-orange-100: oklch(95.4% 0.038 75.164);
     --color-orange-800: oklch(47% 0.157 37.304);
     --color-orange-900: oklch(40.8% 0.123 38.172);
@@ -913,6 +916,9 @@
   .bg-orange-100 {
     background-color: var(--color-orange-100);
   }
+  .bg-red-100 {
+    background-color: var(--color-red-100);
+  }
   .bg-teal-100 {
     background-color: var(--color-teal-100);
   }
@@ -1711,6 +1717,11 @@
       background-color: var(--color-orange-900);
     }
   }
+  .dark\:bg-red-900 {
+    @media (prefers-color-scheme: dark) {
+      background-color: var(--color-red-900);
+    }
+  }
   .dark\:bg-teal-500\/10 {
     @media (prefers-color-scheme: dark) {
       background-color: color-mix(in srgb, oklch(70.4% 0.14 182.503) 10%, transparent);
@@ -1755,6 +1766,11 @@
   .dark\:text-neutral-500 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-neutral-500);
+    }
+  }
+  .dark\:text-red-200 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-red-200);
     }
   }
   .dark\:text-teal-500 {
