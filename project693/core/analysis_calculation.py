@@ -93,7 +93,8 @@ def weighted_log_likelihood(betas, data):
         beta_i, beta_j = betas[i], betas[j]
         # weight = row['RT']       # weight
         
-        weight = (RT_max - row['RT']) / (RT_max - RT_max + 1e-9)
+        # weight = (RT_max - row['RT']) / (RT_max - RT_max + 1e-9)
+        weight = 1 / (row['RT'] + 1e-9)
         
         p = np.exp(beta_i) / (np.exp(beta_i) + np.exp(beta_j))
         ll += weight * np.log(p + 1e-9)
