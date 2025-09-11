@@ -164,7 +164,7 @@ class SurveyDAO(BaseDAO):
                 date_format(end_time, '%d-%m-%Y %H:%i:%S') as end_time,
                 m.survey_participants,
                 m.total_choices, 
-                if(active = 1, 'Active', 'Archived') as status
+                if(active = 1, 'Active', 'Closed') as status
             from survey_cycle sc
             left join
             (
