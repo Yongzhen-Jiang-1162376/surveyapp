@@ -83,18 +83,12 @@ def initialize():
 def weighted_log_likelihood(betas, data):
     ll = 0.0
     
-    RT_max = config['data']['RT'].max()
-    RT_min = config['data']['RT'].min()
-    
     for _, row in data.iterrows():
-        # mapping image id to index
         i= config['id_to_idx'][row['winner']]
         j = config['id_to_idx'][row['loser']]
         beta_i, beta_j = betas[i], betas[j]
-        # weight = row['RT']       # weight
-        
-        # weight = (RT_max - row['RT']) / (RT_max - RT_max + 1e-9)
-        weight = 1 / (row['RT'] + 1e-9)
+
+        weight = 1 / (row['RT'] + 1e-9) # inversed weighting
         
         p = np.exp(beta_i) / (np.exp(beta_i) + np.exp(beta_j))
         ll += weight * np.log(p + 1e-9)
