@@ -5,12 +5,83 @@
 {% block content %}
   {% include "dashboard/dashboard_nav.html" %}
 
-  <div class="p-4 px-6 py-0 bg-white">
+  <div class="p-4 px-6 py-0 bg-white relative">
     <h1 class="text-4xl py-6 text-center">
       Analysis of Plant Invasiveness vs. Attractiveness
     </h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="fixed top-[120px] right-0 z-50 group inline-block">
+      <button 
+        type="button" 
+        class="py-3 px-4 rounded-l-xl inline-flex items-center gap-x-2 font-medium bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+        data-hs-overlay="#hs-offcanvas-nav">
+        <i data-lucide="square-menu"></i>
+      </button>
+    </div>
+
+    <div id="hs-offcanvas-nav" class="hs-overlay hs-overlay-open:translate-x-0 hs-overlay-backdrop-open:bg-blue-950/50 hidden translate-x-full fixed top-0 end-0 transition-all duration-300 transform h-full max-w-sm w-full z-80 bg-white border-e border-gray-200">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
+        <h3 id="hs-offcanvas-example-label" class="font-bold text-gray-800">
+          Charts Navigation
+        </h3>
+        <button type="button" class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200" data-hs-overlay="#hs-offcanvas-nav">
+          <span class="sr-only">Close</span>
+          <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section1"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >1. Bradley-Terry Beta vs Win Percentage
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section2"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >2. Bradley-Terry Beta By Plant
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section3"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >3. Bradley-Terry Beta By Plant (Ranking)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section4"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >4. Bradley-Terry Beta By Plant (Heatmap)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section5"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >5. Bradley-Terry Beta By Invasive Type (Histogram)
+          </a>
+        </p>
+        <p class="mb-2">
+          <a class="text-blue-600 decoration-blue-600 hover:opacity-80" 
+             href="#section6"
+             data-hs-overlay="#hs-offcanvas-nav"
+          >6. Win/Loss By Plant
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2" id="section1">Bradley-Terry Beta vs Win Percentage</h1>
+
+    <!-- win percentage beta chart -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
       >
@@ -24,6 +95,66 @@
       </div>
     </div>
 
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn1" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect1" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="win_percentage_beta_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasiveness</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Win Percentage</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta score</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta socre (weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="win_percentage_beta_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo1" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn1" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo1" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn1" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2 mt-6" id="section2">Bradley-Terry Beta By Each Plant</h1>
+    <!-- beta score by each image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -38,6 +169,214 @@
       </div>
     </div>
 
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn2" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect2" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="beta_score_by_plant_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasiveness</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta score</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta socre (weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="beta_score_by_plant_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo2" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn2" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo2" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn2" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2" id="section3">Ranking of Bradley-Terry Beta By Each Plant</h1>
+    <!-- ranking of beta scores by each image -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_ranking_uw_div'] | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_ranking_w_div'] | safe }}</div>
+      </div>
+    </div>
+
+
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn3" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect3" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="beta_score_by_plant_ranking_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasiveness</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta score</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bradley-Terry beta socre (weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="beta_score_by_plant_ranking_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo3" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn3" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo3" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn3" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-xl py-2" id="section4">Heat map of Bradley-Terry Beta by Each Plant</h1>
+    <!-- heat map of beta scores by each image -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_uw_div'] | safe }}</div>
+      </div>
+
+      <div
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
+      >
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_w_div'] | safe }}</div>
+      </div>
+    </div>
+
+    
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn4" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect4" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="beta_score_heat_map_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant A</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant B</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">A Beats B</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">A Beats B (Weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="beta_score_heat_map_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo4" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn4" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo4" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn4" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+
+    <h1 class="text-xl py-2" id="section5">Histogram of Bradley-Terry Beta By Invasive Type</h1>
+    <!-- beta scores by plant type -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -51,21 +390,91 @@
         <div class="w-full">{{ plots['beta_scores_by_plant_type_w_div'] | safe }}</div>
       </div>
     </div>
-<!-- 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+
+
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn5" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect5" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="beta_score_by_plant_type_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin No.</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin Left</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin Right</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive Count</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Non-Invasive Count</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin No.</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin Left (Weighted)</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Bin Right (Weighted)</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasive Count (Weighted)</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Non-Invasive Count (Weighted)</th>
+            </tr>
+          </thead>
+          <tbody id="beta_score_by_plant_type_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo5" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn5" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo5" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn5" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <h1 class="text-xl py-2">Heat map of Bradley-Terry Beta by Each Plant</h1>
+    heat map of beta scores by each image
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
-        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
       >
-        <div class="w-full">{{ hist_type_div | safe }}</div>
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_uw_div'] | safe }}</div>
       </div>
 
       <div
-        class="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl"
+        class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
       >
-        <div class="w-full">{{ hist_type_div2 | safe }}</div>
+        <div class="w-full">{{ plots['beta_scores_heat_map_by_image_w_div'] | safe }}</div>
       </div>
     </div> -->
 
+
+
+    <h1 class="text-xl py-2" id="section6">Win/Loss By Each Plant</h1>
+    <!-- win loss by image -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div
         class="flex flex-col p-2 bg-white border border-gray-200 shadow-2xl rounded-xl"
@@ -80,6 +489,63 @@
       </div>
     </div>
 
+
+    <!-- data table -->
+    <div class="flex flex-col py-4 px-6 bg-white border border-gray-200 shadow-2xl rounded-xl">
+      <!-- Action Bar -->
+      <div class="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Left actions -->
+        <div class="flex items-center gap-2 ">
+          <button 
+            id="downloadBtn6" 
+            type="button" 
+            class="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-500 hover:bg-teal-600 cursor-pointer"
+          >
+            Download Data
+          </button>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            Rows per page
+            <select id="rowsPerPageSelect6" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+              <option>5</option>
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table wrapper -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 border-collapse text-sm" id="win_loss_by_plant_table">
+          <!-- <caption class="caption-top text-left px-3 py-2 font-semibold text-gray-700">Data</caption> -->
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Plant</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Invasiveness</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Win</th>
+              <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Loss</th>
+            </tr>
+          </thead>
+          <tbody id="win_loss_by_plant_table_body">
+          </tbody>
+        </table>
+      </div>
+      <!-- Footer / Pagination -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 pb-0 border-t border-gray-200">
+        <div id="rangeInfo6" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn6" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+          <span id="pageInfo6" class="text-sm text-gray-700">Page 1 of 1</span>
+          <button id="nextBtn6" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    </div>
     
   </div>
 
@@ -91,5 +557,154 @@
 {{ plots['beta_scores_by_plant_type_w_script'] | safe }}
 {{ plots['win_loss_by_image_uw_script'] | safe }}
 {{ plots['win_loss_by_image_w_script'] | safe }}
+{{ plots['beta_scores_heat_map_by_image_uw_script'] | safe }}
+{{ plots['beta_scores_heat_map_by_image_w_script'] | safe }}
+{{ plots['beta_scores_ranking_uw_script'] | safe }}
+{{ plots['beta_scores_ranking_w_script'] | safe }}
 
+{% endblock %}
+
+
+{% block scripts %}
+
+<script type="module">
+import { DataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
+
+
+const win_percentage_beta_datatable = {{ data['win_percentage_beta_datatable']|tojson }};
+const beta_score_by_plant_datatable = {{ data['beta_score_by_plant_datatable']|tojson }};
+const beta_score_ranking_datatable = {{ data['beta_score_ranking_datatable']|tojson }};
+const beta_score_by_plant_type_hist_datatable = {{ data['beta_score_by_plant_type_hist_datatable']|tojson }};
+const win_vs_loss_by_plant_datatable = {{ data['win_vs_loss_by_plant_datatable']|tojson }};
+const beta_score_heat_map_datatable = {{ data['beta_score_heat_map_datatable']|tojson }};
+
+new DataTable({
+  data: win_percentage_beta_datatable,
+  tableBodyId: "win_percentage_beta_table_body",
+  prevBtnId: "prevBtn1",
+  nextBtnId: "nextBtn1",
+  pageInfoId: "pageInfo1",
+  rangeInfoId: "rangeInfo1",
+  rowsPerPageSelectId: "rowsPerPageSelect1",
+  downloadBtnId: "downloadBtn1",
+  rowsPerPage: 10,
+  columns: [
+    'plant',
+    'invasiveness',
+    'win_percentage',
+    'bt_beta_score',
+    'bt_beta_score_weighted'
+  ],
+  downloadFileName: 'beta_vs_win_percentage.csv'
+});
+
+new DataTable({
+  data: beta_score_by_plant_datatable,
+  tableBodyId: "beta_score_by_plant_table_body",
+  prevBtnId: "prevBtn2",
+  nextBtnId: "nextBtn2",
+  pageInfoId: "pageInfo2",
+  rangeInfoId: "rangeInfo2",
+  rowsPerPageSelectId: "rowsPerPageSelect2",
+  downloadBtnId: "downloadBtn2",
+  rowsPerPage: 10,
+  columns: [
+    'plant',
+    'invasiveness',
+    'bt_beta_score',
+    'bt_beta_score_weighted'
+  ],
+  downloadFileName: 'beta_score_by_plant.csv'
+});
+
+new DataTable({
+  data: beta_score_ranking_datatable,
+  tableBodyId: "beta_score_by_plant_ranking_table_body",
+  prevBtnId: "prevBtn3",
+  nextBtnId: "nextBtn3",
+  pageInfoId: "pageInfo3",
+  rangeInfoId: "rangeInfo3",
+  rowsPerPageSelectId: "rowsPerPageSelect3",
+  downloadBtnId: "downloadBtn3",
+  rowsPerPage: 10,
+  columns: [
+    'plant',
+    'invasiveness',
+    'bt_beta_score',
+    'bt_beta_score_weighted'
+  ],
+  downloadFileName: 'beta_score_ranking_by_plant.csv'
+});
+
+
+new DataTable({
+  data: beta_score_heat_map_datatable,
+  tableBodyId: "beta_score_heat_map_table_body",
+  prevBtnId: "prevBtn4",
+  nextBtnId: "nextBtn4",
+  pageInfoId: "pageInfo4",
+  rangeInfoId: "rangeInfo4",
+  rowsPerPageSelectId: "rowsPerPageSelect4",
+  downloadBtnId: "downloadBtn4",
+  rowsPerPage: 10,
+  columns: [
+    'Plant_A',
+    'Plant_B',
+    'A_Beats_B',
+    'A_Beats_B_Weighted'
+  ],
+  downloadFileName: 'beta_score_heat_map.csv'
+});
+
+
+new DataTable({
+  data: beta_score_by_plant_type_hist_datatable,
+  tableBodyId: "beta_score_by_plant_type_table_body",
+  prevBtnId: "prevBtn5",
+  nextBtnId: "nextBtn5",
+  pageInfoId: "pageInfo5",
+  rangeInfoId: "rangeInfo5",
+  rowsPerPageSelectId: "rowsPerPageSelect5",
+  downloadBtnId: "downloadBtn5",
+  rowsPerPage: 10,
+  columns: [
+    'Bin_Number',
+    'Bin_Left',
+    'Bin_Right',
+    'Invasive_Count',
+    'Non_Invasive_Count',
+    'Bin_Number_Weighted',
+    'Bin_Left_Weighted',
+    'Bin_Right_Weighted',
+    'Invasive_Count_Weighted',
+    'Non_Invasive_Count_Weighted'
+  ],
+  downloadFileName: 'beta_score_by_plant_histogram.csv'
+});
+
+
+new DataTable({
+  data: win_vs_loss_by_plant_datatable,
+  tableBodyId: "win_loss_by_plant_table_body",
+  prevBtnId: "prevBtn6",
+  nextBtnId: "nextBtn6",
+  pageInfoId: "pageInfo6",
+  rangeInfoId: "rangeInfo6",
+  rowsPerPageSelectId: "rowsPerPageSelect6",
+  downloadBtnId: "downloadBtn6",
+  rowsPerPage: 10,
+  columns: [
+    'plant',
+    'invasiveness',
+    'win',
+    'loss'
+  ],
+  downloadFileName: 'win_loss_by_plant.csv'
+});
+
+</script>
+
+<script>
+lucide.createIcons();
+</script>
 {% endblock %}

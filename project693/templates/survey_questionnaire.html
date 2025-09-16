@@ -5,7 +5,7 @@
 <div class="w-full px-6 md:w-2/3 lg:w-1/2 pt-4 md:pt-12 mx-auto">
     <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
         <h2 class="text-xl font-bold text-gray-700 text-center">Final Question</h2>
-        <p class="text-lg mt-6">What characteristics made you prefer certain plants over others?</p>
+        <p class="text-lg mt-6">What characteristics most influenced your choice of plant?</p>
 
         <form method="POST" action="{{ url_for('survey_questionnaire') }}">
             <div class="mt-4">
@@ -19,7 +19,7 @@
                         id="reasonColor" 
                         required
                     >
-                    <label class="text-gray-700 ms-1" for="reasonColor">Color</label>
+                    <label class="text-gray-700 ms-1" for="reasonColor">The dominant flower colour (e.g. red, blue, white etc.)</label>
                 </div>
 
                 <div class="mb-1">
@@ -31,7 +31,7 @@
                         id="reasonShape" 
                         required
                     >
-                    <label class="text-gray-700 ms-1" for="reasonShape">Shape</label>
+                    <label class="text-gray-700 ms-1" for="reasonShape">Contrasting colours in the flower (e.g. green and yellow, blue and white etc.)</label>
                 </div>
 
                 <div class="mb-1">
@@ -43,7 +43,7 @@
                         id="reasonFamiliarity" 
                         required
                     >
-                    <label class="text-gray-700 ms-1" for="reasonFamiliarity">Familiarity</label>
+                    <label class="text-gray-700 ms-1" for="reasonFamiliarity">Flower shape (e.g. round, heart-shaped etc.)</label>
                 </div>
 
                 <div class="mb-1">
@@ -55,7 +55,7 @@
                         id="reasonNovelty" 
                         required
                     >
-                    <label class="text-gray-700 ms-1" for="reasonNovelty">Novelty</label>
+                    <label class="text-gray-700 ms-1" for="reasonNovelty">It was a plant that was familiar to you</label>
                 </div>
 
                 <div class="mb-1">
@@ -67,7 +67,7 @@
                         id="reasonForm" 
                         required
                     >
-                    <label class="text-gray-700 ms-1" for="reasonForm">General Plant Form</label>
+                    <label class="text-gray-700 ms-1" for="reasonForm">It was a plant that looked different from most plants you know</label>
                 </div>
             </div>
 

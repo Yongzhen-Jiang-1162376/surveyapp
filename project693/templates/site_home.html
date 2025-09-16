@@ -15,15 +15,14 @@
 <div class="w-full px-6 md:w-2/3 pt-4 md:pt-10 mx-auto">
   <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
     <div class="text-center">
-      <h1 class="text-3xl font-bold text-gray-800">Welcome to Green or Mean</h1>
+      <h1 class="text-3xl font-bold text-gray-800">Welcome to the Ornamental Preference Survey</h1>
       <p class="mt-6 text-gray-700">
-        The Green or Mean project is a short interactive survey designed to understand how everyday people choose plants, especially whether they are drawn more by appearance or environmental impact. 
-        You'll be shown pairs of plants and asked which one you prefer, with a quick question at the end to understand your reasoning. Your choices will help researchers explore public preferences and raise awareness about the dangers of invasive species in Aotearoa New Zealand.
+        The Ornamental Preference Survey is a short interactive survey designed to understand how everyday people choose between different ornamental plants, especially what floral attributes make certain plants more attractive. You'll be shown ten pairs of plants and will be asked to click on the one you prefer.  There is no right or wrong answer, what is wanted is your initial impression of which one you prefer. There is then a final question to help us to understand your reasoning. Your participation in this survey will help researchers at Lincoln University, New Zealand explore public preferences for ornamental plants.
       </p>
 
-      <p class="mt-6 text-gray-700">
+      <!-- <p class="mt-6 text-gray-700">
         It is quick, anonymous and insightful, and at the end you will see a breakdown of how often you chose invasive versus non-invasive plants, helping you reflect on your own preferences and their potential ecological impact.
-      </p>
+      </p> -->
         
       {% if not g.user %}
         <a href="{{ url_for('survey') }}" class="btn btn-success btn-lg mt-3">
@@ -36,11 +35,11 @@
   </div>
 </div>
 
-<div class="container mx-auto flex justify-center" style="margin-top: 60px; margin-bottom: 40px;">
-  <img src="{{ url_for('static', filename='img/plantmeinstead.png') }}" 
+<div class="container mx-auto flex justify-center" style="margin-top: 100px; margin-bottom: 40px;">
+  <img src="{{ url_for('static', filename='img/Lincoln_University.png') }}" 
        alt="Green or Mean Banner" 
-       class="img-fluid rounded shadow-sm" 
-       style="max-height: 300px;" />
+       class="max-h-[250px] w-auto" 
+       style="max-height: 200px;" />
 </div>
 
 {% endblock %}

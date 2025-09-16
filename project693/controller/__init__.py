@@ -46,6 +46,8 @@ from . import (
     dashboard_controller, 
     dashboard_age_group_controller, 
     dashboard_gardening_controller, 
-    dashboard_bradley_terry_model_controller
+    dashboard_bradley_terry_model_controller,
+    api_controller,
+    survey_cycle_controller
 )
 from . import image_controller

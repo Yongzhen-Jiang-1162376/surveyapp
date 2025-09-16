@@ -34,7 +34,7 @@ def list_plants():
     )
 
     return render_template(
-        "competition/plant_list.html", plants=plants
+        "admin/plant_list.html", plants=plants
     )
 
 
@@ -58,7 +58,7 @@ def add_plant():
         plant_dao.add_plant(name, description, image_filename, invasiveness)
         flash("New Plant added successfully!", "success")
         return redirect(url_for("list_plants"))
-    return render_template("competition/add_plant.html")
+    return render_template("admin/add_plant.html")
 
 
 @app.route("/siteadmin/edit_plant/<int:id>", methods=["GET", "POST"])
@@ -82,7 +82,7 @@ def edit_plant(id):
         flash("Plant edited successfully!", "success")
         return redirect(url_for("list_plants"))
     
-    return render_template("competition/edit_plant.html", plant=plant)
+    return render_template("siteadmin/edit_plant.html", plant=plant)
 
 
 @app.route("/siteadmin/delete_plants/<int:id>", methods=["POST"])

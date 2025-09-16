@@ -1,0 +1,244 @@
+{% extends "site_layout.html" %}
+
+{% block title %}Survey Cycle{% endblock %}
+
+{% block content %}
+
+<!-- Table Section -->
+<div class="max-w-[100rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+  <!-- Card -->
+  <div class="flex flex-col">
+    <div class="-m-1.5 overflow-x-auto">
+      <div class="p-1.5 min-w-full inline-block align-middle">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
+          <!-- Header -->
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
+                Survey Cycle
+              </h2>
+              <!-- <p class="text-sm text-gray-600 dark:text-neutral-400">
+                Keys you have generated to connect with third-party clients or access the <a class="inline-flex items-center gap-x-1.5 text-blue-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-blue-500" href="#">Preline API.</a>
+              </p> -->
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+              <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                Rows per page
+                <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                  <option>5</option>
+                  <option selected>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <!-- End Header -->
+
+          <!-- Table -->
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+            <thead class="bg-gray-50 dark:bg-neutral-900">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Cycle Id
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Start Time
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      End Time
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Survey Participants
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Total Choices
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Status
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Survey Raw Data
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Analysis Data
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                      Action
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-200" id="surveyCycleTableBodyId">
+            </tbody>
+          </table>
+          <!-- End Table -->
+
+          <!-- Footer -->
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-neutral-700">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-neutral-400">
+                <div id="rangeInfo" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="prevBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+              <span id="pageInfo" class="text-sm text-gray-700">Page 1 of 1</span>
+              <button id="nextBtn" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+            </div>
+          </div>
+          <!-- End Footer -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Card -->
+</div>
+<!-- End Table Section -->
+
+{% endblock %}
+
+{% block scripts %}
+<!-- <script src="{{ url_for('static', filename='js/datatable.js')}}" type="module"></script> -->
+
+
+<script type="module">
+import { AjaxDataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
+
+new AjaxDataTable({
+  apiUrl: "/api/survey-cycle-data",
+  tableBodyId: "surveyCycleTableBodyId",
+  prevBtnId: "prevBtn",
+  nextBtnId: "nextBtn",
+  pageInfoId: "pageInfo",
+  rangeInfoId: "rangeInfo",
+  rowsPerPageSelectId: "rowsPerPageSelect",
+  downloadBtnId: "downloadBtn",
+  rowsPerPage: 10,
+  columns: [
+    { key: 'cycle_id', header: 'Cycle ID' },
+    { key: 'start_time', header: 'Start Time' },
+    { key: 'end_time', header: 'End Time' },
+    { key: 'survey_participants', header: 'Survey Participants' },
+    { key: 'total_choices', header: 'Total Choices' },
+    { 
+      header: 'Status',
+      render: row => {
+        switch (row.status) {
+          case 'Active':
+            return `
+              <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full dark:bg-teal-500/10 dark:text-teal-500">
+                Active
+              </span>
+            `;
+          case 'Closed':
+            return `
+              <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                Closed
+              </span>
+            `;
+        }
+      }
+    },
+    {
+      header: 'Survey Raw Data',
+      render: row => {
+        if (row.status === 'Closed') {
+
+          return `
+            <button class="p-1 text-blue-600 hover:text-blue-800 download-cycle-raw-data-btn">
+              <i data-lucide="download"></i>
+            </button>
+          `;
+        } else {
+          return '';
+        }
+      }
+    },
+    {
+      header: 'Analysis Data',
+      render: row => {
+        if (row.status === 'Closed') {
+
+          return `
+            <button onclick="downloadCycleResultsCSV(${row.cycle_id})" class="p-1 text-blue-600 hover:text-blue-800">
+              <i data-lucide="download"></i>
+            </button>
+          `;
+        } else {
+          return '';
+        }
+      }
+    },
+    {
+      header: 'Action',
+      render: row => {
+        if (row.status === 'Active') {
+
+          return `
+            <button type="button" class="close-btn py-2 px-3 inline-flex items-center gap-x-2 
+                    text-sm font-medium rounded-lg border border-transparent 
+                    bg-teal-500 text-white hover:bg-teal-600 cursor-pointer">
+              Close & Start a New Survey
+            </button>
+          `;
+        } else {
+          return '';
+        }
+      }
+    },
+  ]
+});
+</script>
+
+<!-- <script>
+lucide.createIcons();
+</script> -->
+{% endblock %}

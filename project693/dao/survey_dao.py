@@ -42,6 +42,9 @@ class SurveyDAO(BaseDAO):
         Stores an answer to a survey question.
         """
         
+        cycle_id = self.get_active_survey_cycle_id()
+        print(cycle_id)
+        
         plantDao = PlantDAO()
         plant = plantDao.get_plant_by_id(answer.selected_plant_id)
         
@@ -58,18 +61,20 @@ class SurveyDAO(BaseDAO):
 
         query = """
             INSERT INTO survey_results (
-                session_id, 
-                question_seq, 
+                session_id,
+                question_seq,
                 selected_plant_id,
-                response_time, 
+                response_time,
                 invasive_plant_id,
                 non_invasive_plant_id,
                 winner,
                 loser,
                 invasive_winner,
-                invasive_loser
+                invasive_loser,
+                active,
+                cycle_id
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         self.execute_non_query(
             query,
@@ -83,6 +88,97 @@ class SurveyDAO(BaseDAO):
                 winner,
                 loser,
                 invasive_winner,
-                invasive_loser
+                invasive_loser,
+                1,
+                cycle_id
             )
         )
+    
+    def active_survey_cycle_existed(self):
+        """
+        check whether an active survey cycle is existed
+        """
+        query = """
+            select count(1) as count from survey_cycle where active = 1;
+        """
+        
+        result = self.execute_query(query)
+        return result
+    
+    def get_active_survey_cycle_id(self):
+        """
+        get the active (current) survey cycle id
+        """
+        query = """
+            select id from survey_cycle where active = 1;
+        """
+        result = self.execute_query(query)
+        return result[0][0]
+
+    def active_survey_result_existed(self):
+        """
+        check whether active survey result existed
+        """
+        query = """
+            select count(1) from survey_results where active = 1;
+        """
+        result = self.execute_query(query)
+        return result[0][0]
+        
+    def start_survey_cyle(self):
+        """
+        Start a new survey cycle
+        """
+        
+        # make all existing survey cycle as active = 0
+        query = """
+            update survey_cycle set active = 0, end_time = now() where active = 1;
+        """
+        self.execute_non_query(query)
+        
+        query = """
+            update survey_results set active = 0 where active = 1;
+        """
+        self.execute_non_query(query)
+        
+        query = """
+            insert into survey_cycle (start_time, active) values (now(), 1);
+        """
+        self.execute_non_query(query)
+
+
+    def get_total_survey_cycles(self):
+        query = """
+            select count(1) from survey_cycle;  
+        """
+        result = self.execute_query(query)
+        return result[0][0] if result else 0
+
+
+    def list_survey_cycle_paginated(self, limit, offset):
+        
+        query = """
+            select 
+                id as cycle_id, 
+                date_format(start_time, '%d-%m-%Y %H:%i:%S') as start_time,
+                date_format(end_time, '%d-%m-%Y %H:%i:%S') as end_time,
+                m.survey_participants,
+                m.total_choices, 
+                if(active = 1, 'Active', 'Closed') as status
+            from survey_cycle sc
+            left join
+            (
+                select
+                    cycle_id,
+                    count(distinct session_id) as survey_participants,
+                    count(1) as total_choices
+                from survey_results
+                group by cycle_id
+            ) as m on sc.id = m.cycle_id
+            order by id
+            limit %s offset %s;
+            ;
+        """
+
+        result = self.execute_query(query, (limit, offset))        
+        return result if result else []
