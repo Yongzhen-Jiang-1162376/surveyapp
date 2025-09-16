@@ -141,7 +141,7 @@ CREATE TABLE `bt_beta_score_win_percentage` (
   `bt_beta_socre_weighted` float not null,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
-    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
+    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
 );
 
 -- add bradley-terry beta score heat map table
@@ -157,7 +157,7 @@ CREATE TABLE `bt_beta_score_heat_map` (
   `plant_a_beats_b_weighted` float,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cycle_id_bt_beta_heat_map`
-    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
+    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
 );
 
 -- add bradley-terry beta score by invasive type histogram table
@@ -176,7 +176,7 @@ CREATE TABLE `bt_beta_score_by_invasive_type_histogram` (
   `non_invasive_count_weighted` int not null,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cycle_id_bt_beta_histogram`
-    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
+    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
 );
 
 -- add win/loss by plant table
@@ -191,7 +191,7 @@ CREATE TABLE `win_loss_by_plant` (
   `loss` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cycle_id_win_loss`
-    FOREIGN KEY (`cycle_id`) REFERENCES `suvery_cycle`(`id`)
+  FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
 );
 
 -- add an active column to servey result table to support survey period
