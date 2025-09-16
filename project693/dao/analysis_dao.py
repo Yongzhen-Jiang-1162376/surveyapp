@@ -348,7 +348,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
     
     
-    def save_beta_score_by_invasive_type_histogram(self, data):
+    def save_beta_score_by_invasive_type_histogram(self, data, cycle_id):
         sql = """
             insert into bt_beta_score_by_invasive_type_histogram (
                 cycle_id, bin_no, bin_left, bin_right, invasive_count, non_invasive_count, bin_left_weighted, bin_right_weighted,
@@ -356,22 +356,49 @@ class AnalysisDAO(BaseDAO):
             ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         
-        self.execute_many(sql, data)
+        tuple_date = [
+            (
+                cycle_id,
+                row['Bin_Number'],
+                row['Bin_Left'],
+                row['Bin_Right'],
+                row['Invasive_Count'],
+                row['Non_Invasive_Count'],
+                row['Bin_Left_Weighted'],
+                row['Bin_Right_Weighted'],
+                row['Invasive_Count_Weighted'],
+                row['Non_Invasive_Count_Weighted']
+            )
+            for row in data
+        ]
+        
+        self.execute_many(sql, tuple_date)
         return
 
-    def save_win_loss_by_plant(self, data):
+    def save_win_loss_by_plant(self, data, cycle_id):
         sql = """
             insert into win_loss_by_plant (
                 cycle_id, plant_id, plant_name, invasiveness, win, loss
             ) values (%s, %s, %s, %s, %s, %s);
         """
-        self.execute_many(sql, data)
-        return
-    
-    def save_beta_score_heat_map_by_plant(self, data):
         
-        survey_dao = SurveyDAO()
-        cycle_id = survey_dao.get_active_survey_cycle_id()
+        tuple_data = [
+            (
+                cycle_id,
+                row['plant_id'],
+                row['plant'],
+                row['invasiveness'],
+                row['win'],
+                row['loss']
+            )
+            for row in data
+        ]
+        
+        self.execute_many(sql, tuple_data)
+        return
+
+
+    def save_beta_score_heat_map_by_plant(self, data, cycle_id):
         
         sql = """
             insert into bt_beta_score_heat_map (
@@ -392,17 +419,29 @@ class AnalysisDAO(BaseDAO):
             for row in data
         ]
         
-        print(tuple_data[0:5])
-        
         self.execute_many(sql, tuple_data)
         return
 
 
-    def save_beta_score_win_percentage(self, data):
+    def save_beta_score_win_percentage(self, data, cycle_id):
         sql = """
             insert into bt_beta_score_win_percentage (
                 cycle_id, plant_id, plant_name, invasiveness, win_percentage, bt_beta_score, bt_beta_score_weighted
             ) values (%s, %s, %s, %s, %s, %s, %s);
         """
-        self.execute_many(sql, data)
+        
+        tuple_data = [
+            (
+                cycle_id,
+                row['plant_id'],
+                row['plant'],
+                row['invasiveness'],
+                row['win_percentage_value'],
+                row['bt_beta_score'],
+                row['bt_beta_score_weighted']
+            )
+            for row in data
+        ]
+        
+        self.execute_many(sql, tuple_data)
         return

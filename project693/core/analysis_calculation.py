@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, ses
 from project693.controller import app
 from werkzeug.utils import secure_filename
 from project693.dao.plant_dao import PlantDAO
-from project693.dao.analysis_dao import AnalysisDAO
+from project693.dao.survey_dao import SurveyDAO
 from project693.utils.session_manager import SessionManager
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -239,6 +239,7 @@ def beta_vs_win_percentage_datatable():
     win_percentages_dict = win_percentages.to_dict()
     
     for idx in range(config['num_images']):
+        plant_id = config['idx_to_id'][idx]
         plant_name = config['all_plants'][config['idx_to_id'][idx]]
         invasive = config['all_plants_invasiveness'][config['idx_to_id'][idx]]
         win_percentage = win_percentages_dict[config['idx_to_id'][idx]]
@@ -246,19 +247,20 @@ def beta_vs_win_percentage_datatable():
         bt_beta_weighted = float(config['weighted_beta_normalized'][idx])
         
         rows.append({
+            'plant_id': plant_id,
             'plant': plant_name,
             'invasiveness': invasive,
-            'win_percentage_origin': win_percentage,
+            'win_percentage_value': win_percentage,
             'win_percentage': str(round(win_percentage * 100, 2)) + '%',
             'bt_beta_score': round(bt_beta, 4),
             'bt_beta_score_weighted': round(bt_beta_weighted, 4)
         })
     
-    rows = sorted(rows, key=lambda r: r['win_percentage_origin'], reverse=True)
+    rows = sorted(rows, key=lambda r: r['win_percentage_value'], reverse=True)
     
     # delete 'win_percentage_origin' column, to keep consistent when downloading data
-    for row in rows:
-        del row['win_percentage_origin']
+    # for row in rows:
+    #     del row['win_percentage_origin']
     
     return rows
 
@@ -455,12 +457,14 @@ def win_loss_by_plant_datatable():
     losses = [int((config['data']['loser'] == id).sum()) for id in config['image_ids']]
     
     for idx in range(config['num_images']):
+        plant_id = config['idx_to_id'][idx]
         plant_name = images[idx]
         invasive = config['all_plants_invasiveness'][config['idx_to_id'][idx]]
         win = wins[idx]
         loss = losses[idx]
         
         rows.append({
+            'plant_id': plant_id,
             'plant': plant_name,
             'invasiveness': invasive,
             'win': win,
@@ -624,10 +628,23 @@ def beta_scores_ranking(weighted=1):
 
 def save_beta_score_heat_map_data():
     initialize()
-    
-    rows = beta_score_heat_map_datatable()
-    
     analysis_dao = AnalysisDAO()
+    survey_dao = SurveyDAO()
+    cycle_id = survey_dao.get_active_survey_cycle_id()
     
+    # heat map data
+    rows = beta_score_heat_map_datatable()
+    analysis_dao.save_beta_score_heat_map_by_plant(rows, cycle_id)
     
-    analysis_dao.save_beta_score_heat_map_by_plant(rows)
+    # win/loss data
+    rows = win_loss_by_plant_datatable()
+    analysis_dao.save_win_loss_by_plant(rows, cycle_id)
+
+    # beta score by plant type histogram
+    rows = beta_scores_by_plant_type_datatable()
+    analysis_dao.save_beta_score_by_invasive_type_histogram(rows, cycle_id)
+    
+    # beta score by plant vs win percentage
+    rows = beta_vs_win_percentage_datatable()
+    print(rows)
+    analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
