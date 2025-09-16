@@ -117,3 +117,19 @@ class BaseDAO:
             raise e
         finally:
             self.disconnect()
+    
+    def execute_many(self, sql, data):
+        """
+        Execute a series of transaction in batch way
+        e.g. insert a list of rows
+        """
+        try:
+            self.connect()
+            self.cursor.executemany(sql, data)
+            self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            raise e
+        finally:
+            self.disconnect()
+            
