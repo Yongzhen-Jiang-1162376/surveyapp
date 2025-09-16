@@ -7,6 +7,7 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
+from project693.core.analysis_calculation import save_beta_score_heat_map_data
 
 
 analysis_dao = AnalysisDAO()
@@ -182,8 +183,11 @@ def close_survey():
             'success': False,
             'message': 'No survey results in this cycle.\nPlease fill out some surveys.'
         }), 404
+        
+    # save analysis data for current survey cycle
+    save_beta_score_heat_map_data()
     
-    survey_dao.start_survey_cyle()
+    # survey_dao.start_survey_cyle()
     
     return jsonify({
         'success': True,

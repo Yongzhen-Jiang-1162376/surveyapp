@@ -547,6 +547,7 @@ def beta_score_heat_map_datatable():
     betas = config['unweighted_beta_normalized']
     betas_weighted = config['weighted_beta_normalized']
     plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
+    plant_ids = [config['idx_to_id'][idx] for idx in range(len(betas))]
     
     matrix = probability_matrix(betas)
     matrix_weighted = probability_matrix(betas_weighted)
@@ -556,7 +557,9 @@ def beta_score_heat_map_datatable():
     for i in range(n):
         for j in range(n):
             row = {
+                'Plant_A_Id': plant_ids[i],
                 'Plant_A': plant_names[i],
+                'Plant_B_Id': plant_ids[j],
                 'Plant_B': plant_names[j],
                 'A_Beats_B': 'NA' if np.isnan(matrix[i, j]) else round(float(matrix[i, j]), 5),
                 'A_Beats_B_Weighted': 'NA' if np.isnan(matrix_weighted[i, j]) else round(float(matrix_weighted[i, j]), 5),
@@ -617,3 +620,14 @@ def beta_scores_ranking(weighted=1):
     plot.add_layout(labels)
     
     return plot
+
+
+def save_beta_score_heat_map_data():
+    initialize()
+    
+    rows = beta_score_heat_map_datatable()
+    
+    analysis_dao = AnalysisDAO()
+    
+    
+    analysis_dao.save_beta_score_heat_map_by_plant(rows)

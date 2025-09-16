@@ -1,4 +1,5 @@
 from project693.dao.base_dao import BaseDAO
+from project693.dao.survey_dao import SurveyDAO
 
 
 class AnalysisDAO(BaseDAO):
@@ -345,3 +346,63 @@ class AnalysisDAO(BaseDAO):
 
         result = self.execute_query(query, (avg_response_time, cycle_id))        
         return result if result else []
+    
+    
+    def save_beta_score_by_invasive_type_histogram(self, data):
+        sql = """
+            insert into bt_beta_score_by_invasive_type_histogram (
+                cycle_id, bin_no, bin_left, bin_right, invasive_count, non_invasive_count, bin_left_weighted, bin_right_weighted,
+                invasive_count_weighted, non_invasive_count_weighted
+            ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        
+        self.execute_many(sql, data)
+        return
+
+    def save_win_loss_by_plant(self, data):
+        sql = """
+            insert into win_loss_by_plant (
+                cycle_id, plant_id, plant_name, invasiveness, win, loss
+            ) values (%s, %s, %s, %s, %s, %s);
+        """
+        self.execute_many(sql, data)
+        return
+    
+    def save_beta_score_heat_map_by_plant(self, data):
+        
+        survey_dao = SurveyDAO()
+        cycle_id = survey_dao.get_active_survey_cycle_id()
+        
+        sql = """
+            insert into bt_beta_score_heat_map (
+                cycle_id, plant_a_id, plant_a_name, plant_b_id, plant_b_name, plant_a_beats_b, plant_a_beats_b_weighted
+            ) values (%s, %s, %s, %s, %s, %s, %s);
+        """
+        
+        tuple_data = [
+            (
+                cycle_id,
+                row['Plant_A_Id'],
+                row['Plant_A'],
+                row['Plant_B_Id'],
+                row['Plant_B'],
+                None if row['A_Beats_B'] == 'NA' else row['A_Beats_B'],
+                None if row['A_Beats_B_Weighted'] == 'NA' else row['A_Beats_B_Weighted']
+            )
+            for row in data
+        ]
+        
+        print(tuple_data[0:5])
+        
+        self.execute_many(sql, tuple_data)
+        return
+
+
+    def save_beta_score_win_percentage(self, data):
+        sql = """
+            insert into bt_beta_score_win_percentage (
+                cycle_id, plant_id, plant_name, invasiveness, win_percentage, bt_beta_score, bt_beta_score_weighted
+            ) values (%s, %s, %s, %s, %s, %s, %s);
+        """
+        self.execute_many(sql, data)
+        return
