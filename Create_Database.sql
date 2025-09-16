@@ -138,7 +138,7 @@ CREATE TABLE `bt_beta_score_win_percentage` (
   `invasiveness` VARCHAR(50) NOT NULL,
   `win_percentage` float not null,
   `bt_beta_score` float not null,
-  `bt_beta_socre_weighted` float not null,
+  `bt_beta_score_weighted` float not null,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
