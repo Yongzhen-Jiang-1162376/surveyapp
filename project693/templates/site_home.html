@@ -14,10 +14,17 @@
 
 <div class="w-full px-6 md:w-2/3 pt-4 md:pt-10 mx-auto">
   <div class="px-6 py-6 mb-4 border border-gray-200 rounded-2xl bg-light rounded-3 shadow-xl">
-    <div class="text-center">
-      <h1 class="text-3xl font-bold text-gray-800">Welcome to the Ornamental Preference Survey</h1>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 text-center">Welcome to the Ornamental Preference Survey</h1>
       <p class="mt-6 text-gray-700">
-        The Ornamental Preference Survey is a short interactive survey designed to understand how everyday people choose between different ornamental plants, especially what floral attributes make certain plants more attractive. You'll be shown ten pairs of plants and will be asked to click on the one you prefer.  There is no right or wrong answer, what is wanted is your initial impression of which one you prefer. There is then a final question to help us to understand your reasoning. Your participation in this survey will help researchers at Lincoln University, New Zealand explore public preferences for ornamental plants.
+        The Ornamental Preference Survey is a short interactive survey designed to understand how everyday people choose between different ornamental plants, especially what floral attributes make certain plants more attractive.
+      </p>
+      <p class="mt-6 text-gray-700">
+        You'll be shown ten pairs of plants and will be asked to click on the one you prefer. There is no right or wrong answer, what is wanted is your initial impression of which one you prefer. There is then a final question to help us to understand your reasoning. 
+      </p>
+
+      <p class="mt-6 text-gray-700">
+        Your participation in this survey will help researchers at Lincoln University, New Zealand explore public preferences for ornamental plants.
       </p>
 
       <!-- <p class="mt-6 text-gray-700">
@@ -25,21 +32,22 @@
       </p> -->
         
       {% if not g.user %}
+        <div class="text-center">
         <a href="{{ url_for('survey') }}" class="btn btn-success btn-lg mt-3">
           <button class="mt-10 py-2 px-4 inline-flex items-center gap-x-2 text-lg font-medium rounded-lg border text-white bg-teal-500 hover:bg-teal-600 cursor-pointer">
             Take the Survey
           </button>
         </a>
+        </div>
       {% endif %}
     </div>
   </div>
 </div>
 
-<div class="container mx-auto flex justify-center" style="margin-top: 100px; margin-bottom: 40px;">
+<div class="mx-auto flex justify-center md:mt-45 mt-10 mb-6">
   <img src="{{ url_for('static', filename='img/Lincoln_University.png') }}" 
        alt="Green or Mean Banner" 
-       class="max-h-[250px] w-auto" 
-       style="max-height: 200px;" />
+       class="max-h-[180px] w-auto"/>
 </div>
 
 {% endblock %}
