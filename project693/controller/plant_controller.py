@@ -82,7 +82,7 @@ def edit_plant(id):
         flash("Plant edited successfully!", "success")
         return redirect(url_for("list_plants"))
     
-    return render_template("siteadmin/edit_plant.html", plant=plant)
+    return render_template("admin/edit_plant.html", plant=plant)
 
 
 @app.route("/siteadmin/delete_plants/<int:id>", methods=["POST"])
