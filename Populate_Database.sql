@@ -47,3 +47,19 @@ values ('Akebia quinata', 'Akebia quinata Weed', 'Akebia quinata Weed.jpg', 'inv
 
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+/*
+SET FOREIGN_KEY_CHECKS = 0;
+
+truncate table survey_metadata;
+truncate table survey_results;
+truncate table survey_cycle;
+truncate table bt_beta_score_by_invasive_type_histogram;
+truncate table bt_beta_score_heat_map;
+truncate table bt_beta_score_win_percentage;
+truncate table win_loss_by_plant;
+
+SET FOREIGN_KEY_CHECKS = 1;
+*/
