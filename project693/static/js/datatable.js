@@ -1,6 +1,4 @@
 // datatable.js
-import { zipSync, strToU8 } from "./lib/browser.js"
-
 export class AjaxDataTable {
     constructor(options) {
         this.apiUrl = options.apiUrl;
