@@ -388,7 +388,7 @@ class AnalysisDAO(BaseDAO):
                 bin_right_weighted,
                 invasive_count_weighted,
                 non_invasive_count_weighted
-            FROM greenmean.bt_beta_score_by_invasive_type_histogram
+            FROM bt_beta_score_by_invasive_type_histogram
             where cycle_id = %s
             order by id;
         """
@@ -428,7 +428,7 @@ class AnalysisDAO(BaseDAO):
                 invasiveness,
                 win,
                 loss
-            FROM greenmean.win_loss_by_plant
+            FROM win_loss_by_plant
             where cycle_id = %s
             order by id;
         """
@@ -471,7 +471,7 @@ class AnalysisDAO(BaseDAO):
                 plant_b_name,
                 plant_a_beats_b,
                 plant_a_beats_b_weighted
-            FROM greenmean.bt_beta_score_heat_map
+            FROM bt_beta_score_heat_map
             where cycle_id = %s
             order by id;
         """
@@ -513,7 +513,7 @@ class AnalysisDAO(BaseDAO):
                 win_percentage,
                 bt_beta_score,
                 bt_beta_score_weighted
-            FROM greenmean.bt_beta_score_win_percentage
+            FROM bt_beta_score_win_percentage
             where cycle_id = %s
             order by id;
         """
