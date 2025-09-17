@@ -92,15 +92,7 @@
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
                     <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
-                      Survey Raw Data
-                    </span>
-                  </div>
-                </th>
-
-                <th scope="col" class="px-6 py-3 text-start">
-                  <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
-                      Analysis Data
+                      Survey Data
                     </span>
                   </div>
                 </th>
@@ -148,7 +140,6 @@
 {% block scripts %}
 <!-- <script src="{{ url_for('static', filename='js/datatable.js')}}" type="module"></script> -->
 
-
 <script type="module">
 import { AjaxDataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
@@ -194,21 +185,6 @@ new AjaxDataTable({
 
           return `
             <button class="p-1 text-blue-600 hover:text-blue-800 download-cycle-raw-data-btn cursor-pointer">
-              <i data-lucide="download"></i>
-            </button>
-          `;
-        } else {
-          return '';
-        }
-      }
-    },
-    {
-      header: 'Analysis Data',
-      render: row => {
-        if (row.status === 'Closed') {
-
-          return `
-            <button onclick="downloadCycleResultsCSV(${row.cycle_id})" class="p-1 text-blue-600 hover:text-blue-800 cursor-pointer">
               <i data-lucide="download"></i>
             </button>
           `;
