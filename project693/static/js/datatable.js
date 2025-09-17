@@ -172,6 +172,32 @@ export class AjaxDataTable {
     }
 
     async downloadCycleResultsCSV(cycle_id) {
+        try {
+            const response = await fetch("/api/download-survey-cycle-data-by-cycle-id", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cycle_id })
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch zip file');
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_results.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    /*
+    async downloadCycleResultsCSV(cycle_id) {
         const files = {};
 
         let result = await this.fetchCycleDataCSV(
@@ -267,6 +293,7 @@ export class AjaxDataTable {
         //     console.error(err);
         // }
     }
+    */
 
     async closeSurvey(cycle_id) {
         if (!confirm("Are you sure to close this survey?")) return;
