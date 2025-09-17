@@ -1,4 +1,5 @@
 // datatable.js
+import { zipSync, strToU8 } from "./lib/browser.js"
 
 export class AjaxDataTable {
     constructor(options) {
@@ -146,41 +147,125 @@ export class AjaxDataTable {
         }
     }
 
-    async downloadCycleResultsCSV(cycle_id) {
+    async fetchCycleDataCSV(cycle_id, fileName, api_path) {
         try {
-            // fetch data from backend
-            const response = await fetch("/api/all-survey-data-by-cycle-id", {
+            const response = await fetch(`/api/${api_path}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    cycle_id
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( { cycle_id })
             });
-            if (!response.ok) throw new Error("Something wrong please check with admin.");
+            if (!response.ok) throw new Error('Failed to fetch cycle data');
 
             const res = await response.json();
             const data = res.datatable;
-            
-            if (!data.length) return;
+            if (!data.length) return null;
 
             const header = Object.keys(data[0]);
             const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
             const csv = [header.join(','), ...data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
 
-            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'survey_result.csv';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
+            return { fileName, content: "\ufeff" + csv };
         } catch (err) {
             console.error(err);
+            return null;
         }
+    }
+
+    async downloadCycleResultsCSV(cycle_id) {
+        const files = {};
+
+        let result = await this.fetchCycleDataCSV(
+            cycle_id, 
+            'survey_raw_data.csv', 
+            'all-survey-data-by-cycle-id'
+        );
+        if (result) {
+            files[result.fileName] = strToU8(result.content);
+        }
+
+        result = await this.fetchCycleDataCSV(
+            cycle_id, 
+            'beta_score_by_invasive_type_histogram.csv', 
+            'beta-score-by-invasive-type-histogram-by-cycle-id'
+        );
+        if (result) {
+            files[result.fileName] = strToU8(result.content);
+        }
+
+        result = await this.fetchCycleDataCSV(
+            cycle_id, 
+            'win_loss_by_plant.csv', 
+            'win-loss-by-plant-by-cycle-id'
+        );
+        if (result) {
+            files[result.fileName] = strToU8(result.content);
+        }
+
+        result = await this.fetchCycleDataCSV(
+            cycle_id, 
+            'beta_score_heat_map_by_plant.csv', 
+            'beta-score-heat-map-by-plant-by-cycle-id'
+        );
+        if (result) {
+            files[result.fileName] = strToU8(result.content);
+        }
+
+        result = await this.fetchCycleDataCSV(
+            cycle_id, 
+            'beta_score_with_win_percentage_by_plant.csv', 
+            'beta-score-win-percentage-by-cycle-id'
+        );
+        if (result) {
+            files[result.fileName] = strToU8(result.content);
+        }
+
+        if (Object.keys(files).length === 0) return;
+
+        const zipped = zipSync(files);
+        const blob = new Blob([zipped], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'survey_results.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        // try {
+        //     // fetch data from backend
+        //     const response = await fetch("/api/all-survey-data-by-cycle-id", {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({
+        //             cycle_id
+        //         })
+        //     });
+        //     if (!response.ok) throw new Error("Something wrong please check with admin.");
+
+        //     const res = await response.json();
+        //     const data = res.datatable;
+            
+        //     if (!data.length) return;
+
+        //     const header = Object.keys(data[0]);
+        //     const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+        //     const csv = [header.join(','), ...data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
+
+        //     const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+        //     const url = URL.createObjectURL(blob);
+        //     const a = document.createElement('a');
+        //     a.href = url;
+        //     a.download = 'survey_result.csv';
+        //     document.body.appendChild(a);
+        //     a.click();
+        //     a.remove();
+        //     URL.revokeObjectURL(url);
+        // } catch (err) {
+        //     console.error(err);
+        // }
     }
 
     async closeSurvey(cycle_id) {

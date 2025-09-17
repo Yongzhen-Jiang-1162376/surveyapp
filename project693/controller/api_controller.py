@@ -7,7 +7,7 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
-from project693.core.analysis_calculation import save_beta_score_heat_map_data
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data
 
 
 analysis_dao = AnalysisDAO()
@@ -185,11 +185,101 @@ def close_survey():
         }), 404
         
     # save analysis data for current survey cycle
-    save_beta_score_heat_map_data()
+    save_survey_cycle_analysis_data()
     
-    # survey_dao.start_survey_cyle()
+    survey_dao.start_survey_cyle()
     
     return jsonify({
         'success': True,
         'message': 'Survey cycle closed successfully.\nA new suvey cycle is started.'
+    })
+
+
+@app.route("/api/beta-score-by-invasive-type-histogram-by-cycle-id", methods=["POST"])
+def get_beta_score_by_invasive_type_histogram_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'bin_no',
+        'bin_left',
+        'bin_right',
+        'invasive_count',
+        'non_invasive_count',
+        'bin_left_weighted',
+        'bin_right_weighted',
+        'invasive_count_weighted',
+        'non_invasive_count_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/win-loss-by-plant-by-cycle-id", methods=["POST"])
+def get_win_loss_by_plant_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win',
+        'loss'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/beta-score-heat-map-by-plant-by-cycle-id", methods=["POST"])
+def get_beta_score_heat_map_by_plant_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_a_id',
+        'plant_a_name',
+        'plant_b_id',
+        'plant_b_name',
+        'plant_a_beats_b',
+        'plant_a_beats_b_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/beta-score-win-percentage-by-cycle-id", methods=["POST"])
+def get_beta_score_win_percentage_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win_percentage',
+        'bt_beta_score',
+        'bt_beta_score_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
     })

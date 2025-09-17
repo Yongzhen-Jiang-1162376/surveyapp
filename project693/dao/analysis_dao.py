@@ -374,6 +374,27 @@ class AnalysisDAO(BaseDAO):
         
         self.execute_many(sql, tuple_date)
         return
+    
+    def list_beta_score_by_invasive_type_histogram_by_cycle_id(self, cycle_id):
+        query = """
+            SELECT
+                cycle_id,
+                bin_no,
+                bin_left,
+                bin_right,
+                invasive_count,
+                non_invasive_count,
+                bin_left_weighted,
+                bin_right_weighted,
+                invasive_count_weighted,
+                non_invasive_count_weighted
+            FROM greenmean.bt_beta_score_by_invasive_type_histogram
+            where cycle_id = %s
+            order by id;
+        """
+        result = self.execute_query(query, (cycle_id,))        
+        return result if result else []
+        
 
     def save_win_loss_by_plant(self, data, cycle_id):
         sql = """
@@ -396,6 +417,23 @@ class AnalysisDAO(BaseDAO):
         
         self.execute_many(sql, tuple_data)
         return
+
+
+    def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            SELECT
+                cycle_id,
+                plant_id,
+                plant_name,
+                invasiveness,
+                win,
+                loss
+            FROM greenmean.win_loss_by_plant
+            where cycle_id = %s
+            order by id;
+        """
+        result = self.execute_query(query, (cycle_id,))        
+        return result if result else []
 
 
     def save_beta_score_heat_map_by_plant(self, data, cycle_id):
@@ -421,6 +459,24 @@ class AnalysisDAO(BaseDAO):
         
         self.execute_many(sql, tuple_data)
         return
+    
+    
+    def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            SELECT
+                cycle_id,
+                plant_a_id,
+                plant_a_name,
+                plant_b_id,
+                plant_b_name,
+                plant_a_beats_b,
+                plant_a_beats_b_weighted
+            FROM greenmean.bt_beta_score_heat_map
+            where cycle_id = %s
+            order by id;
+        """
+        result = self.execute_query(query, (cycle_id,))        
+        return result if result else []
 
 
     def save_beta_score_win_percentage(self, data, cycle_id):
@@ -445,3 +501,21 @@ class AnalysisDAO(BaseDAO):
         
         self.execute_many(sql, tuple_data)
         return
+    
+    
+    def list_beta_score_win_percentage_by_cycle_id(self, cycle_id):
+        query = """
+            SELECT
+                cycle_id,
+                plant_id,
+                plant_name,
+                invasiveness,
+                win_percentage,
+                bt_beta_score,
+                bt_beta_score_weighted
+            FROM greenmean.bt_beta_score_win_percentage
+            where cycle_id = %s
+            order by id;
+        """
+        result = self.execute_query(query, (cycle_id,))        
+        return result if result else []
