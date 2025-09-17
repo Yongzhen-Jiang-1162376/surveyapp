@@ -626,7 +626,7 @@ def beta_scores_ranking(weighted=1):
     return plot
 
 
-def save_beta_score_heat_map_data():
+def save_survey_cycle_analysis_data():
     initialize()
     analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
