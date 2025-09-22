@@ -3,7 +3,7 @@
 {% block title %}Plant List{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="mx-auto px-4 py-10 sm:px-6 lg:px-8 lg:py-14 max-w-[100rem]">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flashes">
@@ -14,38 +14,129 @@
     {% endif %}
     {% endwith %}
 
-    <div class="card p-4 shadow-sm" style="background-color: #f8f9fa; border-radius: 8px;">
-        <h2 class="text-center mb-4">Plant List</h2>
+    <div class="flex flex-col">
+    <div class="-m-1.5 overflow-x-auto">
+      <div class="p-1.5 min-w-full inline-block align-middle">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
+          <!-- Header -->
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
+                Plant List
+              </h2>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="text-end">
+                    <a 
+                    href="{{ url_for('add_plant') }}" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow hover:bg-blue-700"
+                    >
+                    Add a new Plant
+                    </a>
+                </div>
+            </div>
+          </div>
+
+          <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-start w-[300px]">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Name
+                                </span>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start w-[500px]">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Description
+                                </span>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Image
+                                </span>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Actions
+                                </span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plant in plants %}
+                    <tr class="odd:bg-white even:bg-gray-50">
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.name }}</td>
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.description }}</td>
+                        <td class="border border-gray-300 px-3 py-2"><img src="{{ url_for('static', filename='img/' + plant.image) }}" alt="{{ plant.name }}" class="h-[100px] w-[100px] object-cover rounded-lg mx-auto"></td>
+                        <td class="border border-gray-300 px-3 py-2">
+                            <div class="flex justify-center gap-4">
+                                <a href="{{ url_for('edit_plant', id=plant.id) }}" class="px-3 py-1.5 text-sm font-medium text-white bg-teal-600 rounded-md shadow hover:bg-teal-700">
+                                    Edit
+                                </a>
+                                <form 
+                                    action="{{ url_for('delete_plant', id=plant.id) }}" 
+                                    method="post" 
+                                    class="delete-form inline"
+                                >
+                                    <button 
+                                        type="submit" 
+                                        class="px-3 py-1.5 text-sm font-medium text-white bg-red-400 rounded-md shadow hover:bg-red-600 cursor-pointer"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+    <!-- <div class="p-4 shadow-sm"> -->
+        <!-- <h2 class="text-center mb-4">Plant List</h2> -->
 
         <!-- Add New Plant Button -->
-        <div class="text-end mb-4">
+        <!-- <div class="text-end mb-4">
             <a href="{{ url_for('add_plant') }}" class="btn btn-dark">Add a new Plant</a>
-        </div>
+        </div> -->
 
         <!-- Search Bar -->
-        <form class="d-flex mb-4" method="get" action="{{ url_for('list_plants') }}">
+        <!-- <form class="d-flex mb-4" method="get" action="{{ url_for('list_plants') }}">
             <input class="form-control me-2" type="search" name="search" placeholder="Search Plants" aria-label="Search">
             <button class="btn btn-dark" type="submit">Search</button>
-        </form>
+        </form> -->
 
         <!-- Plants Table -->
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered text-center">
+        <!-- <div class="table-responsive"> -->
+            <!-- <table class="min-w-full divide-y divide-gray-200">
                 <thead class="table-dark">
                     <tr>
                         <th>Name</th>
-                        <th style="width: 40%;">Description</th>
+                        <th>Description</th>
                         <th>Image</th>
-                        <th style="width: 20%;">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for plant in plants %}
                     <tr>
-                        <td>{{ plant.name }}</td>
-                        <td>{{ plant.description }}</td>
-                        <td><img src="{{ url_for('static', filename='img/' + plant.image) }}" alt="{{ plant.name }}" width="60" height="60" style="object-fit: cover; border-radius: 8px;"></td>
-                        <td>
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.name }}</td>
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.description }}</td>
+                        <td class="border border-gray-300 px-3 py-2"><img src="{{ url_for('static', filename='img/' + plant.image) }}" alt="{{ plant.name }}" class="h-[100px] w-[100px] object-cover rounded-lg"></td>
+                        <td class="border border-gray-300 px-3 py-2">
                             <div class="d-flex justify-content-center">
                                 <a href="{{ url_for('edit_plant', id=plant.id) }}" class="btn btn-dark btn-sm me-2">Edit</a>
                                 <form action="{{ url_for('delete_plant', id=plant.id) }}" method="post" style="display:inline;" class="delete-form">
@@ -56,9 +147,9 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
-        </div>
-    </div>
+            </table> -->
+        <!-- </div> -->
+    <!-- </div> -->
 </div>
 
 <!-- JavaScript for Delete Confirmation -->

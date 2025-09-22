@@ -7,7 +7,11 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
-from project693.core.analysis_calculation import save_beta_score_heat_map_data
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data
+from flask import send_file
+from io import BytesIO, StringIO
+import csv
+import zipfile
 
 
 analysis_dao = AnalysisDAO()
@@ -185,11 +189,203 @@ def close_survey():
         }), 404
         
     # save analysis data for current survey cycle
-    save_beta_score_heat_map_data()
+    save_survey_cycle_analysis_data()
     
-    # survey_dao.start_survey_cyle()
+    survey_dao.start_survey_cyle()
     
     return jsonify({
         'success': True,
         'message': 'Survey cycle closed successfully.\nA new suvey cycle is started.'
     })
+
+
+@app.route("/api/beta-score-by-invasive-type-histogram-by-cycle-id", methods=["POST"])
+def get_beta_score_by_invasive_type_histogram_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'bin_no',
+        'bin_left',
+        'bin_right',
+        'invasive_count',
+        'non_invasive_count',
+        'bin_left_weighted',
+        'bin_right_weighted',
+        'invasive_count_weighted',
+        'non_invasive_count_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/win-loss-by-plant-by-cycle-id", methods=["POST"])
+def get_win_loss_by_plant_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win',
+        'loss'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/beta-score-heat-map-by-plant-by-cycle-id", methods=["POST"])
+def get_beta_score_heat_map_by_plant_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_a_id',
+        'plant_a_name',
+        'plant_b_id',
+        'plant_b_name',
+        'plant_a_beats_b',
+        'plant_a_beats_b_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+
+@app.route("/api/beta-score-win-percentage-by-cycle-id", methods=["POST"])
+def get_beta_score_win_percentage_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
+    
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win_percentage',
+        'bt_beta_score',
+        'bt_beta_score_weighted'
+    ]
+    datatable = [dict(zip(columns, row)) for row in rows]
+    
+    return jsonify({
+        "datatable": datatable
+    })
+
+@app.route("/api/download-survey-cycle-data-by-cycle-id", methods=["POST"])
+def download_survey_cycle_data_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id", 1))
+    
+    csv_data = {}
+    
+    def rows_to_csv(columns, rows):
+        output = StringIO()
+        writer = csv.DictWriter(output, fieldnames=columns)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(dict(zip(columns, row)))
+        return output.getvalue()
+    
+    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(cycle_id)
+    columns = [
+        'session_id',
+        'question_seq',
+        'submission_time',
+        'response_time',
+        'invasive_plant_id',
+        'invasive_plant_name',
+        'non_invasive_plant_id',
+        'non_invasive_plant_name',
+        'selected_plant_id',
+        'selected_plant_name',
+        'has_garden',
+        'age_group',
+        'reasoning',
+        'invasive_win'
+    ]
+    csv_data['survey_raw_data.csv'] = rows_to_csv(columns, rows)
+    
+    
+    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(cycle_id)
+    columns = [
+        'cycle_id',
+        'bin_no',
+        'bin_left',
+        'bin_right',
+        'invasive_count',
+        'non_invasive_count',
+        'bin_left_weighted',
+        'bin_right_weighted',
+        'invasive_count_weighted',
+        'non_invasive_count_weighted'
+    ]
+    csv_data['beta_score_by_invasive_type_histogram.csv'] = rows_to_csv(columns, rows)
+    
+    
+    rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win_percentage',
+        'bt_beta_score',
+        'bt_beta_score_weighted'
+    ]
+    csv_data['beta_score_with_win_percentage_by_plant.csv'] = rows_to_csv(columns, rows)
+    
+    
+    rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
+    columns = [
+        'cycle_id',
+        'plant_a_id',
+        'plant_a_name',
+        'plant_b_id',
+        'plant_b_name',
+        'plant_a_beats_b',
+        'plant_a_beats_b_weighted'
+    ]
+    csv_data['beta_score_heat_map_by_plant.csv'] = rows_to_csv(columns, rows)
+
+
+    rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
+    columns = [
+        'cycle_id',
+        'plant_id',
+        'plant_name',
+        'invasiveness',
+        'win',
+        'loss'
+    ]
+    csv_data['win_loss_by_plant.csv'] = rows_to_csv(columns, rows)
+
+    # create ZIP in memory
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for filename, content in csv_data.items():
+            zip_file.writestr(filename, content)
+    
+    zip_buffer.seek(0)
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name='survey_data.zip'
+    )

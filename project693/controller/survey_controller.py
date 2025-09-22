@@ -197,3 +197,22 @@ def survey_questionnaire():
         non_invasive_percent=non_invasive_percent,
         message=message
     )
+
+
+@app.route("/survey/choice-summary/", methods=["GET"])
+def survey_choice_summary():
+    
+    plants = [
+        {"name": "Akebia quinata", "invasive": False},
+        {"name": "Acer platanoides", "invasive": True},
+        {"name": "Pennisetum setaceum", "invasive": True},
+        {"name": "Lavandula angustifolia", "invasive": False},
+        {"name": "Tradescantia fluminensis", "invasive": True},
+        {"name": "Rosa rubiginosa", "invasive": False},
+        {"name": "Cortaderia selloana", "invasive": True},
+        {"name": "Cirsium arvense", "invasive": True},
+        {"name": "Nassella trichotoma", "invasive": True},
+        {"name": "Phalaris aquatica", "invasive": False}
+    ]
+    
+    return render_template("survey_choice_summary.html", plants=plants)
