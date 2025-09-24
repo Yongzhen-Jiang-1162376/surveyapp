@@ -58,6 +58,13 @@
                         <th scope="col" class="px-6 py-3 text-start">
                             <div class="flex items-center gap-x-2">
                                 <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Invasiveness
+                                </span>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
                                     Image
                                 </span>
                             </div>
@@ -76,6 +83,7 @@
                     <tr class="odd:bg-white even:bg-gray-50">
                         <td class="border border-gray-300 px-3 py-2">{{ plant.name }}</td>
                         <td class="border border-gray-300 px-3 py-2">{{ plant.description }}</td>
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.invasiveness }}</td>
                         <td class="border border-gray-300 px-3 py-2"><img src="{{ url_for('static', filename='img/' + plant.image) }}" alt="{{ plant.name }}" class="h-[100px] w-[100px] object-cover rounded-lg mx-auto"></td>
                         <td class="border border-gray-300 px-3 py-2">
                             <div class="flex justify-center gap-4">
