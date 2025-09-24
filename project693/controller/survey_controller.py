@@ -195,6 +195,7 @@ def survey_questionnaire():
         "survey_complete.html",
         invasive_percent=invasive_percent,
         non_invasive_percent=non_invasive_percent,
+        session_id=session_id,
         message=message
     )
 
@@ -202,17 +203,32 @@ def survey_questionnaire():
 @app.route("/survey/choice-summary/", methods=["GET"])
 def survey_choice_summary():
     
-    plants = [
-        {"name": "Akebia quinata", "invasive": False},
-        {"name": "Acer platanoides", "invasive": True},
-        {"name": "Pennisetum setaceum", "invasive": True},
-        {"name": "Lavandula angustifolia", "invasive": False},
-        {"name": "Tradescantia fluminensis", "invasive": True},
-        {"name": "Rosa rubiginosa", "invasive": False},
-        {"name": "Cortaderia selloana", "invasive": True},
-        {"name": "Cirsium arvense", "invasive": True},
-        {"name": "Nassella trichotoma", "invasive": True},
-        {"name": "Phalaris aquatica", "invasive": False}
-    ]
+    # session_id = request.args.get("session_id")
+    session_id = 'bb57d3b7-6ff3-4573-b645-eaff6302fb01'
     
-    return render_template("survey_choice_summary.html", plants=plants)
+    plants = survey_dao.list_survey_summary(session_id)
+    agg_counts = survey_dao.list_survey_summary_aggregation(session_id)
+    
+    # print(plants)
+    # print(agg_counts)
+    
+    data = {
+        'invasive_count': agg_counts[0],
+        'non_invasive_count': agg_counts[1],
+        'plants': plants
+    }
+    
+    # plants = [
+    #     {"name": "Akebia quinata", "invasive": False},
+    #     {"name": "Acer platanoides", "invasive": True},
+    #     {"name": "Pennisetum setaceum", "invasive": True},
+    #     {"name": "Lavandula angustifolia", "invasive": False},
+    #     {"name": "Tradescantia fluminensis", "invasive": True},
+    #     {"name": "Rosa rubiginosa", "invasive": False},
+    #     {"name": "Cortaderia selloana", "invasive": True},
+    #     {"name": "Cirsium arvense", "invasive": True},
+    #     {"name": "Nassella trichotoma", "invasive": True},
+    #     {"name": "Phalaris aquatica", "invasive": False}
+    # ]
+    
+    return render_template("survey_choice_summary.html", data=data)
