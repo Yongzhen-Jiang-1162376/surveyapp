@@ -203,8 +203,8 @@ def survey_questionnaire():
 @app.route("/survey/choice-summary/", methods=["GET"])
 def survey_choice_summary():
     
-    # session_id = request.args.get("session_id")
-    session_id = 'bb57d3b7-6ff3-4573-b645-eaff6302fb01'
+    session_id = request.args.get("session_id")
+    # session_id = 'bb57d3b7-6ff3-4573-b645-eaff6302fb01'
     
     plants = survey_dao.list_survey_summary(session_id)
     agg_counts = survey_dao.list_survey_summary_aggregation(session_id)
