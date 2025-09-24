@@ -37,7 +37,7 @@
 
         <div class="flex flex-col md:flex-row justify-between">
             <a href="{{ url_for('site_home') }}" class="btn btn-primary btn-lg mt-4">Back to Home</a>
-            <a href="{{ url_for('site_home') }}" class="btn btn-primary btn-lg mt-4">Your choice detail</a>
+            <a href="{{ url_for('survey_choice_summary', session_id=session_id) }}" class="btn btn-primary btn-lg mt-4">Your choice detail</a>
         </div>
         
     </div>
