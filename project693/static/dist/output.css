@@ -57,6 +57,7 @@
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-sm: 24rem;
+    --container-md: 28rem;
     --container-lg: 32rem;
     --container-xl: 36rem;
     --container-2xl: 42rem;
@@ -85,6 +86,7 @@
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -300,6 +302,9 @@
   .top-2 {
     top: calc(var(--spacing) * 2);
   }
+  .top-5 {
+    top: calc(var(--spacing) * 5);
+  }
   .top-\[120px\] {
     top: 120px;
   }
@@ -309,8 +314,14 @@
   .right-0 {
     right: calc(var(--spacing) * 0);
   }
+  .right-5 {
+    right: calc(var(--spacing) * 5);
+  }
   .bottom-full {
     bottom: 100%;
+  }
+  .left-0 {
+    left: calc(var(--spacing) * 0);
   }
   .z-50 {
     z-index: 50;
@@ -320,6 +331,9 @@
   }
   .z-100 {
     z-index: 100;
+  }
+  .z-\[60\] {
+    z-index: 60;
   }
   .col-12 {
     grid-column: 12;
@@ -353,6 +367,9 @@
   }
   .-m-1\.5 {
     margin: calc(var(--spacing) * -1.5);
+  }
+  .m-3 {
+    margin: calc(var(--spacing) * 3);
   }
   .mx-1 {
     margin-inline: calc(var(--spacing) * 1);
@@ -634,6 +651,9 @@
   .max-w-lg {
     max-width: var(--container-lg);
   }
+  .max-w-md {
+    max-width: var(--container-md);
+  }
   .max-w-sm {
     max-width: var(--container-sm);
   }
@@ -820,6 +840,9 @@
   .overflow-x-auto {
     overflow-x: auto;
   }
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
   .overflow-y-auto {
     overflow-y: auto;
   }
@@ -934,6 +957,9 @@
   }
   .bg-\[\#D43684\] {
     background-color: #D43684;
+  }
+  .bg-black {
+    background-color: var(--color-black);
   }
   .bg-blue-400 {
     background-color: var(--color-blue-400);
@@ -1093,6 +1119,9 @@
   }
   .pt-20 {
     padding-top: calc(var(--spacing) * 20);
+  }
+  .pt-30 {
+    padding-top: calc(var(--spacing) * 30);
   }
   .pb-0 {
     padding-bottom: calc(var(--spacing) * 0);
@@ -1337,6 +1366,10 @@
     --tw-duration: 500ms;
     transition-duration: 500ms;
   }
+  .ease-out {
+    --tw-ease: var(--ease-out);
+    transition-timing-function: var(--ease-out);
+  }
   .file\:mr-3 {
     &::file-selector-button {
       margin-right: calc(var(--spacing) * 3);
@@ -1445,6 +1478,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-600);
+      }
+    }
+  }
+  .hover\:bg-red-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-red-700);
       }
     }
   }
@@ -1604,6 +1644,11 @@
       opacity: 50%;
     }
   }
+  .sm\:mx-auto {
+    @media (width >= 40rem) {
+      margin-inline: auto;
+    }
+  }
   .sm\:flex {
     @media (width >= 40rem) {
       display: flex;
@@ -1612,6 +1657,16 @@
   .sm\:h-9 {
     @media (width >= 40rem) {
       height: calc(var(--spacing) * 9);
+    }
+  }
+  .sm\:w-full {
+    @media (width >= 40rem) {
+      width: 100%;
+    }
+  }
+  .sm\:max-w-lg {
+    @media (width >= 40rem) {
+      max-width: var(--container-lg);
     }
   }
   .sm\:flex-row {
@@ -1627,6 +1682,11 @@
   .sm\:justify-between {
     @media (width >= 40rem) {
       justify-content: space-between;
+    }
+  }
+  .sm\:p-6 {
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 6);
     }
   }
   .sm\:p-7 {
@@ -2001,6 +2061,14 @@
       opacity: 100%;
     }
   }
+  .hs-overlay-open\:mt-7 {
+    &.open {
+      margin-top: calc(var(--spacing) * 7);
+    }
+    .open & {
+      margin-top: calc(var(--spacing) * 7);
+    }
+  }
   .hs-overlay-open\:translate-x-0 {
     &.open {
       --tw-translate-x: calc(var(--spacing) * 0);
@@ -2009,6 +2077,24 @@
     .open & {
       --tw-translate-x: calc(var(--spacing) * 0);
       translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+  .hs-overlay-open\:opacity-100 {
+    &.open {
+      opacity: 100%;
+    }
+    .open & {
+      opacity: 100%;
+    }
+  }
+  .hs-overlay-open\:duration-500 {
+    &.open {
+      --tw-duration: 500ms;
+      transition-duration: 500ms;
+    }
+    .open & {
+      --tw-duration: 500ms;
+      transition-duration: 500ms;
     }
   }
   .hs-overlay-backdrop-open\:bg-blue-950\/50 {
@@ -2309,6 +2395,10 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
 @property --tw-content {
   syntax: "*";
   initial-value: "";
@@ -2368,6 +2458,7 @@
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-duration: initial;
+      --tw-ease: initial;
       --tw-content: "";
       --tw-divide-x-reverse: 0;
     }
