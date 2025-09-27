@@ -640,17 +640,28 @@ def save_survey_cycle_analysis_data():
     
     # heat map data
     rows = beta_score_heat_map_datatable()
+    # clear data first
+    analysis_dao.delete_beta_score_heat_map_by_plant(cycle_id)
+    # save data
     analysis_dao.save_beta_score_heat_map_by_plant(rows, cycle_id)
     
     # win/loss data
     rows = win_loss_by_plant_datatable()
+    # clear data first
+    analysis_dao.delete_win_loss_by_plant(cycle_id)
+    # save data
     analysis_dao.save_win_loss_by_plant(rows, cycle_id)
 
     # beta score by plant type histogram
     rows = beta_scores_by_plant_type_datatable()
+    # clear data first
+    analysis_dao.delete_beta_score_by_invasive_type_histogram(cycle_id)
+    # save data
     analysis_dao.save_beta_score_by_invasive_type_histogram(rows, cycle_id)
     
     # beta score by plant vs win percentage
     rows = beta_vs_win_percentage_datatable()
-    print(rows)
+    # clear data first
+    analysis_dao.delete_beta_score_win_percentage(cycle_id)
+    # save data
     analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
