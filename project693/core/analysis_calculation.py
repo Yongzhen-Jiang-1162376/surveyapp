@@ -49,7 +49,8 @@ def initialize():
         'invasive_loser'
     ])
 
-    # invasive_map = {}
+    # clear invasive_map dict
+    config['invasive_map'] = {}
 
     for index, row in config['data'].iterrows():
         winner = int(row['winner'])
@@ -70,7 +71,7 @@ def initialize():
     config['num_images'] = len(config['image_ids'])
     config['betas_init'] = np.zeros(config['num_images'])
     
-    
+    print(config)
     
     config['weighted_betas'] = calc_weighted_beta_estimates()
     config['unweighted_betas'] = calc_unweighted_beta_estimates()
@@ -382,6 +383,11 @@ def beta_scores_by_plant_type_datatable():
     bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
     bins_weighted = np.linspace(min(beta_normalized_weighted), max(beta_normalized_weighted), 11)
     
+    print('checking...')
+    print(beta_normalized)
+    print(config['invasive_map'])
+    print(config['invasive_map'].items())
+    print(config['id_to_idx'])
     normalized_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
     normalized_non_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
     
