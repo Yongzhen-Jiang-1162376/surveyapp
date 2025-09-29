@@ -35,6 +35,7 @@ config = {
 
 
 def initialize():
+    print('---------------------- initialize ---------------------------')
     analysis_dao = AnalysisDAO()
 
     all_plants_from_db = analysis_dao.list_survey_plants()
@@ -71,15 +72,25 @@ def initialize():
     config['num_images'] = len(config['image_ids'])
     config['betas_init'] = np.zeros(config['num_images'])
     
-    print(config)
+    # print(config)
     
     config['weighted_betas'] = calc_weighted_beta_estimates()
     config['unweighted_betas'] = calc_unweighted_beta_estimates()
     
+    print('config weighted beta:')
+    print(config['weighted_betas'])
+    print('config unweighted beta:')
+    print(config['unweighted_betas'])
+    
     config['weighted_beta_normalized'] = calc_normalized_betas(config['weighted_betas'])
     config['unweighted_beta_normalized'] = calc_normalized_betas(config['unweighted_betas'])
+    
+    print('config weighted beta norm:')
+    print(config['weighted_beta_normalized'])
+    print('config unweighted beta norm:')
+    print(config['unweighted_beta_normalized'])
 
-    print(config['data']['RT'])
+    # print(config['data']['RT'])
 
 def weighted_log_likelihood(betas, data):
     ll = 0.0
@@ -229,6 +240,74 @@ def beta_vs_win_percentage(weighted=1):
     return plot
 
 
+# 1. scatter chart beta vs win percentage 
+def beta_vs_win_percentage_V2(db_rows, weighted=1):
+    
+    # analysis_dao = AnalysisDAO()
+    # rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
+    
+    # row data returned from db
+    # cycle_id, plant_id, plant_name, invasiveness, win_percentage, bt_beta_score, bt_beta_score_weighted
+    
+    plot_data = {
+        'plant': [r[2] for r in db_rows],
+        'win_percentage': [r[4] for r in db_rows],
+        'bradley_terry_beta': [r[6] if weighted else r[5] for r in db_rows],
+        'label_color': ['#FFC000' if r[3] == 'invasive' else '#00B050' for r in db_rows]
+    }
+    
+    # beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    
+    # # percentage calculation
+    # wins = config['data']['winner'].value_counts()
+    # appearances = pd.concat([config['data']['winner'], config['data']['loser']]).value_counts()
+    # win_percentages = (wins / appearances).fillna(0)
+    # win_percentages_dict = win_percentages.to_dict()
+    
+    # plot_data = {
+    #     'plant': [],
+    #     'win_percentage': [],
+    #     'bradley_terry_beta': [],
+    #     'label_color': []
+    # }
+    
+    # for idx in range(config['num_images']):
+    #     plant_name = config['all_plants'][config['idx_to_id'][idx]]
+    #     win_percentages = win_percentages_dict[config['idx_to_id'][idx]]
+    #     bradley_terry_beta = float(beta_normalized[idx])
+    #     color = '#FFC000' if config['invasive_map'][config['idx_to_id'][idx]] == 1 else '#00B050'
+        
+    #     plot_data['plant'].append(plant_name)
+    #     plot_data['win_percentage'].append(win_percentages)
+    #     plot_data['bradley_terry_beta'].append(bradley_terry_beta)
+    #     plot_data['label_color'].append(color)
+
+    
+    source = ColumnDataSource(data=plot_data)
+    
+    x_min = min(plot_data['win_percentage']) - 0.1
+    x_max = max(plot_data['win_percentage']) + 0.3
+
+    title = "Bradley-Terry beta vs. Win % (weighted)" if weighted else "Bradley-Terry beta vs. Win%"
+
+    plot = figure(
+        x_range=(x_min, x_max),
+        title=title,
+        x_axis_label="Win percentage",
+        y_axis_label="Bradley-Terry beta",
+        height=600,
+        sizing_mode="stretch_width"
+    )
+
+    plot.scatter("win_percentage", "bradley_terry_beta", size=8, marker="circle", source=source, color="navy", alpha=0.6)
+
+    labels = LabelSet(x="win_percentage", y="bradley_terry_beta", text="plant", level="glyph",
+                    x_offset=5, y_offset=5, source=source, text_font_size="9pt", text_color="label_color")
+    plot.add_layout(labels)
+    
+    return plot
+
+
 # 1-1 datatable for beta vs win percentage
 def beta_vs_win_percentage_datatable():
     rows = []
@@ -267,7 +346,9 @@ def beta_vs_win_percentage_datatable():
 
 
 
-# 2. Histogram of attractiveness scores by each image
+
+
+# 2. Attractiveness scores by each image
 def beta_scores_by_image(weighted=1):
     beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
     
@@ -289,6 +370,40 @@ def beta_scores_by_image(weighted=1):
     
     plot = figure(
         x_range=image_names, height=600, sizing_mode="stretch_width",
+        title=title,
+        x_axis_label="Plant Name", y_axis_label="Score [-1, +1]"
+    )
+
+    plot.vbar(x="names", top="score", width=0.6, color="color", source=source)
+
+    plot.xaxis.major_label_orientation = 0.785
+    
+    return plot
+
+
+def beta_scores_by_image_V2(db_rows, weighted=1):
+    # beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    
+    # image_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(beta_normalized))]
+    # scores = beta_normalized
+    
+    # colors = [
+    #     "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
+    #     for idx in range(len(beta_normalized))
+    # ]
+    
+    plot_data = {
+        'names': [r[2] for r in db_rows],
+        'score': [r[6] if weighted else r[5] for r in db_rows],
+        'color': ['#FFC000' if r[3] == 'invasive' else '#00B050' for r in db_rows]
+    }
+
+    source = ColumnDataSource(data=plot_data)
+    
+    title = "Normalized Attractiveness Score per Plant (weighted)" if weighted else "Normalized Attractiveness Score per Plant"
+    
+    plot = figure(
+        x_range=plot_data['names'], height=600, sizing_mode="stretch_width",
         title=title,
         x_axis_label="Plant Name", y_axis_label="Score [-1, +1]"
     )
@@ -372,6 +487,74 @@ def beta_scores_by_plant_type(weighted=1):
     
     return plot
 
+
+def beta_scores_by_plant_type_V2(db_rows, weighted=1):
+    # plot_data = {
+    #     'names': [r[2] for r in db_rows],
+    #     'score': [r[6] if weighted else r[5] for r in db_rows],
+    #     'color': ['#FFC000' if r[3] == 'invasive' else '#00B050' for r in db_rows]
+    # }
+    
+    beta_normalized = [r[6] if weighted else r[5] for r in db_rows]
+    # print(beta_normalized)
+    
+    # beta_normalized = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    # print(beta_normalized)
+    # generate 10 bins for histogram
+    bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
+    
+    # print(bins)
+    
+    normalized_invasive_betas = [r[6] if weighted else r[5] for r in db_rows if r[3] == 'invasive']
+    normalized_non_invasive_betas = [r[6] if weighted else r[5] for r in db_rows if r[3] != 'invasive']
+    
+    print(normalized_invasive_betas)
+    print(normalized_non_invasive_betas)
+    
+    # normalized_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
+    # normalized_non_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
+    
+    print(normalized_invasive_betas)
+    print(normalized_non_invasive_betas)
+    
+    hist_invasive, edges_invasive = np.histogram(normalized_invasive_betas, bins=bins)
+    hist_non_invasive, edges_non_invasive = np.histogram(normalized_non_invasive_betas, bins=bins)
+    
+    # print(hist_invasive, edges_invasive)
+    # print(hist_non_invasive, edges_non_invasive)
+    
+    title = "Histogram of Normalized Attractiveness Scores (weighted)" if weighted else "Histogram of Normalized Attractiveness Scores"
+    
+    plot = figure(height=600, sizing_mode="stretch_width",
+            title=title,
+            x_axis_label="Normalized Score", y_axis_label="Count")
+
+    plot.quad(top=hist_invasive, bottom=0,
+                        left=edges_invasive[:-1], right=edges_invasive[1:],
+                        fill_color="#FFC000", line_color="white", alpha=1,
+                        legend_label="Invasive")
+
+    plot.quad(top=hist_non_invasive, bottom=0,
+                        left=edges_non_invasive[:-1], right=edges_non_invasive[1:],
+                        fill_color="#00B050", line_color="white", alpha=1,
+                        legend_label="Non-Invasive")
+
+    mean_invasive = np.mean(normalized_invasive_betas)
+    mean_non_invasive = np.mean(normalized_non_invasive_betas)
+
+    span_invasive = Span(location=mean_invasive, dimension="height", line_color="#FFC000",
+                        line_width=2, line_dash="dashed")
+    span_non_invasive = Span(location=mean_non_invasive, dimension="height", line_color="#00B050",
+                            line_width=2, line_dash="dashed")
+
+    plot.add_layout(span_invasive)
+    plot.add_layout(span_non_invasive)
+
+    plot.legend.location = "top_left"
+    plot.legend.click_policy = "hide"
+    
+    return plot
+
 # 3-1 beta score by plant type
 def beta_scores_by_plant_type_datatable():
     rows = []
@@ -383,11 +566,11 @@ def beta_scores_by_plant_type_datatable():
     bins = np.linspace(min(beta_normalized), max(beta_normalized), 11)
     bins_weighted = np.linspace(min(beta_normalized_weighted), max(beta_normalized_weighted), 11)
     
-    print('checking...')
-    print(beta_normalized)
-    print(config['invasive_map'])
-    print(config['invasive_map'].items())
-    print(config['id_to_idx'])
+    # print('checking...')
+    # print(beta_normalized)
+    # print(config['invasive_map'])
+    # print(config['invasive_map'].items())
+    # print(config['id_to_idx'])
     normalized_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 1]
     normalized_non_invasive_betas = [beta_normalized[config['id_to_idx'][key]] for key, value in config['invasive_map'].items() if value == 0]
     
@@ -453,6 +636,48 @@ def win_loss_by_image(weighted=1):
     return plot
 
 
+def win_loss_by_image_V2(db_rows, weighted=1):
+    
+    plot_data = {
+        'images': [r[2] for r in db_rows],
+        'wins': [r[4] for r in db_rows],
+        'losses': [r[5] for r in db_rows]
+    }
+    
+    # images = [config['all_plants'][id] for id in config['image_ids']]
+    
+    # wins = [int((config['data']['winner'] == id).sum()) for id in config['image_ids']]
+    # losses = [int((config['data']['loser'] == id).sum()) for id in config['image_ids']]
+
+    # source = ColumnDataSource(data=dict(
+    #     images=images,
+    #     wins=wins,
+    #     losses=losses
+    # ))
+    source = ColumnDataSource(data=plot_data)
+    
+    title = "Wins/Losses per Image (weighted)" if weighted else "Wins/Losses per Image"
+    
+    plot = figure(x_range=plot_data['images'], height=600, sizing_mode="stretch_width", title=title)
+
+    plot.vbar(x=dodge("images", -0.15, range=plot.x_range), top="wins", width=0.3, source=source,
+        color="#FFC000", legend_label="Wins")
+    plot.vbar(x=dodge("images", 0.15, range=plot.x_range), top="losses", width=0.3, source=source,
+        color="#00B050", legend_label="Losses")
+    
+    # Styling
+    plot.x_range.range_padding = 0.05
+    plot.xgrid.grid_line_color = None
+    plot.y_range.start = 0
+    plot.yaxis.axis_label = "Count"
+    plot.legend.location = "top_left"
+    plot.legend.orientation = "horizontal"
+
+    plot.xaxis.major_label_orientation = 0.785
+    
+    return plot
+
+
 # 4-1 Win/Loss by plant datatable
 def win_loss_by_plant_datatable():
     rows = []
@@ -484,6 +709,88 @@ def win_loss_by_plant_datatable():
 def beta_scores_heat_map(weighted=1):
     betas = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
     plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
+    
+    matrix = probability_matrix(betas)
+    
+    # mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+    mapper = LinearColorMapper(palette="RdBu11", low=0, high=1)
+    
+    n = len(plant_names)
+    xname, yname, value = [], [], []
+    
+    for i in range(n):
+        for j in range(n):
+            if not np.isnan(matrix[i, j]):
+                xname.append(plant_names[j])
+                yname.append(plant_names[i])
+                value.append(matrix[i, j])
+    
+    title = "Attractiveness Score Heat Map (weighted)" if weighted else "Attractiveness Score Heat Map"
+    
+    plot = figure(title=title, x_range=plant_names, y_range=list(reversed(plant_names)),
+                  x_axis_location="below", height=700, sizing_mode="stretch_width")
+    
+    plot.rect(x="x", y="y", width=1, height=1, source=dict(x=xname, y=yname, value=value),
+              fill_color=transform('value', mapper), line_color=None)
+    
+    color_bar = ColorBar(color_mapper=mapper, ticker=BasicTicker(desired_num_ticks=10),
+                         formatter=PrintfTickFormatter(format="%.2f"),
+                         label_standoff=12, border_line_color=None, location=(0, 0))
+    plot.add_layout(color_bar, "right")
+    
+    # plot.xaxis.major_label_orientation = np.pi/4
+    plot.xaxis.major_label_orientation = "vertical"
+    
+    
+    # plot.xaxis.visible = False
+    # plot.yaxis.visible = False
+    
+    colors = [
+        "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
+        for idx in range(len(betas))
+    ]
+    
+    x_source = ColumnDataSource(dict(
+        x=plant_names,
+        y=[plant_names[0]] * len(plant_names),
+        name=plant_names,
+        color=colors
+    ))
+    x_labels = LabelSet(
+        x="x", y=0, text="name", text_color="color",
+        source=x_source, y_offset=-5, text_align="center", text_baseline="top"
+    )
+    plot.add_layout(x_labels)
+    
+    y_source = ColumnDataSource(dict(
+        x=[plant_names[0]] * len(plant_names),
+        y=list(reversed(plant_names)),
+        name=list(reversed(plant_names)),
+        color=list(reversed(colors))
+    ))
+    y_labels = LabelSet(
+        x=0, y="y", text="name", text_color="color",
+        source=y_source, x_offset=-5, text_align="right", text_baseline="middle"
+    )
+    
+    return plot
+
+
+def beta_scores_heat_map_V2(db_rows, weighted=1):
+    
+    betas = [r[6] if weighted else r[5] for r in db_rows]
+    plant_names = [r[2] for r in db_rows]
+    # print('db rows betas:')
+    # print(betas)
+    # print('plant names:')
+    # print(plant_names)
+    
+    # betas = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    # plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
+    # print('config betas:')
+    # print(betas)
+    # print('plant names:')
+    # print(plant_names)
     
     matrix = probability_matrix(betas)
     
@@ -632,7 +939,65 @@ def beta_scores_ranking(weighted=1):
     return plot
 
 
-def save_survey_cycle_analysis_data():
+def beta_scores_ranking_V2(db_rows, weighted=1):
+    
+    betas = [r[6] if weighted else r[5] for r in db_rows]
+    plant_names = [r[2] for r in db_rows]
+    colors = ['#FFC000' if r[3] == 'invasive' else '#00B050' for r in db_rows]
+    
+    # betas = config['weighted_beta_normalized'] if weighted else config['unweighted_beta_normalized']
+    # plant_names = [config['all_plants'][config['idx_to_id'][idx]] for idx in range(len(betas))]
+    
+    df = pd.DataFrame({
+        "plant": plant_names,
+        "beta": betas,
+        "color": colors
+    })
+    df["rank"] = df["beta"].rank(ascending=False, method="min").astype(int)
+    # df["color"] = [
+    #     "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
+    #     for idx in range(len(betas))
+    # ]
+    
+    df = df.sort_values("beta", ascending=True)
+    
+    source = ColumnDataSource(df)
+    
+    title = "Plant Attractiveness Ranking (weighted)" if weighted else "Plant Attractiveness Ranking"
+    
+    plot = figure(
+        y_range=list(df["plant"]),
+        x_axis_label="Normalized Beta Score",
+        y_axis_label="Plant",
+        height=600,
+        sizing_mode="stretch_width",
+        title=title
+    )
+    
+    plot.hbar(
+        y="plant",
+        right="beta",
+        height=0.6,
+        color="color",
+        source=source
+    )
+    
+    labels = LabelSet(
+        x="beta",
+        y="plant",
+        text="rank",
+        x_offset=5,
+        y_offset=-8,
+        text_font_size="10pt",
+        text_color="black"
+    )
+    
+    plot.add_layout(labels)
+    
+    return plot
+
+
+def save_survey_cycle_analysis_data(is_current=1):
     initialize()
     analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
