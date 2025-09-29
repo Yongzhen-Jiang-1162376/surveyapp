@@ -515,7 +515,32 @@ class AnalysisDAO(BaseDAO):
                 bt_beta_score_weighted
             FROM bt_beta_score_win_percentage
             where cycle_id = %s
-            order by id;
+            -- order by id
+            order by plant_name;
         """
         result = self.execute_query(query, (cycle_id,))        
         return result if result else []
+
+    def delete_beta_score_heat_map_by_plant(self, cycle_id):
+        query = """
+            delete from bt_beta_score_heat_map where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+    
+    def delete_win_loss_by_plant(self, cycle_id):
+        query = """
+            delete from win_loss_by_plant where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+
+    def delete_beta_score_by_invasive_type_histogram(self, cycle_id):
+        query = """
+            delete from bt_beta_score_by_invasive_type_histogram where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+    
+    def delete_beta_score_win_percentage(self, cycle_id):
+        query = """
+            delete from bt_beta_score_win_percentage where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))

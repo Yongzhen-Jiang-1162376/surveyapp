@@ -6,7 +6,7 @@
 <div class="w-full px-6 md:w-2/3 pt-4 mx-auto">
   <div class="flex justify-between items-center">
     <section class="text-2xl font-medium mt-4 mb-6 py-3">
-        Your choices: 5 invasive plants, 5 non-invasive plants.
+        Your choices: {{ data['invasive_count'] }} invasive plants, {{ data['non_invasive_count'] }} non-invasive plants.
     </section>
     <div class="flex flex-col">
       <div class="inline-flex items-center">
@@ -21,14 +21,15 @@
   </div>
   
   <section id="cards" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {% for plant in plants %}
+      {% for plant in data['plants'] %}
       <article 
         class="
-          py-9 px-4 rounded-2xl shadow-sm bg-white border border-gray-900 cursor-pointer hover:shadow-md transition
-          {{ 'text-red-600' if plant.invasive else 'text-green-600' }}"
+          py-6 px-4 rounded-2xl shadow-sm bg-white border border-gray-900 cursor-pointer hover:shadow-md transition
+          {{ 'text-red-600' if plant[1] == 'invasive' else 'text-green-600' }}"
+        data-plant="{{ plant[0] }}"
         data-hs-overlay="#hs-offcanvas-nav-with-backdrop"
       >
-        <h2 class="text-xl font-medium truncate">{{ plant.name }}</h2>
+        <h2 class="text-2xl font-medium truncate">{{ plant[0] }}</h2>
       </article>
       {% endfor %}
   </section>
@@ -36,7 +37,7 @@
   <div id="hs-offcanvas-nav-with-backdrop" class="hs-overlay hs-overlay-open:translate-x-0 hs-overlay-backdrop-open:bg-blue-950/50 hidden translate-x-full fixed top-0 end-0 transition-all duration-300 transform h-full max-w-lg w-full z-80 bg-white border-e border-gray-200">
     <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
       <h3 id="hs-offcanvas-example-label" class="font-bold text-gray-800">
-        Charts Navigation
+        Plant Information
       </h3>
       <button type="button" class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200" data-hs-overlay="#hs-offcanvas-nav-with-backdrop">
         <span class="sr-only">Close</span>
@@ -46,8 +47,76 @@
         </svg>
       </button>
     </div>
-    Content Here
+    <div id="offcanvas-content" class="p-4"></div>
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+<script>
+
+// Attach click to articles
+document.querySelectorAll("article").forEach(card => {
+  card.addEventListener("click", async () => {
+    const plantName = card.dataset.plant;
+    console.log(plantName)
+    const contentEl = document.getElementById("offcanvas-content");
+
+    // Clear any previous Typed instance and container
+    if (window.currentTyped) {
+      window.currentTyped.destroy();
+      window.currentTyped = null;
+    }
+
+    contentEl.innerHTML = "<p>Loading...</p>"; // important: empty before typing
+
+    // show offcanvas
+    const offcanvas = document.getElementById("hs-offcanvas-nav-with-backdrop");
+    offcanvas.classList.remove("hidden");
+    offcanvas.classList.remove("translate-x-full");
+
+    try {
+      const res = await fetch(`/survey/plant-info?name=${encodeURIComponent(plantName)}`);
+      const data = await res.json();
+
+      console.log(data)
+
+      const formatted = data.description
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .split("\n\n")
+        .map(p => `<p>${p}</p><p>&nbsp;</p>`)
+        .join("");
+      
+      // Clear any previous Typed instance
+      if (window.currentTyped) {
+        window.currentTyped.destroy();
+        window.currentTyped = null;
+      }
+
+      contentEl.innerHTML = ""; // important: empty before typing
+
+      // Use Typed.js to display HTML with typewriter effect
+      window.currentTyped = new Typed("#offcanvas-content", {
+        strings: [formatted],
+        typeSpeed: 30,
+        contentType: 'html',  // important: allow HTML
+        showCursor: false
+      });
+
+    } catch (err) {
+      console.log("Error fetching plant info:', err");
+    }
+  })
+});
+
+
+// Close button
+document.querySelector("#hs-offcanvas-nav-with-backdrop button").addEventListener("click", () => {
+  const offcanvas = document.getElementById("hs-offcanvas-nav-with-backdrop");
+  offcanvas.classList.add("translate-x-full");
+  setTimeout(() => offcanvas.classList.add("hidden"), 300);
+});
+</script>
 {% endblock %}

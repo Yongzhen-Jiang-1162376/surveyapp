@@ -48,13 +48,34 @@ def add_plant():
         name = request.form["name"]
         description = request.form["description"]
         invasiveness = request.form.get("invasiveness")
-        image = request.files.get("image")
-        image_filename = "default.png"
-        if image and allowed_file(image.filename):
-            ext = os.path.splitext(image.filename)[1]
-            image_filename = f"{uuid.uuid4()}{ext}"
-            image_path = os.path.join(app.config["UPLOAD_FOLDER"], image_filename)
-            image.save(image_path)
+        file = request.files.get("image")
+        # image_filename = "default.png"
+        
+        if not name:
+            flash("Please input a name for this plant", "error")
+            return render_template("admin/add_plant.html")
+        
+        if not description:
+            flash("Please input a description for this plant", "error")
+            return render_template("admin/add_plant.html")
+
+        if not invasiveness:
+            flash("Please select an invasiveness for this plant", "error")
+            return render_template("admin/add_plant.html")
+        
+        if not file or file.filename == "":
+            flash("Please select an image for this plant", "error")
+            return render_template("admin/add_plant.html")
+        
+        if not allowed_file(file.filename):
+            flash("Image format only supports jpg/jpeg/png/gif", "error")
+            return render_template("admin/add_plant.html")
+        
+        ext = os.path.splitext(file.filename)[1]
+        image_filename = f"{uuid.uuid4()}{ext}"
+        image_path = os.path.join(app.config["UPLOAD_FOLDER"], image_filename)
+        file.save(image_path)
+        
         plant_dao.add_plant(name, description, image_filename, invasiveness)
         flash("New Plant added successfully!", "success")
         return redirect(url_for("list_plants"))
@@ -63,22 +84,48 @@ def add_plant():
 
 @app.route("/siteadmin/edit_plant/<int:id>", methods=["GET", "POST"])
 def edit_plant(id):
+    
     plant = plant_dao.get_plant_by_id(id)
-
+    
     if request.method == "POST":
         name = request.form["name"]
         description = request.form["description"]     
+        invasiveness = request.form["invasiveness"]
+        print('invasiveness')
+        print(invasiveness)    
         file = request.files.get("image")
+        
+        if not name:
+            flash("Please input a name for this plant", "error")
+            return render_template("admin/edit_plant.html", plant=plant)
+        
+        if not description:
+            flash("Please input a description for this plant", "error")
+            return render_template("admin/edit_plant.html", plant=plant)
+
+        if not invasiveness:
+            flash("Please select an invasiveness for this plant", "error")
+            return render_template("admin/edit_plant.html", plant=plant)
+        
+        # if not file or file.filename == "":
+        #     flash("Please select an image for this plant", "error")
+        #     return render_template("admin/add_plant.html")
+        
         if file and file.filename != "":
+            
+            if not allowed_file(file.filename):
+                flash("Image format only supports jpg/jpeg/png/gif", "error")
+                return render_template("admin/edit_plant.html", plant=plant)
+            
             filename = secure_filename(file.filename)
             ext = os.path.splitext(filename)[1]
             filename = f"{uuid.uuid4().hex}{ext}"
             file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            image = filename
+            file = filename
         else:
-            image = plant.image
+            file = plant.image
             
-        plant_dao.edit_plant(id, name, description, image)
+        plant_dao.edit_plant(id, name, invasiveness, description, file)
         flash("Plant edited successfully!", "success")
         return redirect(url_for("list_plants"))
     
@@ -87,6 +134,21 @@ def edit_plant(id):
 
 @app.route("/siteadmin/delete_plants/<int:id>", methods=["POST"])
 def delete_plant(id):
+    
+    plant = plant_dao.get_plant_by_id(id)
+    if not plant:
+        flash("Plant not found.", "error")
+        return redirect(url_for("list_plants"))
+    
+    if plant.image:
+        image_path = os.path.join(app.config["UPLOAD_FOLDER"], plant.image)
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+            except Exception as e:
+                flash(f"Could not delete image file: {e}", "warning")
+        
+    
     plant_dao.delete_plant(id)
     flash("Plant deleted successfully!", "success")
     return redirect(url_for("list_plants"))

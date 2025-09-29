@@ -24,6 +24,28 @@ export class AjaxDataTable {
         this.fetchData();
     }
 
+    showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        const toast = document.createElement("div");
+        toast.className = `
+            flex items-center justify-between px-4 py-2 rounded shadow text-white
+            ${type === "success" ? "bg-green-600" : "bg-red-600"}
+            animate-fadeIn
+        `;
+        toast.textContent = message;
+
+        container.appendChild(toast);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.add("animate-fadeOut");
+            toast.addEventListener("animationend", () => toast.remove());
+        }, 3000);
+    }
+
+
     attachEvents() {
         this.prevBtn.addEventListener('click', () => {
             this.gotoPage(this.currentPage - 1);
@@ -96,7 +118,7 @@ export class AjaxDataTable {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
                 console.log(row.cycle_id);
-                this.closeSurvey(row.cycle_id);
+                this.closeSurvey();
             });
         });
 
@@ -293,31 +315,105 @@ export class AjaxDataTable {
     }
     */
 
-    async closeSurvey(cycle_id) {
-        if (!confirm("Are you sure to close this survey?")) return;
+    async closeSurvey() {
 
-        try {
-            const res = await fetch('/api/close-survey', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" }
-            });
+        const modal = document.getElementById("closeSurveyModal");
+        const confirmBtn = document.getElementById("confirmCloseSurvey");
+        const cancelBtn = document.getElementById("cancelCloseSurvey");
 
-            const data = await res.json();
+        // show modal
+        modal.classList.remove("hidden");
 
-            if (!res.ok || !data.success) {
-                alert(data.message);
-            } else {
-                alert(data.message);
-                window.location.reload();
+        // cancel handler
+        const cancelHandler = () => {
+            modal.classList.add("hidden");
+            cancelBtn.removeEventListener("click", cancelHandler);
+            confirmBtn.removeEventListener("click", confirmHandler);
+        };
+
+        cancelBtn.addEventListener("click", cancelHandler);
+
+        // confirm handler
+        const confirmHandler = async () => {
+            try {
+                const res = await fetch('/api/close-survey', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    // body: JSON.stringify({ cycle_id })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    // alert(data.message);
+                    this.showToast(data.message, "error");
+                } else {
+                    // alert(data.message);
+                    this.showToast(data.message, "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            } catch (err) {
+                console.error(err);
+                // alert("Something went wrong");
+                this.showToast("Something went wrong", "error");
+            } finally {
+                modal.classList.add("hidden");
+                cancelBtn.removeEventListener("click", cancelHandler);
+                confirmBtn.removeEventListener("click", confirmHandler);
             }
-            
-            // if (!res.ok) throw new Error('Failed to close survey');
+        };
 
-            // alert('Survey closed');
-        } catch (err) {
-            console.error(err);
-            alert('Something went wrong');
-        }
+        confirmBtn.addEventListener("click", confirmHandler);
+
+
+
+
+        // Open modal by simulating a click on a trigger
+        console.log('logged')
+
+        
+
+        // HSOverlay.open('#closeSurveyModal');
+
+        // const trigger = document.createElement("button");
+        // trigger.setAttribute("data-hs-overlay", "#closeSurveyModal");
+
+        // console.log('logged2')
+        // document.body.appendChild(trigger);
+        // trigger.click();
+        // trigger.remove();
+
+        // const confirmBtn = document.getElementById("confirmCloseSurvey");
+
+        // if (!confirm("Are you sure to close this survey?")) return;
+
+        // const handler = async function () {
+        //     try {
+        //         const res = await fetch('/api/close-survey', {
+        //             method: 'POST',
+        //             headers: { "Content-Type": "application/json" }
+        //         });
+
+        //         const data = await res.json();
+
+        //         if (!res.ok || !data.success) {
+        //             alert(data.message);
+        //         } else {
+        //             alert(data.message);
+        //             window.location.reload();
+        //         }
+                
+        //     } catch (err) {
+        //         console.error(err);
+        //         alert('Something went wrong');
+        //     } finally {
+        //         // close modal
+        //         window.HSOverlay.close(modal)
+        //         confirmBtn.removeEventListener("click", handler);
+        //     }
+        // }
+
+        // confirmBtn.addEventListener("click", handler);
     }
 }
 

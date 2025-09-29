@@ -182,3 +182,29 @@ class SurveyDAO(BaseDAO):
 
         result = self.execute_query(query, (limit, offset))        
         return result if result else []
+    
+    def list_survey_summary(self, session_id):
+        query = """
+            select
+                p.name,
+                p.invasiveness
+            from survey_results sr
+            inner join plants p on sr.selected_plant_id = p.id
+            where sr.session_id = %s
+            order by sr.question_seq;
+        """
+        
+        result = self.execute_query(query, (session_id,))
+        return result if result else []
+
+    def list_survey_summary_aggregation(self, session_id):
+        query = """
+            select
+                sum(invasive_winner) as invasive_count,
+                sum(invasive_loser) as non_invasive_count
+            from survey_results
+            where session_id = %s;
+        """
+        
+        result = self.execute_query(query, (session_id,))
+        return result[0]

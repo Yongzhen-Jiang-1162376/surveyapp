@@ -12,18 +12,18 @@ class PlantDAO(BaseDAO):
 
     def add_plant(self, name: str, description: str, image: str, invasiveness: str) -> None:
         query = """
-            INSERT INTO plants (name, description, image, invasiveness)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO plants (name, description, image, invasiveness, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, now(), now());
         """
         self.execute_non_query(query, (name, description, image, invasiveness))
 
-    def edit_plant(self, id: int, name: str, description: str, image: str) -> None:
+    def edit_plant(self, id: int, name: str, invasiveness: str, description: str, image: str) -> None:
         query = """
             UPDATE plants
-            SET name = %s, description = %s, image = %s
-            WHERE id = %s
+            SET name = %s, description = %s, invasiveness = %s, image = %s, updated_at = now()
+            WHERE id = %s;
         """
-        self.execute_non_query(query, (name, description, image, id))
+        self.execute_non_query(query, (name, description, invasiveness, image, id))
 
 
     def delete_plant(self, id: int) -> None:
@@ -35,6 +35,7 @@ class PlantDAO(BaseDAO):
             SELECT id, name, description, image, invasiveness
             FROM plants
             WHERE name LIKE %s OR description LIKE %s
+            order by updated_at desc, id desc;
         """
         result = self.execute_query(query, (f"%{keyword}%", f"%{keyword}%"))
         

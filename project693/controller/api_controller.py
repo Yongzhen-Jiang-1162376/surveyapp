@@ -12,9 +12,14 @@ from flask import send_file
 from io import BytesIO, StringIO
 import csv
 import zipfile
+from openai import OpenAI
+import os
+import html
 
 
 analysis_dao = AnalysisDAO()
+
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
 @app.route("/api/current-survey-data", methods=["POST"])
@@ -24,12 +29,13 @@ def get_survey_data():
     req = request.get_json()
     page = int(req.get("page", 1))
     limit = int(req.get("limit", 10))
-    
+
     offset = (page - 1) * limit
-    
+
     total = analysis_dao.get_current_total_survey_results()
-    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(limit, offset)
-    
+    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
+        limit, offset)
+
     columns = [
         'session_id',
         'question_seq',
@@ -47,7 +53,7 @@ def get_survey_data():
         'invasive_win'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable,
         "total": total
@@ -56,9 +62,9 @@ def get_survey_data():
 
 @app.route("/api/all-current-survey-data", methods=["POST"])
 def get_all_survey_data():
-    
+
     rows = analysis_dao.list_all_current_survey_results_with_plant_name()
-    
+
     columns = [
         'session_id',
         'question_seq',
@@ -76,7 +82,7 @@ def get_all_survey_data():
         'invasive_win'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
@@ -86,8 +92,9 @@ def get_all_survey_data():
 def get_all_survey_data_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
-    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(cycle_id)
-    
+    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(
+        cycle_id)
+
     columns = [
         'session_id',
         'question_seq',
@@ -105,7 +112,7 @@ def get_all_survey_data_by_cycle_id():
         'invasive_win'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
@@ -116,12 +123,13 @@ def get_current_beta_vs_win_percentage_data():
     req = request.get_json()
     page = int(req.get("page", 1))
     limit = int(req.get("limit", 10))
-    
+
     offset = (page - 1) * limit
-    
+
     total = analysis_dao.get_current_total_survey_results()
-    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(limit, offset)
-    
+    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
+        limit, offset)
+
     columns = [
         'session_id',
         'question_seq',
@@ -139,7 +147,7 @@ def get_current_beta_vs_win_percentage_data():
         'invasive_win'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable,
         "total": total
@@ -151,13 +159,13 @@ def get_survey_cycle_data():
     req = request.get_json()
     page = int(req.get("page", 1))
     limit = int(req.get("limit", 10))
-    
+
     offset = (page - 1) * limit
-    
+
     survey_dao = SurveyDAO()
     total = survey_dao.get_total_survey_cycles()
     rows = survey_dao.list_survey_cycle_paginated(limit, offset)
-    
+
     columns = [
         'cycle_id',
         'start_time',
@@ -167,32 +175,31 @@ def get_survey_cycle_data():
         'status',
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable,
         "total": total
     })
 
 
-
 @app.route("/api/close-survey", methods=["POST"])
 def close_survey():
-    
+
     survey_dao = SurveyDAO()
-    
+
     active_survey_result = survey_dao.active_survey_result_existed()
-    
+
     if not active_survey_result:
         return jsonify({
             'success': False,
             'message': 'No survey results in this cycle.\nPlease fill out some surveys.'
         }), 404
-        
+
     # save analysis data for current survey cycle
     save_survey_cycle_analysis_data()
-    
+
     survey_dao.start_survey_cyle()
-    
+
     return jsonify({
         'success': True,
         'message': 'Survey cycle closed successfully.\nA new suvey cycle is started.'
@@ -203,8 +210,9 @@ def close_survey():
 def get_beta_score_by_invasive_type_histogram_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
-    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(cycle_id)
-    
+    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(
+        cycle_id)
+
     columns = [
         'cycle_id',
         'bin_no',
@@ -218,7 +226,7 @@ def get_beta_score_by_invasive_type_histogram_by_cycle_id():
         'non_invasive_count_weighted'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
@@ -229,7 +237,7 @@ def get_win_loss_by_plant_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
-    
+
     columns = [
         'cycle_id',
         'plant_id',
@@ -239,7 +247,7 @@ def get_win_loss_by_plant_by_cycle_id():
         'loss'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
@@ -250,7 +258,7 @@ def get_beta_score_heat_map_by_plant_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
-    
+
     columns = [
         'cycle_id',
         'plant_a_id',
@@ -261,7 +269,7 @@ def get_beta_score_heat_map_by_plant_by_cycle_id():
         'plant_a_beats_b_weighted'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
@@ -272,7 +280,7 @@ def get_beta_score_win_percentage_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
-    
+
     columns = [
         'cycle_id',
         'plant_id',
@@ -283,18 +291,19 @@ def get_beta_score_win_percentage_by_cycle_id():
         'bt_beta_score_weighted'
     ]
     datatable = [dict(zip(columns, row)) for row in rows]
-    
+
     return jsonify({
         "datatable": datatable
     })
+
 
 @app.route("/api/download-survey-cycle-data-by-cycle-id", methods=["POST"])
 def download_survey_cycle_data_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
-    
+
     csv_data = {}
-    
+
     def rows_to_csv(columns, rows):
         output = StringIO()
         writer = csv.DictWriter(output, fieldnames=columns)
@@ -302,8 +311,9 @@ def download_survey_cycle_data_by_cycle_id():
         for row in rows:
             writer.writerow(dict(zip(columns, row)))
         return output.getvalue()
-    
-    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(cycle_id)
+
+    rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(
+        cycle_id)
     columns = [
         'session_id',
         'question_seq',
@@ -321,9 +331,9 @@ def download_survey_cycle_data_by_cycle_id():
         'invasive_win'
     ]
     csv_data['survey_raw_data.csv'] = rows_to_csv(columns, rows)
-    
-    
-    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(cycle_id)
+
+    rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(
+        cycle_id)
     columns = [
         'cycle_id',
         'bin_no',
@@ -336,9 +346,9 @@ def download_survey_cycle_data_by_cycle_id():
         'invasive_count_weighted',
         'non_invasive_count_weighted'
     ]
-    csv_data['beta_score_by_invasive_type_histogram.csv'] = rows_to_csv(columns, rows)
-    
-    
+    csv_data['beta_score_by_invasive_type_histogram.csv'] = rows_to_csv(
+        columns, rows)
+
     rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
     columns = [
         'cycle_id',
@@ -349,9 +359,9 @@ def download_survey_cycle_data_by_cycle_id():
         'bt_beta_score',
         'bt_beta_score_weighted'
     ]
-    csv_data['beta_score_with_win_percentage_by_plant.csv'] = rows_to_csv(columns, rows)
-    
-    
+    csv_data['beta_score_with_win_percentage_by_plant.csv'] = rows_to_csv(
+        columns, rows)
+
     rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
     columns = [
         'cycle_id',
@@ -363,7 +373,6 @@ def download_survey_cycle_data_by_cycle_id():
         'plant_a_beats_b_weighted'
     ]
     csv_data['beta_score_heat_map_by_plant.csv'] = rows_to_csv(columns, rows)
-
 
     rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
     columns = [
@@ -381,7 +390,7 @@ def download_survey_cycle_data_by_cycle_id():
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         for filename, content in csv_data.items():
             zip_file.writestr(filename, content)
-    
+
     zip_buffer.seek(0)
     return send_file(
         zip_buffer,
@@ -389,3 +398,31 @@ def download_survey_cycle_data_by_cycle_id():
         as_attachment=True,
         download_name='survey_data.zip'
     )
+
+
+@app.route("/survey/plant-info")
+def plant_info():
+    plant_name = request.args.get("name")
+
+    prompt = f"Provide a short, informative description of the plant '{plant_name}' including whether it is invasive, within 2-3 paragraphs. Use **bold** for important words."
+
+    # Use the Responses API
+    response = client.responses.create(
+        model="gpt-5-nano",
+        input=[
+            {"role": "system", "content": "You are a helpful botanist assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        text={
+            "format": {
+                "type": "text"
+            }
+        },
+        max_output_tokens=5000
+    )
+
+    description = response.output_text or "No description available from this model."
+    
+    description = html.unescape(description)
+
+    return jsonify({"description": description})
