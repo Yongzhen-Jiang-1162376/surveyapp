@@ -6,9 +6,17 @@
 <div class="mx-auto px-4 py-10 sm:px-6 lg:px-8 lg:py-14 max-w-[100rem]">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    <div class="flashes">
+    <div class="fixed top-[53px] right-4 space-y-2 z-50">
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }} w-50 mx-auto">{{ message }}</div>
+            <div class="toast hs-removing:translate-x-5 hs-removing:opacity-0 transition-all duration-300 max-w-xs text-white shadow-md rounded-xl p-4
+                {% if category == 'success' %} bg-green-500
+                {% elif category == 'error' %} bg-orange-500
+                {% elif category == 'warning' %} bg-yellow-500
+                {% else %} bg-blue-600
+                {% endif %}
+            ">
+                <p class="text-sm">{{ message }}</p>
+            </div>
         {% endfor %}
     </div>
     {% endif %}
@@ -58,6 +66,13 @@
                         <th scope="col" class="px-6 py-3 text-start">
                             <div class="flex items-center gap-x-2">
                                 <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                    Invasiveness
+                                </span>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start">
+                            <div class="flex items-center gap-x-2">
+                                <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
                                     Image
                                 </span>
                             </div>
@@ -76,6 +91,7 @@
                     <tr class="odd:bg-white even:bg-gray-50">
                         <td class="border border-gray-300 px-3 py-2">{{ plant.name }}</td>
                         <td class="border border-gray-300 px-3 py-2">{{ plant.description }}</td>
+                        <td class="border border-gray-300 px-3 py-2">{{ plant.invasiveness }}</td>
                         <td class="border border-gray-300 px-3 py-2"><img src="{{ url_for('static', filename='img/' + plant.image) }}" alt="{{ plant.name }}" class="h-[100px] w-[100px] object-cover rounded-lg mx-auto"></td>
                         <td class="border border-gray-300 px-3 py-2">
                             <div class="flex justify-center gap-4">
@@ -154,19 +170,38 @@
 
 <!-- JavaScript for Delete Confirmation -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const deleteForms = document.querySelectorAll('.delete-form');
-        
-        deleteForms.forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); 
-                const confirmed = confirm('Are you sure you want to delete this Plant?');
-                if (confirmed) {
-                    form.submit(); 
-                }
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            const confirmed = confirm('Are you sure you want to delete this Plant?');
+            if (confirmed) {
+                form.submit(); 
+            }
         });
     });
+});
+
+// Wait for the page to load
+document.addEventListener("DOMContentLoaded", function() {
+    // Select all toast elements
+    const toasts = document.querySelectorAll('.toast');
+
+    toasts.forEach(function(toast) {
+        // Set timeout to remove toast after 3 seconds (3000 ms)
+        setTimeout(function() {
+            // Add Tailwind transition classes to animate
+            toast.classList.add('opacity-0', 'translate-x-5');
+
+            // Remove the element from DOM after transition (300ms)
+            setTimeout(function() {
+                toast.remove();
+            }, 300);
+        }, 5000); // 5 seconds
+    });
+});
 </script>
 
 {% endblock %}

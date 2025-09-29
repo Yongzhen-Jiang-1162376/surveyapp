@@ -93,41 +93,6 @@ add (
   `original_image_id`	int
 );
 
--- add fields in survey results table
--- alter table survey_results
--- add (
--- 	`response_time`	float,
--- 	`invasive_plant_id` int,
---   `non_invasive_plant_id` int
--- );
-
--- rename question_number to question_seq 
--- alter table survey_results
--- change question_number question_seq int;
-
--- rename survey result column names to support statistical analysis
--- alter table survey_results
--- add (
---   `winner` int,
---   `loser` int,
---   `invasive_winner` int,
---   `invasive_loser` int
--- )
-
--- add an active column to servey result table to support survey cycle
--- by default it is true (active)
--- 1: active (current cycle)
--- 0: inactive (history cycle)
--- alter table survey_results
--- add column active bool default 1;     
-
-
-
-
--- add cycle id column to link to survey cycle table
-
-
-
 -- add bradley-terry beta score with win percentage table
 DROP TABLE IF EXISTS `bt_beta_score_win_percentage`;
 CREATE TABLE `bt_beta_score_win_percentage` (
@@ -198,6 +163,10 @@ CREATE TABLE `win_loss_by_plant` (
 -- by default it is true (active)
 alter table survey_results
 add column active bool default 1;
+
+
+alter table plants add column created_at TIMESTAMP;
+alter table plants add column updated_at TIMESTAMP;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
