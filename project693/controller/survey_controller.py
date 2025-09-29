@@ -6,10 +6,18 @@ from project693.dao.survey_dao import SurveyDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
+import time
+import threading
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data
 
 
 plant_dao = PlantDAO()
 survey_dao = SurveyDAO()
+
+
+def save_data_to_db(data):
+    time.sleep(10)
+    print(f"Saved to DB: {data}")
 
 
 @app.route("/survey/", methods=["GET", "POST"])
@@ -156,7 +164,10 @@ def survey_questionnaire():
         session_id=session_id,
         reasoning=reasoning
     )
-
+    
+    # async save analysis data for current cycle
+    threading.Thread(target=save_survey_cycle_analysis_data).start()
+    
     # Get all selected answers from session
     answers = SessionManager.get("answers") or []
 
