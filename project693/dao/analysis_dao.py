@@ -515,7 +515,8 @@ class AnalysisDAO(BaseDAO):
                 bt_beta_score_weighted
             FROM bt_beta_score_win_percentage
             where cycle_id = %s
-            order by id;
+            -- order by id
+            order by plant_name;
         """
         result = self.execute_query(query, (cycle_id,))        
         return result if result else []
