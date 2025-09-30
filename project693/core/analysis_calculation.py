@@ -827,10 +827,12 @@ def beta_scores_heat_map_V2(db_rows, weighted=1):
     # plot.xaxis.visible = False
     # plot.yaxis.visible = False
     
-    colors = [
-        "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
-        for idx in range(len(betas))
-    ]
+    colors = ["#FFC000" if r[3] == 'invasive' else "#00B050" for r in db_rows]
+    
+    # colors = [
+    #     "#FFC000" if config['invasive_map'][config['idx_to_id'][idx]] == 1 else "#00B050"
+    #     for idx in range(len(betas))
+    # ]
     
     x_source = ColumnDataSource(dict(
         x=plant_names,
