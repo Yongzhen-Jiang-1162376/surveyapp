@@ -520,6 +520,60 @@ class AnalysisDAO(BaseDAO):
         """
         result = self.execute_query(query, (cycle_id,))        
         return result if result else []
+    
+    def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                plant_id,
+                plant_name,
+                invasiveness,
+                win,
+                loss
+            from win_loss_by_plant
+            where cycle_id = %s
+            order by plant_name;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+
+
+    def list_beta_score_by_plant_type_histogram_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                bin_no,
+                bin_left,
+                bin_right,
+                invasive_count,
+                non_invasive_count,
+                bin_left_weighted,
+                bin_right_weighted,
+                invasive_count_weighted,
+                non_invasive_count_weighted
+            from bt_beta_score_by_invasive_type_histogram where cycle_id = %s
+            order by bin_no;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+    
+    def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                plant_a_id,
+                plant_a_name,
+                plant_b_id,
+                plant_b_name,
+                plant_a_beats_b,
+                plant_a_beats_b_weighted
+                from bt_beta_score_heat_map
+                where cycle_id = %s
+            order by plant_a_name, plant_b_name;        
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+
 
     def delete_beta_score_heat_map_by_plant(self, cycle_id):
         query = """
