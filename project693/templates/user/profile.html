@@ -4,7 +4,90 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="bg-gray-100 mx-auto px-4">
+    <div class="text-center py-4">
+        <h2 class="text-2xl font-semibold">User Profile</h2>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+        {% for category, message in messages %}
+        <p class="mb-1">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="flex justify-center">
+        <div class="w-full md:w-3/4 lg:w-2/3">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-6">
+                <div class="flex justify-center mb-6">
+                    <img src="{{ url_for('static', filename='img/' ~ user.avatar if user.avatar != 'default.png' else 'img/default.png') }}" 
+                         alt="Avatar" 
+                         class="rounded-full w-36 h-36 object-cover" />
+                </div>
+
+                <!-- User Details Table using Preline -->
+                <div class="overflow-x-auto">
+                    <table class="table-auto w-full border border-gray-200">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th colspan="2" class="py-2 text-center">User Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100 w-1/3">Username</th>
+                                <td class="px-4 py-2">{{ user.username }}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100">Email</th>
+                                <td class="px-4 py-2">{{ user.email }}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100">First Name</th>
+                                <td class="px-4 py-2">{{ user.first_name or '' }}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100">Last Name</th>
+                                <td class="px-4 py-2">{{ user.last_name or '' }}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100">Description</th>
+                                <td class="px-4 py-2">{{ user.description or '' }}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <th class="text-left px-4 py-2 bg-gray-100">Site Role</th>
+                                <td class="px-4 py-2">{{ user.role or '' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-left px-4 py-2 bg-gray-100">Location</th>
+                                <td class="px-4 py-2">
+                                    <div id="map" class="w-full h-72 mt-2 rounded-lg border"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6">
+                    <a href="{{ url_for('update_profile') }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 block text-center">
+                        Update Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- <div class="container mt-5">
     <div>
         <h2 class="text-center mb-4">User Profile</h2>
     </div>
@@ -16,7 +99,6 @@
                     <img src="{{ url_for('static', filename='img/' ~ user.avatar if user.avatar != 'default.png' else 'img/default.png') }}" alt="Avatar" class="rounded-circle" style="width: 150px; height: 150px" />
                 </div>
 
-                <!-- Updated Table Styling -->
                 <table class="table table-bordered table-hover table-responsive-sm" style="width: 100%; font-size: 1rem">
                     <thead class="thead-dark">
                         <tr>
@@ -58,13 +140,12 @@
                 </table>
 
                 <div class="d-grid mt-4">
-                    <!-- Dark Gray Button -->
                     <a href="{{ url_for('update_profile') }}" class="btn btn-dark">Update Profile</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Leaflet.js Map Integration -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
