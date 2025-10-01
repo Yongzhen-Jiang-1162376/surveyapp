@@ -7,17 +7,18 @@
 <!-- Toast container -->
 <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
 
+<div class="p-4 py-0 bg-white">
 <!-- Table Section -->
-<div class="max-w-[100rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+<div class="max-w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
   <!-- Card -->
   <div class="flex flex-col">
     <div class="-m-1.5 overflow-x-auto">
       <div class="p-1.5 min-w-full inline-block align-middle">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden">
           <!-- Header -->
-          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
             <div>
-              <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
+              <h2 class="text-xl font-semibold text-gray-800">
                 Survey Cycle
               </h2>
               <!-- <p class="text-sm text-gray-600 dark:text-neutral-400">
@@ -28,7 +29,7 @@
             <div class="flex flex-wrap items-center gap-3">
               <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                 Rows per page
-                <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm">
                   <option>5</option>
                   <option selected>10</option>
                   <option>25</option>
@@ -41,20 +42,20 @@
           <!-- End Header -->
 
           <!-- Table -->
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-            <thead class="bg-gray-50 dark:bg-neutral-900">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
-                      Cycle Id
+                    <span class="text-sm font-semibold uppercase text-gray-800">
+                      Internal Cycle Id
                     </span>
                   </div>
                 </th>
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Start Time
                     </span>
                   </div>
@@ -62,7 +63,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       End Time
                     </span>
                   </div>
@@ -70,7 +71,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Survey Participants
                     </span>
                   </div>
@@ -78,7 +79,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Total Choices
                     </span>
                   </div>
@@ -86,7 +87,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Status
                     </span>
                   </div>
@@ -94,7 +95,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Survey Data
                     </span>
                   </div>
@@ -102,7 +103,7 @@
 
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
                       Action
                     </span>
                   </div>
@@ -116,9 +117,9 @@
           <!-- End Table -->
 
           <!-- Footer -->
-          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-neutral-700">
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
             <div>
-              <p class="text-sm text-gray-600 dark:text-neutral-400">
+              <p class="text-sm text-gray-600">
                 <div id="rangeInfo" class="text-sm text-gray-600">Showing 0 to 0 of 0 entries</div>
               </p>
             </div>
@@ -135,8 +136,22 @@
     </div>
   </div>
   <!-- End Card -->
+
+
+  <div id="detailTableContainer" class="hidden mt-6">
+    <h3 class="text-lg font-semibold mb-3">Cycle Details</h3>
+    <div id="detailTable"></div>
+  </div>
+</div>
 </div>
 <!-- End Table Section -->
+
+
+<!-- Detail Table Section -->
+<!-- Detail Section -->
+
+
+
 
 
 <!-- Confirmation Modal -->
@@ -237,7 +252,13 @@ new AjaxDataTable({
             </button>
           `;
         } else {
-          return '';
+          return `
+            <button type="button" class="recalculate-btn py-2 px-3 inline-flex items-center gap-x-2 
+                    text-sm font-medium rounded-lg border border-transparent 
+                    bg-blue-500 text-white hover:bg-blue-600 cursor-pointer">
+              Recalculate
+            </button>
+          `;
         }
       }
     },
