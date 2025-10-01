@@ -408,7 +408,8 @@ def plant_info():
 
     # Use the Responses API
     response = client.responses.create(
-        model="gpt-5-nano",
+        # model="gpt-5-nano",
+        model="gpt-4.1-nano",
         input=[
             {"role": "system", "content": "You are a helpful botanist assistant."},
             {"role": "user", "content": prompt}
@@ -426,3 +427,16 @@ def plant_info():
     description = html.unescape(description)
 
     return jsonify({"description": description})
+
+
+@app.route("/api/survey-cycle-detail", methods=["POST"])
+def survey_cycle_detail_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id"))
+    
+    survey_dao = SurveyDAO()
+    
+    datatable = survey_dao.list_survey_cycle_detail_data(cycle_id)
+    
+    return jsonify({ "datatable": datatable })
+
