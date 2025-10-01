@@ -182,7 +182,8 @@ class SurveyDAO(BaseDAO):
 
         result = self.execute_query(query, (limit, offset))        
         return result if result else []
-    
+
+
     def list_survey_summary(self, session_id):
         query = """
             select
@@ -197,6 +198,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (session_id,))
         return result if result else []
 
+
     def list_survey_summary_aggregation(self, session_id):
         query = """
             select
@@ -208,3 +210,29 @@ class SurveyDAO(BaseDAO):
         
         result = self.execute_query(query, (session_id,))
         return result[0]
+
+
+    def list_survey_cycle_detail_data(self, cycle_id):
+        query = """
+            select
+                sr.id,
+                sr.session_id,
+                sr.question_seq,
+                date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
+                sr.response_time,
+                sr.invasive_plant_id,
+                p.name as invasive_plant_name,
+                sr.non_invasive_plant_id,
+                p1.name as non_invasive_plant_name,
+                sr.selected_plant_id,
+                p2.name as selected_plant_name,
+                sr.invasive_winner as invasive_win
+            from survey_results sr
+            inner join plants p on sr.invasive_plant_id = p.id
+            inner join plants p1 on sr.non_invasive_plant_id = p1.id
+            inner join plants p2 on sr.selected_plant_id = p2.id
+            where sr.cycle_id = %s
+            order by sr.submission_time, sr.question_seq;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
