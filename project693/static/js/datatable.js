@@ -94,7 +94,7 @@ export class AjaxDataTable {
         const totalPages = Math.max(1, Math.ceil(this.total / this.rowsPerPage));
 
         this.tableBody.innerHTML = this.datatable.map(row => `
-            <tr class="odd:bg-white even:bg-gray-50">
+            <tr class="odd:bg-white even:bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
                 ${this.columns.map(col => {
                     if (col.key) {
                         return `<td class="border border-gray-300 px-3 py-2">${row[col.key] ?? ''}</td>`
@@ -129,7 +129,132 @@ export class AjaxDataTable {
                 this.downloadCycleResultsCSV(row.cycle_id);
             });
         });
-        
+
+        let detailGrid = null;
+
+        this.tableBody.querySelectorAll('tr').forEach((row, index) => {
+            row.addEventListener('click', async () => {
+                const cycle = this.datatable[index];
+                console.log('Clicked cycle: ', cycle.cycle_id);
+
+                // Highlight selected row
+                this.tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('bg-gray-200'));
+                row.classList.add('bg-gray-200');
+
+                // show detail table
+                const detailContainer = document.getElementById('detailTableContainer');
+                detailContainer.classList.remove('hidden');
+
+                // Fetch detail data for this cycle
+                const res = await fetch(`/api/survey-cycle-detail`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cycle_id: cycle.cycle_id })
+                });
+                const result = await res.json();
+                const data = result.datatable || [];
+
+                const detailDiv = document.getElementById("detailTable");
+
+                // clear any existing Grid.js instance
+                // if (this.detailGrid) {
+                //     this.detailGrid.destroy();
+                //     this.detailGrid = null;
+                // }
+
+                console.log(data)
+
+                // Set the table headers
+                if (data.length) {
+
+                    if (!detailGrid) {
+                        detailGrid = new gridjs.Grid({
+                            columns: [
+                                { name: 'Internal Id', hidden: true },
+                                'Session Id',
+                                { name: 'Ques. Seq', width: '150px' },
+                                { name: 'Submitted At', width: '180px' },
+                                { name: 'Response Time', width: '180px' },
+                                { name: 'Invasive Plant Name', width: '280px' },
+                                { name: 'Non-Invasive Plant Name', width: '280px' },
+                                'Selected Plant Name',
+                                {
+                                    name: '',
+                                    sort: false,
+                                    search: false,
+                                    width: '80px',
+                                    formatter: (_, row) => {
+                                        return gridjs.h('div', { 
+                                        className: 'flex justify-center items-center' // center horizontally + vertically
+                                        }, [
+                                        gridjs.h('button', {
+                                            className: 'text-red-600 hover:text-red-800 cursor-pointer flex items-center justify-center',
+                                            onClick: (e) => {
+                                            e.stopPropagation();
+                                            const internalId = row.cells[0].data;
+                                            console.log('Delete clicked for ID:', internalId);
+                                            }
+                                        }, gridjs.html(`
+                                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        `))
+                                        ]);
+                                    }
+                                }
+                            ],
+                            data: data.map(row => [
+                                row[0],
+                                row[1],
+                                row[2],
+                                row[3],
+                                row[4],
+                                row[6],
+                                row[8],
+                                row[10],
+                                null
+                            ]),
+                            pagination: { enabled: true, limit: 10 },
+                            search: true,
+                            sort: false,
+                            className: {
+                                table: "w-full border-collapse border border-gray-300",
+                                th: "border px-3 py-2 text-left text-sm font-semibold uppercase !text-gray-800",
+                                td: "border px-3 py-2 whitespace-normal break-words"
+                            },
+                            afterRender: () => {
+                                lucide.createIcons();
+                            }
+                        }).render(detailDiv);
+                        lucide.createIcons();
+                    } else {
+                        detailGrid.updateConfig({
+                            data: data.map(row => [
+                                row[0],
+                                row[1],
+                                row[2],
+                                row[3],
+                                row[4],
+                                row[6],
+                                row[8],
+                                row[10],
+                                null
+                            ])
+                        }).forceRender();
+
+                        lucide.createIcons();
+                    }
+                } else {
+                    detailDiv.innerHTML = `<div class="text-gray-500">No detail data found.</div>`;
+                }
+            });
+        });
+
         lucide.createIcons();
     }
 
@@ -365,55 +490,6 @@ export class AjaxDataTable {
 
         confirmBtn.addEventListener("click", confirmHandler);
 
-
-
-
-        // Open modal by simulating a click on a trigger
-        console.log('logged')
-
-        
-
-        // HSOverlay.open('#closeSurveyModal');
-
-        // const trigger = document.createElement("button");
-        // trigger.setAttribute("data-hs-overlay", "#closeSurveyModal");
-
-        // console.log('logged2')
-        // document.body.appendChild(trigger);
-        // trigger.click();
-        // trigger.remove();
-
-        // const confirmBtn = document.getElementById("confirmCloseSurvey");
-
-        // if (!confirm("Are you sure to close this survey?")) return;
-
-        // const handler = async function () {
-        //     try {
-        //         const res = await fetch('/api/close-survey', {
-        //             method: 'POST',
-        //             headers: { "Content-Type": "application/json" }
-        //         });
-
-        //         const data = await res.json();
-
-        //         if (!res.ok || !data.success) {
-        //             alert(data.message);
-        //         } else {
-        //             alert(data.message);
-        //             window.location.reload();
-        //         }
-                
-        //     } catch (err) {
-        //         console.error(err);
-        //         alert('Something went wrong');
-        //     } finally {
-        //         // close modal
-        //         window.HSOverlay.close(modal)
-        //         confirmBtn.removeEventListener("click", handler);
-        //     }
-        // }
-
-        // confirmBtn.addEventListener("click", handler);
     }
 }
 
