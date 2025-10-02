@@ -34,7 +34,7 @@ config = {
 }
 
 
-def initialize():
+def initialize(cycle_id=None):
     print('---------------------- initialize ---------------------------')
     analysis_dao = AnalysisDAO()
 
@@ -91,6 +91,7 @@ def initialize():
     print(config['unweighted_beta_normalized'])
 
     # print(config['data']['RT'])
+
 
 def weighted_log_likelihood(betas, data):
     ll = 0.0
@@ -999,11 +1000,46 @@ def beta_scores_ranking_V2(db_rows, weighted=1):
     return plot
 
 
-def save_survey_cycle_analysis_data(is_current=1):
+def save_survey_cycle_analysis_data():
     initialize()
     analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
     cycle_id = survey_dao.get_active_survey_cycle_id()
+    
+    # heat map data
+    rows = beta_score_heat_map_datatable()
+    # clear data first
+    analysis_dao.delete_beta_score_heat_map_by_plant(cycle_id)
+    # save data
+    analysis_dao.save_beta_score_heat_map_by_plant(rows, cycle_id)
+    
+    # win/loss data
+    rows = win_loss_by_plant_datatable()
+    # clear data first
+    analysis_dao.delete_win_loss_by_plant(cycle_id)
+    # save data
+    analysis_dao.save_win_loss_by_plant(rows, cycle_id)
+
+    # beta score by plant type histogram
+    rows = beta_scores_by_plant_type_datatable()
+    # clear data first
+    analysis_dao.delete_beta_score_by_invasive_type_histogram(cycle_id)
+    # save data
+    analysis_dao.save_beta_score_by_invasive_type_histogram(rows, cycle_id)
+    
+    # beta score by plant vs win percentage
+    rows = beta_vs_win_percentage_datatable()
+    # clear data first
+    analysis_dao.delete_beta_score_win_percentage(cycle_id)
+    # save data
+    analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
+
+
+def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
+    # initialize()
+    analysis_dao = AnalysisDAO()
+    # survey_dao = SurveyDAO()
+    # cycle_id = survey_dao.get_active_survey_cycle_id()
     
     # heat map data
     rows = beta_score_heat_map_datatable()
