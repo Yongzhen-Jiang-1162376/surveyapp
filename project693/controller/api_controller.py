@@ -440,3 +440,24 @@ def survey_cycle_detail_by_cycle_id():
     
     return jsonify({ "datatable": datatable })
 
+
+@app.route("/api/delete-survey-choice-by-id", methods=['POST'])
+def delete_survey_choice_by_id():
+    req = request.get_json()
+    survey_id = int(req.get("id"))
+    
+    survey_dao = SurveyDAO()
+    survey_dao.delete_survey_choice_by_id(survey_id)
+    
+    return jsonify({ "success": True }), 200
+
+
+@app.route("/api/delete-survey-cycle-by-id", methods=['POST'])
+def delete_survey_cycle_by_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id"))
+    
+    survey_dao = SurveyDAO()
+    survey_dao.delete_survey_cycle_by_id(cycle_id)
+    
+    return jsonify({ "success": True }), 200
