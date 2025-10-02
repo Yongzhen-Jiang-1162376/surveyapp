@@ -114,11 +114,25 @@ export class AjaxDataTable {
             ? `Showing ${start + 1} to ${end} of ${this.total} entries` 
             : `No entries to show`;
         
+        // close cycle action
         this.tableBody.querySelectorAll('.close-btn').forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
                 console.log(row.cycle_id);
                 this.closeSurvey();
+            });
+        });
+
+        // delete cycle action
+        this.tableBody.querySelectorAll('.delete-cycle-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                const cycle_id = row.cycle_id;
+                console.log(row.cycle_id);
+
+                if (!confirm("Are you sure you want to delete this survey cycle?")) return;
+
+                this.deleteSurveyCycle(cycle_id);
             });
         });
 
@@ -133,14 +147,30 @@ export class AjaxDataTable {
         let detailGrid = null;
 
         this.tableBody.querySelectorAll('tr').forEach((row, index) => {
-            row.addEventListener('click', async () => {
-                const cycle = this.datatable[index];
+            row.addEventListener('click', async (e) => {
+
+                if (e.target.closest('button')) return;
+
+                const row = e.target.closest('tr');
+                if (!row) return;
+
+                const rowsArray = Array.from(this.tableBody.querySelectorAll('tr'));
+                const rowIndex = Array.from(this.tableBody.children).indexOf(row);
+                const cycle = this.datatable[rowIndex];
                 console.log('Clicked cycle: ', cycle.cycle_id);
 
-                // Highlight selected row
-                this.tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('bg-gray-200'));
-                row.classList.add('bg-gray-200');
+                if (!cycle) return;
 
+                // Highlight selected row
+                const isAlreadySelected = row.classList.contains('!bg-blue-200');
+
+                // Remove highligh from all rows
+                rowsArray.forEach(r => r.classList.remove('!bg-blue-200'));
+
+                if (!isAlreadySelected) {
+                    row.classList.add('!bg-blue-200');
+                }
+                
                 // show detail table
                 const detailContainer = document.getElementById('detailTableContainer');
                 detailContainer.classList.remove('hidden');
@@ -162,37 +192,67 @@ export class AjaxDataTable {
                 //     this.detailGrid = null;
                 // }
 
-                console.log(data)
+                // console.log(data)
 
                 // Set the table headers
                 if (data.length) {
 
                     if (!detailGrid) {
                         detailGrid = new gridjs.Grid({
+                            resizable: true,
                             columns: [
                                 { name: 'Internal Id', hidden: true },
-                                'Session Id',
+                                { name: 'Session Id' },
                                 { name: 'Ques. Seq', width: '150px' },
                                 { name: 'Submitted At', width: '180px' },
                                 { name: 'Response Time', width: '180px' },
                                 { name: 'Invasive Plant Name', width: '280px' },
                                 { name: 'Non-Invasive Plant Name', width: '280px' },
-                                'Selected Plant Name',
+                                { name: 'Selected Plant Name', width: '280px' },
                                 {
+                                    id: 'action',
                                     name: '',
                                     sort: false,
                                     search: false,
-                                    width: '80px',
+                                    // width: '80px',
                                     formatter: (_, row) => {
                                         return gridjs.h('div', { 
                                         className: 'flex justify-center items-center' // center horizontally + vertically
                                         }, [
                                         gridjs.h('button', {
                                             className: 'text-red-600 hover:text-red-800 cursor-pointer flex items-center justify-center',
-                                            onClick: (e) => {
-                                            e.stopPropagation();
-                                            const internalId = row.cells[0].data;
-                                            console.log('Delete clicked for ID:', internalId);
+                                            onClick: async (e) => {
+                                                e.stopPropagation();
+                                                const internalId = row.cells[0].data;
+                                                console.log('Delete clicked for ID:', internalId);
+
+                                                if (!confirm("Are you sure you want to delete this survey record?")) return;
+
+                                                try {
+                                                    const res = await fetch('/api/delete-survey-choice-by-id', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({ id: internalId })
+                                                    });
+
+                                                    const data = await res.json();
+
+                                                    if(!res.ok || !data.success) {
+                                                        alert(data.message || "Failed to delete record", "error");
+                                                    } else {
+                                                        const newData = detailGrid.config.data
+                                                            .filter(r => r[0] !== internalId);
+                                                        
+                                                        if (newData.length === 0) {
+                                                            window.location.reload();
+                                                        } else {
+                                                            detailGrid.updateConfig({ data: newData }).forceRender();
+                                                        }
+                                                    }
+                                                } catch (err) {
+                                                    console.log(err)
+                                                    alert("Something went wrong", "error");
+                                                }
                                             }
                                         }, gridjs.html(`
                                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
@@ -224,12 +284,12 @@ export class AjaxDataTable {
                             sort: false,
                             className: {
                                 table: "w-full border-collapse border border-gray-300",
-                                th: "border px-3 py-2 text-left text-sm font-semibold uppercase !text-gray-800",
-                                td: "border px-3 py-2 whitespace-normal break-words"
+                                th: "border px-1 py-2 text-left text-sm font-semibold uppercase !text-gray-800 whitespace-normal break-words",
+                                td: "border px-1 py-2 whitespace-normal break-words"
                             },
-                            afterRender: () => {
-                                lucide.createIcons();
-                            }
+                            // afterRender: () => {
+                            //     lucide.createIcons();
+                            // }
                         }).render(detailDiv);
                         lucide.createIcons();
                     } else {
@@ -489,7 +549,28 @@ export class AjaxDataTable {
         };
 
         confirmBtn.addEventListener("click", confirmHandler);
+    }
 
+    async deleteSurveyCycle(cycle_id) {
+        try {
+            const res = await fetch(`/api/delete-survey-cycle-by-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cycle_id })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                alert(data.message || 'Failed to delete survey cycle.');
+                return false;
+            }
+            window.location.reload()
+        } catch (err) {
+            console.error(err)
+            alert('Error deleting survey cycle');
+            return false;
+        }
     }
 }
 
