@@ -236,3 +236,136 @@ class SurveyDAO(BaseDAO):
         """
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
+    
+    def get_survey_choice_detail_by_id(self, id):
+        query = """
+            select
+                session_id,
+                cycle_id
+            from survey_results
+            where id = %s;
+        """
+        result = self.execute_query(query, (id,))
+        return result[0]
+    
+    def get_survey_choice_detail_by_session_id(self, session_id):
+        query = """
+            select
+                id
+            from survey_results
+            where session_id = %s;
+        """
+        result = self.execute_query(query, (session_id,))
+        return result if result else []
+    
+    def get_survey_choice_detail_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                id
+            from survey_results
+            where cycle_id = %s;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+    
+    def delete_survey_meta_by_session_id(self, session_id):
+        query = """
+            delete from survey_metadata where session_id = %s;
+        """
+        self.execute_non_query(query, (session_id,))
+    
+    def cycle_id_is_active(self, cycle_id):
+        query = """
+            select id from survey_cycle where id = %s and active = 1;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return True if result else False
+    
+    def delete_survey_cycle_by_id(self, cycle_id):
+        query = """
+            delete from survey_cycle where id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+        
+    def delete_beta_score_by_invasive_type_hist_by_cycle_id(self, cycle_id):
+        query = """
+            delete from bt_beta_score_by_invasive_type_histogram where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+    
+    def delete_beta_score_heat_map_by_cycle_id(self, cycle_id):
+        query = """
+            delete from bt_beta_score_heat_map where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+    
+    def delete_beta_score_win_percentage_by_cycle_id(self, cycle_id):
+        query = """
+            delete from bt_beta_score_win_percentage where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+    
+    def delete_win_loss_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            delete from win_loss_by_plant where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+        
+    
+    def delete_survey_choice_by_id(self, id):
+        
+        session_id, cycle_id = self.get_survey_choice_detail_by_id(id)
+        # print(session_id, cycle_id)
+        
+        query = """
+            delete from survey_results where id = %s;
+        """
+        self.execute_non_query(query, (id,))
+        
+        # if all choices in that session has been deleted, then delete the metadata
+        meta_data_res = self.get_survey_choice_detail_by_session_id(session_id)
+        if not meta_data_res:
+            self.delete_survey_meta_by_session_id(session_id)
+        
+        # if all survey choices are deleted in the cycle, and the cycle is not
+        # the active one, then delete the cycle as well
+        cycle_data_res = self.get_survey_choice_detail_by_cycle_id(cycle_id)
+        if not cycle_data_res and not self.cycle_id_is_active(cycle_id):
+            self.delete_beta_score_heat_map_by_cycle_id(cycle_id)
+            self.delete_beta_score_by_invasive_type_hist_by_cycle_id(cycle_id)
+            self.delete_beta_score_win_percentage_by_cycle_id(cycle_id)
+            self.delete_win_loss_by_plant_by_cycle_id(cycle_id)
+            
+            self.delete_survey_cycle_by_id(cycle_id)
+
+
+    def delete_survey_cycle_by_id(self, cycle_id):
+        # delete survey metadata
+        query = """
+            delete from survey_metadata where session_id in
+            (
+                select 
+                distinct session_id
+                from survey_results
+                where cycle_id = %s
+            );
+        """
+        self.execute_non_query(query, (cycle_id,))
+        
+        # delete survey results
+        query = """
+            delete from survey_results where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+        
+        # delete analysis data for this cycle
+        self.delete_beta_score_heat_map_by_cycle_id(cycle_id)
+        self.delete_beta_score_by_invasive_type_hist_by_cycle_id(cycle_id)
+        self.delete_beta_score_win_percentage_by_cycle_id(cycle_id)
+        self.delete_win_loss_by_plant_by_cycle_id(cycle_id)
+        
+        # delete survey_cycle table only if the cycle is not active
+        query = """
+            delete from survey_cycle where id = %s and active != 1;
+        """
+        self.execute_non_query(query, (cycle_id,))
