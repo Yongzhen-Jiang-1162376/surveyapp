@@ -189,7 +189,7 @@
 <script type="module">
 import { AjaxDataTable } from "{{ url_for('static', filename='js/datatable.js') }}";
 
-new AjaxDataTable({
+const ajaxDataTable = new AjaxDataTable({
   apiUrl: "/api/survey-cycle-data",
   tableBodyId: "surveyCycleTableBodyId",
   prevBtnId: "prevBtn",
@@ -211,13 +211,13 @@ new AjaxDataTable({
         switch (row.status) {
           case 'Active':
             return `
-              <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full dark:bg-teal-500/10 dark:text-teal-500">
+              <span class="py-1 px-4 inline-flex items-center gap-x-1 text-sm rounded-md bg-teal-100 text-teal-800">
                 Active
               </span>
             `;
           case 'Closed':
             return `
-              <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+              <span class="py-1 px-4 inline-flex items-center gap-1.5 text-sm rounded-md bg-red-100 text-red-800">
                 Closed
               </span>
             `;
@@ -242,28 +242,42 @@ new AjaxDataTable({
     {
       header: 'Action',
       render: row => {
-        if (row.status === 'Active') {
+        let actionButtons = '';
 
-          return `
-            <button type="button" class="close-btn py-2 px-3 inline-flex items-center gap-x-2 
+        if (row.status === 'Active') {
+          actionButtons += `
+            <button type="button" class="close-btn w-28 py-2 px-3 inline-flex justify-center items-center gap-x-2 
                     text-sm font-medium rounded-lg border border-transparent 
                     bg-teal-500 text-white hover:bg-teal-600 cursor-pointer">
-              Close & Start a New Survey
+              Close
             </button>
           `;
         } else {
-          return `
-            <button type="button" class="recalculate-btn py-2 px-3 inline-flex items-center gap-x-2 
+          actionButtons += `
+            <button type="button" class="recalculate-btn w-28 py-2 px-3 inline-flex justify-center items-center gap-x-1 
                     text-sm font-medium rounded-lg border border-transparent 
                     bg-blue-500 text-white hover:bg-blue-600 cursor-pointer">
-              Recalculate
+              <i data-lucide="rotate-ccw" class="w-4 h-4 shrink-0"></i>Recalculate
             </button>
           `;
         }
+
+        // Add delete button for all survey cycles
+        actionButtons += `
+          <button class="delete-cycle-btn ml-2 py-2 px-3 text-red-600 hover:text-red-800 inline-flex items-center cursor-pointer" 
+                  data-id="${row.cycle_id}">
+            <i data-lucide="trash-2"></i>
+          </button>
+        `
+
+        return `<div class="flex items-center gap-2">${actionButtons}</div>`;
       }
     },
   ]
 });
+
+window.ajaxDataTable = ajaxDataTable;
+
 </script>
 
 <!-- <script>
