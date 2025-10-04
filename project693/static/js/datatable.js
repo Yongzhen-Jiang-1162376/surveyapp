@@ -15,6 +15,23 @@ export class AjaxDataTable {
 
         this.columns = options.columns;
 
+        this.notyf = new Notyf({
+            duration: 3000,
+            position: { x: 'right', y: 'top' },
+            dismissible: true,
+            types: [
+                {
+                    type: 'warning',
+                    background: '#f59e0b', // Tailwind amber-500
+                    icon: {
+                        className: 'material-icons',
+                        tagName: 'i',
+                        text: 'warning'
+                    }
+                }
+            ]
+        })
+
         this.init();
     }
 
@@ -119,7 +136,7 @@ export class AjaxDataTable {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
                 console.log(row.cycle_id);
-                this.closeSurvey();
+                this.closeSurvey(btn);
             });
         });
 
@@ -132,7 +149,19 @@ export class AjaxDataTable {
 
                 if (!confirm("Are you sure you want to delete this survey cycle?")) return;
 
-                this.deleteSurveyCycle(cycle_id);
+                this.deleteSurveyCycle(cycle_id, btn);
+            });
+        });
+        
+        // recalculate & refresh historical cycle
+        this.tableBody.querySelectorAll('.recalculate-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                const cycle_id = row.cycle_id;
+                console.log(row.cycle_id);
+
+                // if (!confirm("Are you sure you want to delete this survey cycle?")) return;
+                this.refreshSurveyCycle(cycle_id, btn);
             });
         });
 
@@ -238,8 +267,13 @@ export class AjaxDataTable {
                                                     const data = await res.json();
 
                                                     if(!res.ok || !data.success) {
-                                                        alert(data.message || "Failed to delete record", "error");
+                                                        this.notyf.open({
+                                                            type: 'warning',
+                                                            message: data.message,
+                                                            duration: 5000
+                                                        });
                                                     } else {
+                                                        this.notyf.success("Survey record deleted successfully");
                                                         const newData = detailGrid.config.data
                                                             .filter(r => r[0] !== internalId);
                                                         
@@ -290,7 +324,8 @@ export class AjaxDataTable {
                             // afterRender: () => {
                             //     lucide.createIcons();
                             // }
-                        }).render(detailDiv);
+                        });
+                        detailGrid.render(detailDiv);
                         lucide.createIcons();
                     } else {
                         detailGrid.updateConfig({
@@ -500,7 +535,7 @@ export class AjaxDataTable {
     }
     */
 
-    async closeSurvey() {
+    async closeSurvey(button) {
 
         const modal = document.getElementById("closeSurveyModal");
         const confirmBtn = document.getElementById("confirmCloseSurvey");
@@ -520,27 +555,49 @@ export class AjaxDataTable {
 
         // confirm handler
         const confirmHandler = async () => {
+            // hide modal immediately
+
+            modal.classList.add("hidden");
+
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                        </path>
+                    </svg> Closing...
+                `;
+            }
+
             try {
-                const res = await fetch('/api/close-survey', {
+                const res = await fetch(`/api/close-survey`, {
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
-                    // body: JSON.stringify({ cycle_id })
+                    body: JSON.stringify({})
                 });
 
                 const data = await res.json();
 
                 if (!res.ok || !data.success) {
-                    // alert(data.message);
-                    this.showToast(data.message, "error");
-                } else {
-                    // alert(data.message);
-                    this.showToast(data.message, "success");
-                    setTimeout(() => window.location.reload(), 1000);
+                    this.notyf.open({
+                        type: 'warning',
+                        message: data.message,
+                        duration: 5000
+                    });
+                    // this.showToast(data.message, "error");
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = "Close";
+
+                        return false;
+                    }
                 }
+                window.location.reload()
             } catch (err) {
                 console.error(err);
-                // alert("Something went wrong");
-                this.showToast("Something went wrong", "error");
+                this.notyf.error("Something is wrong. Please contact your administrator.");
             } finally {
                 modal.classList.add("hidden");
                 cancelBtn.removeEventListener("click", cancelHandler);
@@ -551,7 +608,19 @@ export class AjaxDataTable {
         confirmBtn.addEventListener("click", confirmHandler);
     }
 
-    async deleteSurveyCycle(cycle_id) {
+    async deleteSurveyCycle(cycle_id, button) {
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg> Deleting...
+            `;
+        }
+
         try {
             const res = await fetch(`/api/delete-survey-cycle-by-id`, {
                 method: 'POST',
@@ -562,13 +631,64 @@ export class AjaxDataTable {
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                alert(data.message || 'Failed to delete survey cycle.');
+                this.notyf.error('Failed to delete survey cycle.')
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Refresh";
+                }
                 return false;
             }
             window.location.reload()
         } catch (err) {
             console.error(err)
-            alert('Error deleting survey cycle');
+            // alert('Error deleting survey cycle');
+            this.notyf.error('Failed to delete survey cycle.')
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Refresh";
+            }
+            return false;
+        }
+    }
+
+    async refreshSurveyCycle(cycle_id, button) {
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg> Refreshing...
+            `;
+        }
+
+        try {
+            const res = await fetch(`/api/refresh-survey-cycle-by-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cycle_id })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                this.notyf.warning('Failed to refresh survey cycle.');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Refresh";
+                }
+                return false;
+            }
+            window.location.reload()
+        } catch (err) {
+            console.error(err)
+            this.notyf.warning('Error refreshing survey cycle');
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Refresh";
+            }
             return false;
         }
     }
