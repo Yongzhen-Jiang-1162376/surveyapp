@@ -43,7 +43,6 @@ class SurveyDAO(BaseDAO):
         """
         
         cycle_id = self.get_active_survey_cycle_id()
-        print(cycle_id)
         
         plantDao = PlantDAO()
         plant = plantDao.get_plant_by_id(answer.selected_plant_id)
@@ -340,6 +339,16 @@ class SurveyDAO(BaseDAO):
 
 
     def delete_survey_cycle_by_id(self, cycle_id):
+        
+        # need to delete survey_results first because of foreign key
+        
+        # delete survey results
+        query = """
+            delete from survey_results where cycle_id = %s;
+        """
+        self.execute_non_query(query, (cycle_id,))
+        
+        
         # delete survey metadata
         query = """
             delete from survey_metadata where session_id in
@@ -349,12 +358,6 @@ class SurveyDAO(BaseDAO):
                 from survey_results
                 where cycle_id = %s
             );
-        """
-        self.execute_non_query(query, (cycle_id,))
-        
-        # delete survey results
-        query = """
-            delete from survey_results where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
         
