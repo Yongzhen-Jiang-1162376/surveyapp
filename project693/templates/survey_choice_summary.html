@@ -19,6 +19,10 @@
       </div>
     </div>
   </div>
+
+  <div class="flex justify-between items-center mb-8 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 max-w-2xl">
+    Click below to see the AI-generated description of the plant.
+  </div>
   
   <section id="cards" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {% for plant in data['plants'] %}
@@ -36,7 +40,7 @@
 
   <div id="hs-offcanvas-nav-with-backdrop" class="hs-overlay hs-overlay-open:translate-x-0 hs-overlay-backdrop-open:bg-blue-950/50 hidden translate-x-full fixed top-0 end-0 transition-all duration-300 transform h-full max-w-lg w-full z-80 bg-white border-e border-gray-200">
     <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
-      <h3 id="hs-offcanvas-example-label" class="font-bold text-gray-800">
+      <h3 id="hs-offcanvas-example-label" class="font-bold text-gray-800 text-lg">
         Plant Information
       </h3>
       <button type="button" class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200" data-hs-overlay="#hs-offcanvas-nav-with-backdrop">
@@ -86,7 +90,7 @@ document.querySelectorAll("article").forEach(card => {
       const formatted = data.description
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
         .split("\n\n")
-        .map(p => `<p>${p}</p><p>&nbsp;</p>`)
+        .map(p => `<p class="text-lg">${p}</p><p>&nbsp;</p>`)
         .join("");
       
       // Clear any previous Typed instance

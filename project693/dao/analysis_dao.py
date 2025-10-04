@@ -6,55 +6,94 @@ class AnalysisDAO(BaseDAO):
     def __init__(self) -> None:
         super().__init__()
     
-    def list_survey_plants(self):
+    def list_survey_plants(self, cycle_id=None):
         """
         list all plants which have been chosen for survey
         """
         
-        query = """
-            select
-                p.id,
-                p.name
-            from plants p
-            inner join
-            (
-                select distinct invasive_plant_id as plant_id from survey_results where active = 1
-                union
-                select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
-            ) sr
-            on p.id = sr.plant_id
-            order by p.id;
-        """
+        query = None
+        result = None
         
-        result = self.execute_query(query)
+        if not cycle_id:
+            query = """
+                select
+                    p.id,
+                    p.name
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results where active = 1
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            result = self.execute_query(query)
+        else:
+            query = """
+                select
+                    p.id,
+                    p.name
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results where cycle_id = %s
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results where cycle_id = %s
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            result = self.execute_query(query, (cycle_id, cycle_id))
         
         return result if result else []
 
 
-    def list_survey_plants_invasiveness(self):
+    def list_survey_plants_invasiveness(self, cycle_id=None):
         """
         list all plants which have been chosen for survey
         """
         
-        query = """
-            select
-                p.id,
-                p.invasiveness
-            from plants p
-            inner join
-            (
-                select distinct invasive_plant_id as plant_id from survey_results where active = 1
-                union
-                select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
-            ) sr
-            on p.id = sr.plant_id
-            order by p.id;
-        """
+        query = None
+        result = None
         
-        result = self.execute_query(query)
-        
+        if not cycle_id:
+            query = """
+                select
+                    p.id,
+                    p.invasiveness
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results where active = 1
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            
+            result = self.execute_query(query)
+        else:
+            query = """
+                select
+                    p.id,
+                    p.invasiveness
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results where cycle_id = %s
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results where cycle_id = %s
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            
+            result = self.execute_query(query, (cycle_id, cycle_id))
         return result if result else []
-    
+
     
     def get_current_average_response_time(self):
         query = """
@@ -62,6 +101,14 @@ class AnalysisDAO(BaseDAO):
         """
         
         result = self.execute_query(query)
+        return result[0][0] if result else 0
+
+    def get_average_response_time_by_cycle_id(self, cylce_id):
+        query = """
+            select round(avg(response_time), 6) as avg_response_time from survey_results where cycle_id = %s;
+        """
+        
+        result = self.execute_query(query, (cylce_id,))
         return result[0][0] if result else 0
     
     def get_average_response_time_by_cycle_id(self, cycle_id):
@@ -84,29 +131,45 @@ class AnalysisDAO(BaseDAO):
         return result[0][0] if result else 0
     
     
-    def list_survey_results(self):
+    def list_survey_results(self, cycle_id):
         
-        avg_response_time = self.get_current_average_response_time()
-        # print('average response time')
-        # print(avg_response_time)
+        avg_response_time = None
+        query = None
+        result = None
         
         # if the response time is null, then set it as the average response time
         # Theoretically speaking, null response time is very much unlikely 
         # because the timing is only recorded after user submits
-        query = """
-            select
-                sr.winner,
-                sr.loser,
-                ifnull(sr.response_time, %s) as response_time,
-                sr.invasive_winner,
-                sr.invasive_loser
-            from survey_results sr
-            where sr.active = 1
-            order by sr.id;
-        """
         
-        result = self.execute_query(query, (avg_response_time,))
-        
+        if cycle_id:
+            avg_response_time = self.get_average_response_time_by_cycle_id(cycle_id)
+            query = """
+                select
+                    sr.winner,
+                    sr.loser,
+                    ifnull(sr.response_time, %s) as response_time,
+                    sr.invasive_winner,
+                    sr.invasive_loser
+                from survey_results sr
+                where sr.cycle_id = %s
+                order by sr.id;
+            """
+            result = self.execute_query(query, (avg_response_time, cycle_id))
+        else:
+            avg_response_time = self.get_current_average_response_time()
+            query = """
+                select
+                    sr.winner,
+                    sr.loser,
+                    ifnull(sr.response_time, %s) as response_time,
+                    sr.invasive_winner,
+                    sr.invasive_loser
+                from survey_results sr
+                where sr.active = 1
+                order by sr.id;
+            """
+            result = self.execute_query(query, (avg_response_time,))
+
         return result if result else []
 
 
@@ -520,6 +583,60 @@ class AnalysisDAO(BaseDAO):
         """
         result = self.execute_query(query, (cycle_id,))        
         return result if result else []
+    
+    def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                plant_id,
+                plant_name,
+                invasiveness,
+                win,
+                loss
+            from win_loss_by_plant
+            where cycle_id = %s
+            order by plant_name;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+
+
+    def list_beta_score_by_plant_type_histogram_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                bin_no,
+                bin_left,
+                bin_right,
+                invasive_count,
+                non_invasive_count,
+                bin_left_weighted,
+                bin_right_weighted,
+                invasive_count_weighted,
+                non_invasive_count_weighted
+            from bt_beta_score_by_invasive_type_histogram where cycle_id = %s
+            order by bin_no;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+    
+    def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
+        query = """
+            select
+                cycle_id,
+                plant_a_id,
+                plant_a_name,
+                plant_b_id,
+                plant_b_name,
+                plant_a_beats_b,
+                plant_a_beats_b_weighted
+                from bt_beta_score_heat_map
+                where cycle_id = %s
+            order by plant_a_name, plant_b_name;        
+        """
+        result = self.execute_query(query, (cycle_id,))
+        return result if result else []
+
 
     def delete_beta_score_heat_map_by_plant(self, cycle_id):
         query = """
