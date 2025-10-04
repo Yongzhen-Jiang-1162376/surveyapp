@@ -15,9 +15,9 @@ plant_dao = PlantDAO()
 survey_dao = SurveyDAO()
 
 
-def save_data_to_db(data):
-    time.sleep(10)
-    print(f"Saved to DB: {data}")
+# def save_data_to_db(data):
+    # time.sleep(10)
+    # print(f"Saved to DB: {data}")
 
 
 @app.route("/survey/", methods=["GET", "POST"])

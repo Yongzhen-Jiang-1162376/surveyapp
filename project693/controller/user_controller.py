@@ -33,6 +33,26 @@ def profile():
     return render_template("user/profile.html", user=user)
 
 
+
+@app.route("/siteadmin/update_profile_image/", methods=["POST"])
+def update_profile_image():
+    user_id = session["user_id"]
+    user_dao = UserDao()
+    user = user_dao.find_by_id(user_id)
+    file = request.files.get("profile_image")
+    
+    if file and file.filename != "" and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        user.avatar = filename
+        user_dao.update_user(user)
+        flash("Profile image updated successfully!", "success")
+        return redirect(url_for("update_profile"))
+    else:
+        flash("No file selected or invalid file type.", "warning")
+        return redirect(url_for("update_profile"))
+
+
 @app.route("/siteadmin/update_profile/", methods=["GET", "POST"])
 def update_profile():
     user_id = session["user_id"]
@@ -59,17 +79,18 @@ def update_profile():
         lon_value = request.form.get("lon")
 
         # Validate lat/lon
-        if not lat_value or not lon_value:
+        if not user.location and (not lat_value or not lon_value):
             flash("Latitude and longitude values are required.", "warning")
             return redirect(url_for("update_profile"))
-
-        try:
-            updated_lat = round(float(lat_value), 2)
-            updated_lon = round(float(lon_value), 2)
-            user.location = json.dumps({"lat": updated_lat, "lon": updated_lon})
-        except ValueError:
-            flash("Invalid latitude or longitude values. Please enter valid numbers.")
-            return redirect(url_for("update_profile"))
+        
+        if lat_value and lon_value:
+            try:
+                updated_lat = round(float(lat_value), 2)
+                updated_lon = round(float(lon_value), 2)
+                user.location = json.dumps({"lat": updated_lat, "lon": updated_lon})
+            except ValueError:
+                flash("Invalid latitude or longitude values. Please enter valid numbers.")
+                return redirect(url_for("update_profile"))
 
         # Check and update email
         if updated_email:
@@ -86,6 +107,6 @@ def update_profile():
         user_dao.update_user(user)
 
         flash("Profile updated successfully!")
-        return redirect(url_for("update_profile"))
+        return redirect(url_for("profile"))
 
     return render_template("user/update_profile.html", user=user)

@@ -6,22 +6,15 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.dao.survey_dao import SurveyDAO
 from project693.utils.session_manager import SessionManager
 from project693.core.analysis_calculation import (
-    beta_vs_win_percentage,
     beta_vs_win_percentage_V2,
     beta_vs_win_percentage_datatable,
-    beta_scores_by_image,
     beta_scores_by_image_V2,
-    beta_score_by_plant_datatable,
-    beta_scores_by_plant_type,
     beta_scores_by_plant_type_V2,
     beta_scores_by_plant_type_datatable,
-    win_loss_by_image,
     win_loss_by_image_V2,
     win_loss_by_plant_datatable,
-    beta_scores_heat_map,
     beta_scores_heat_map_V2,
     beta_score_heat_map_datatable,
-    beta_scores_ranking,
     beta_scores_ranking_V2,
     initialize
 )
@@ -48,7 +41,7 @@ def bradley_terry_model():
     )
     
     # analysis_dao = AnalysisDAO()
-    initialize()
+    # initialize()
     
     survey_dao = SurveyDAO()
     analysis_dao = AnalysisDAO()
@@ -77,6 +70,8 @@ def bradley_terry_model():
     ]
     
     # rows = beta_vs_win_percentage_datatable()
+    
+    # datatable data
     beta_vs_win_percentage_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
@@ -101,7 +96,7 @@ def bradley_terry_model():
         for r in db_rows
     ]
 
-    # datatable for downloading
+    # datatable data
     beta_score_by_plant_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
@@ -114,7 +109,27 @@ def bradley_terry_model():
     beta_scores_by_plant_type_uw_script, beta_scores_by_plant_type_uw_div = components(beta_scores_by_plant_type_uw)
     beta_scores_by_plant_type_w_script, beta_scores_by_plant_type_w_div = components(beta_scores_by_plant_type_w)
     
-    rows = beta_scores_by_plant_type_datatable()
+    # rows = beta_scores_by_plant_type_datatable()
+    
+    plant_type_hist_rows = analysis_dao.list_beta_score_by_plant_type_histogram_by_cycle_id(cycle_id)
+    
+    rows = [
+        {
+            'Bin_Number': r[1],
+            'Bin_Left': r[2],
+            'Bin_Right': r[3],
+            'Invasive_Count': r[4],
+            'Non_Invasive_Count': r[5],
+            'Bin_Number_Weighted': r[1],
+            'Bin_Left_Weighted': r[6],
+            'Bin_Right_Weighted': r[7],
+            'Invasive_Count_Weighted': r[8],
+            'Non_Invasive_Count_Weighted': r[9]
+        }
+        for r in plant_type_hist_rows
+    ]
+    
+    # datatable data
     beta_scores_by_plant_type_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
@@ -129,8 +144,22 @@ def bradley_terry_model():
     win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
     win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
     
-    rows = win_loss_by_plant_datatable()
+    # rows = win_loss_by_plant_datatable()
     
+    win_loss_db_rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
+    
+    rows = [
+        {
+            'plant_id': r[1],
+            'plant': r[2],
+            'invasiveness': r[3],
+            'win': r[4],
+            'loss': r[5]
+        }
+        for r in win_loss_db_rows
+    ]
+    
+    # datatable data
     win_loss_by_plant_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
@@ -142,7 +171,23 @@ def bradley_terry_model():
     beta_scores_heat_map_by_image_uw_script, beta_scores_heat_map_by_image_uw_div = components(beta_scores_heat_map_uw)
     beta_scores_heat_map_by_image_w_script, beta_scores_heat_map_by_image_w_div = components(beta_scores_heat_map_w)
     
-    rows = beta_score_heat_map_datatable()
+    # rows = beta_score_heat_map_datatable()
+    
+    # datatable data
+    heat_map_rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
+ 
+    rows = [
+        {
+            'Plant_A_Id': r[1],
+            'Plant_A': r[2],
+            'Plant_B_Id': r[3],
+            'Plant_B': r[4],
+            'A_Beats_B': 'NA' if not r[5] else r[5],
+            'A_Beats_B_Weighted': 'NA' if not r[6] else r[6]
+        }
+        for r in heat_map_rows
+    ]
+    
     beta_score_heat_map_dt = {
         'columns': list(rows[0].keys()),
         'rows': rows
@@ -156,6 +201,7 @@ def bradley_terry_model():
     
     # rows = beta_score_by_plant_datatable()
     
+    # datatable data
     rows = [
         {
             'plant': r[2],

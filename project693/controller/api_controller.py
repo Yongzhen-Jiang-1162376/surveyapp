@@ -7,7 +7,7 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
-from project693.core.analysis_calculation import save_survey_cycle_analysis_data
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data, refresh_survey_cycle_analysis_data_by_cycle_id
 from flask import send_file
 from io import BytesIO, StringIO
 import csv
@@ -193,7 +193,7 @@ def close_survey():
         return jsonify({
             'success': False,
             'message': 'No survey results in this cycle.\nPlease fill out some surveys.'
-        }), 404
+        })
 
     # save analysis data for current survey cycle
     save_survey_cycle_analysis_data()
@@ -408,7 +408,8 @@ def plant_info():
 
     # Use the Responses API
     response = client.responses.create(
-        model="gpt-5-nano",
+        # model="gpt-5-nano",
+        model="gpt-4.1-nano",
         input=[
             {"role": "system", "content": "You are a helpful botanist assistant."},
             {"role": "user", "content": prompt}
@@ -426,3 +427,47 @@ def plant_info():
     description = html.unescape(description)
 
     return jsonify({"description": description})
+
+
+@app.route("/api/survey-cycle-detail", methods=["POST"])
+def survey_cycle_detail_by_cycle_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id"))
+    
+    survey_dao = SurveyDAO()
+    
+    datatable = survey_dao.list_survey_cycle_detail_data(cycle_id)
+    
+    return jsonify({ "datatable": datatable })
+
+
+@app.route("/api/delete-survey-choice-by-id", methods=['POST'])
+def delete_survey_choice_by_id():
+    req = request.get_json()
+    survey_id = int(req.get("id"))
+    
+    survey_dao = SurveyDAO()
+    survey_dao.delete_survey_choice_by_id(survey_id)
+    
+    return jsonify({ "success": True }), 200
+
+
+@app.route("/api/delete-survey-cycle-by-id", methods=['POST'])
+def delete_survey_cycle_by_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id"))
+    
+    survey_dao = SurveyDAO()
+    survey_dao.delete_survey_cycle_by_id(cycle_id)
+    
+    return jsonify({ "success": True }), 200
+
+
+@app.route("/api/refresh-survey-cycle-by-id", methods=['POST'])
+def refresh_survey_cycle_by_id():
+    req = request.get_json()
+    cycle_id = int(req.get("cycle_id"))
+    
+    refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id)
+    
+    return jsonify({ "success": True }), 200

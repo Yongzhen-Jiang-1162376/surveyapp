@@ -4,10 +4,144 @@
 {% block title %}Update Profile{% endblock %}
 
 {% block content %}
+<div class="bg-gray-100 mx-auto px-4 py-8">
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-semibold">Update Your Profile</h2>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+        {% for category, message in messages %}
+        <p class="mb-1">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="flex justify-center">
+        <div class="w-full md:w-3/4 lg:w-2/3">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-6">
+                <!-- Profile Image -->
+                <div class="flex flex-col items-center mb-6">
+                    <img src="{{ url_for('static', filename='img/' ~ user.avatar if user.avatar != 'default.png' else 'img/default.png') }}"
+                         alt="Avatar"
+                         class="rounded-full w-36 h-36 object-cover mb-4" />
+
+                    <form id="uploadForm"
+                          method="POST"
+                          action="{{ url_for('update_profile_image') }}"
+                          enctype="multipart/form-data"
+                          class="flex flex-col items-center gap-3">
+                        <input type="file"
+                               name="profile_image"
+                               id="profile_image"
+                               accept="image/*"
+                               class="block w-full px-3 py-2 text-gray-600 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" />
+                        <button type="submit"
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                            Update Image
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Update Form -->
+                <form method="POST" action="{{ url_for('update_profile') }}" class="space-y-6">
+                    <div class="overflow-x-auto">
+                        <table class="table-auto w-full border border-gray-200">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th colspan="2" class="py-2 text-center">Update Profile Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100 w-1/3">
+                                        Email <span class="text-red-500">*</span>
+                                    </th>
+                                    <td class="px-4 py-2">
+                                        <input type="email" name="email" value="{{ user.email }}" required
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100">
+                                        First Name <span class="text-red-500">*</span>
+                                    </th>
+                                    <td class="px-4 py-2">
+                                        <input type="text" name="first_name" value="{{ user.first_name or '' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100">
+                                        Last Name <span class="text-red-500">*</span>
+                                    </th>
+                                    <td class="px-4 py-2">
+                                        <input type="text" name="last_name" value="{{ user.last_name or '' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100">Description</th>
+                                    <td class="px-4 py-2">
+                                        <input type="text" name="description" value="{{ user.description or '' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100">
+                                        Country <span class="text-red-500">*</span>
+                                    </th>
+                                    <td class="px-4 py-2">
+                                        <select id="country" name="country"
+                                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"></select>
+                                    </td>
+                                </tr>
+                                <tr class="border-b">
+                                    <th class="text-left px-4 py-2 bg-gray-100">Location</th>
+                                    <td class="px-4 py-2">
+                                        <input type="text" id="address" name="address"
+                                               placeholder="Enter a city or choose from map"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 focus:ring-2 focus:ring-green-500 focus:outline-none" />
+                                        <ul id="address-suggestions" class="bg-white border rounded-lg shadow-md text hidden"></ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-left px-4 py-2 bg-gray-100">
+                                        Map View <span class="text-red-500">*</span>
+                                    </th>
+                                    <td class="px-4 py-2">
+                                        <small class="block text-gray-500 mb-2">
+                                            Your location is rounded to protect your privacy, with ~1 KM margin of error.
+                                        </small>
+                                        <div id="map" class="w-full h-72 mt-2 rounded-lg border"></div>
+                                        <input type="hidden" id="lat" name="lat" />
+                                        <input type="hidden" id="lon" name="lon" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="submit"
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                            Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 
 <div class="container mt-5">
     <h2 class="text-center mb-4">Update Your Profile</h2>
     <hr class="my-3" />
-    <!-- Display flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
     <div class="alert alert-info">
         {% for category, message in messages %}
@@ -16,7 +150,6 @@
     </div>
     {% endif %} {% endwith %}
 
-    <!-- Profile Image Update Form -->
     <div class="text-center mb-4">
         <img src="{{ url_for('static', filename='img/' ~ user.avatar if user.avatar != 'default.png' else 'img/default.png') }}" alt="Avatar" class="rounded-circle" style="width: 150px; height: 150px" />
     </div>
@@ -28,7 +161,6 @@
         <button type="submit" class="btn btn-dark">Update Image</button>
     </form>
 
-    <!-- Profile Details Update Form -->
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm p-4 mb-4">
@@ -65,7 +197,6 @@
                                 <th style="width: 35%; background-color: #f8f9fa">Description</th>
                                 <td><input type="text" class="form-control" name="description" value="{{ user.description or '' }}" /></td>
                             </tr>
-                            <!-- Country selection -->
                             <tr>
                                 <th style="width: 35%; background-color: #f8f9fa">
                                     Country
@@ -75,7 +206,6 @@
                                     <select id="country" class="form-control" name="country"></select>
                                 </td>
                             </tr>
-                            <!-- City or Town input -->
                             <tr>
                                 <th style="width: 35%; background-color: #f8f9fa">Location</th>
                                 <td>
@@ -104,7 +234,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Leaflet.js and Country Selector Integration -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -362,36 +492,63 @@
         });
     });
 
-    var geocodeUrl = "https://nominatim.openstreetmap.org/search?format=json&q=";
-    document.getElementById("address").addEventListener("input", function () {
-        var country = document.getElementById("country").value;
-        var query = this.value;
-        if (query.length > 2) {
-            var fullQuery = query + ", " + country;
-            fetch(geocodeUrl + encodeURIComponent(fullQuery) + "&addressdetails=1&limit=5")
-                .then((response) => response.json())
-                .then((data) => {
-                    var suggestions = document.getElementById("address-suggestions");
-                    suggestions.innerHTML = "";
-                    data.forEach(function (location) {
-                        var suggestionItem = document.createElement("li");
-                        suggestionItem.classList.add("list-group-item");
-                        suggestionItem.innerText = location.display_name;
-                        suggestionItem.onclick = function () {
-                            var lat = location.lat;
-                            var lon = location.lon;
-                            document.getElementById("lat").value = lat;
-                            document.getElementById("lon").value = lon;
-                            marker.setLatLng([lat, lon]);
-                            map.setView([lat, lon], 15);
-                            suggestions.innerHTML = "";
-                            document.getElementById("address").value = location.display_name;
-                        };
-                        suggestions.appendChild(suggestionItem);
+    document.addEventListener("DOMContentLoaded", function() {
+        var geocodeUrl = "https://nominatim.openstreetmap.org/search?format=json&q=";
+
+        var suggestions = document.getElementById("address-suggestions");
+        let debounceTimer = null;
+
+
+        document.getElementById("address").addEventListener("input", function () {
+            var country = document.getElementById("country").value;
+            var query = this.value;
+
+            suggestions.innerHTML = "";
+            suggestions.style.display = "none";
+
+            if (query.length < 3) return;
+
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+                var fullQuery = query + ", " + country;
+                fetch(geocodeUrl + encodeURIComponent(fullQuery) + "&addressdetails=1&limit=5")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.length === 0) return;
+
+                        // var suggestions = document.getElementById("address-suggestions");
+                        suggestions.style.display = "block";
+
+                        data.forEach(function (location) {
+                            var suggestionItem = document.createElement("li");
+                            // suggestionItem.classList.add("list-group-item");
+                            suggestionItem.classList.add(
+                                "px-3",
+                                "py-2",
+                                "cursor-pointer",
+                                "hover:bg-gray-200",
+                                "border-b"
+                            );
+                            suggestionItem.innerText = location.display_name;
+                            suggestionItem.onclick = function () {
+                                var lat = location.lat;
+                                var lon = location.lon;
+                                document.getElementById("lat").value = lat;
+                                document.getElementById("lon").value = lon;
+                                marker.setLatLng([lat, lon]);
+                                map.setView([lat, lon], 15);
+                                suggestions.innerHTML = "";
+                                document.getElementById("address").value = location.display_name;
+                            };
+                            suggestions.appendChild(suggestionItem);
+                        });
                     });
-                });
-        }
-    });
+            }, 1000);   // 1 second debounce
+        });
+    })
+
+    
 </script>
 <style>
     #map {

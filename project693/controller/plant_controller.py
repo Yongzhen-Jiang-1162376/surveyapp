@@ -91,8 +91,6 @@ def edit_plant(id):
         name = request.form["name"]
         description = request.form["description"]     
         invasiveness = request.form["invasiveness"]
-        print('invasiveness')
-        print(invasiveness)    
         file = request.files.get("image")
         
         if not name:

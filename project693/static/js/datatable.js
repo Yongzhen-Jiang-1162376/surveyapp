@@ -15,6 +15,23 @@ export class AjaxDataTable {
 
         this.columns = options.columns;
 
+        this.notyf = new Notyf({
+            duration: 3000,
+            position: { x: 'right', y: 'top' },
+            dismissible: true,
+            types: [
+                {
+                    type: 'warning',
+                    background: '#f59e0b', // Tailwind amber-500
+                    icon: {
+                        className: 'material-icons',
+                        tagName: 'i',
+                        text: 'warning'
+                    }
+                }
+            ]
+        })
+
         this.init();
     }
 
@@ -94,7 +111,7 @@ export class AjaxDataTable {
         const totalPages = Math.max(1, Math.ceil(this.total / this.rowsPerPage));
 
         this.tableBody.innerHTML = this.datatable.map(row => `
-            <tr class="odd:bg-white even:bg-gray-50">
+            <tr class="odd:bg-white even:bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
                 ${this.columns.map(col => {
                     if (col.key) {
                         return `<td class="border border-gray-300 px-3 py-2">${row[col.key] ?? ''}</td>`
@@ -114,11 +131,37 @@ export class AjaxDataTable {
             ? `Showing ${start + 1} to ${end} of ${this.total} entries` 
             : `No entries to show`;
         
+        // close cycle action
         this.tableBody.querySelectorAll('.close-btn').forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
                 console.log(row.cycle_id);
-                this.closeSurvey();
+                this.closeSurvey(btn);
+            });
+        });
+
+        // delete cycle action
+        this.tableBody.querySelectorAll('.delete-cycle-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                const cycle_id = row.cycle_id;
+                console.log(row.cycle_id);
+
+                if (!confirm("Are you sure you want to delete this survey cycle?")) return;
+
+                this.deleteSurveyCycle(cycle_id, btn);
+            });
+        });
+        
+        // recalculate & refresh historical cycle
+        this.tableBody.querySelectorAll('.recalculate-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const row = this.datatable[index];
+                const cycle_id = row.cycle_id;
+                console.log(row.cycle_id);
+
+                // if (!confirm("Are you sure you want to delete this survey cycle?")) return;
+                this.refreshSurveyCycle(cycle_id, btn);
             });
         });
 
@@ -129,7 +172,184 @@ export class AjaxDataTable {
                 this.downloadCycleResultsCSV(row.cycle_id);
             });
         });
-        
+
+        let detailGrid = null;
+
+        this.tableBody.querySelectorAll('tr').forEach((row, index) => {
+            row.addEventListener('click', async (e) => {
+
+                if (e.target.closest('button')) return;
+
+                const row = e.target.closest('tr');
+                if (!row) return;
+
+                const rowsArray = Array.from(this.tableBody.querySelectorAll('tr'));
+                const rowIndex = Array.from(this.tableBody.children).indexOf(row);
+                const cycle = this.datatable[rowIndex];
+                console.log('Clicked cycle: ', cycle.cycle_id);
+
+                if (!cycle) return;
+
+                // Highlight selected row
+                const isAlreadySelected = row.classList.contains('!bg-blue-200');
+
+                // Remove highligh from all rows
+                rowsArray.forEach(r => r.classList.remove('!bg-blue-200'));
+
+                if (!isAlreadySelected) {
+                    row.classList.add('!bg-blue-200');
+                }
+                
+                // show detail table
+                const detailContainer = document.getElementById('detailTableContainer');
+                detailContainer.classList.remove('hidden');
+
+                // Fetch detail data for this cycle
+                const res = await fetch(`/api/survey-cycle-detail`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cycle_id: cycle.cycle_id })
+                });
+                const result = await res.json();
+                const data = result.datatable || [];
+
+                const detailDiv = document.getElementById("detailTable");
+
+                // clear any existing Grid.js instance
+                // if (this.detailGrid) {
+                //     this.detailGrid.destroy();
+                //     this.detailGrid = null;
+                // }
+
+                // console.log(data)
+
+                // Set the table headers
+                if (data.length) {
+
+                    if (!detailGrid) {
+                        detailGrid = new gridjs.Grid({
+                            resizable: true,
+                            columns: [
+                                { name: 'Internal Id', hidden: true },
+                                { name: 'Session Id' },
+                                { name: 'Ques. Seq', width: '150px' },
+                                { name: 'Submitted At', width: '180px' },
+                                { name: 'Response Time', width: '180px' },
+                                { name: 'Invasive Plant Name', width: '280px' },
+                                { name: 'Non-Invasive Plant Name', width: '280px' },
+                                { name: 'Selected Plant Name', width: '280px' },
+                                {
+                                    id: 'action',
+                                    name: '',
+                                    sort: false,
+                                    search: false,
+                                    // width: '80px',
+                                    formatter: (_, row) => {
+                                        return gridjs.h('div', { 
+                                        className: 'flex justify-center items-center' // center horizontally + vertically
+                                        }, [
+                                        gridjs.h('button', {
+                                            className: 'text-red-600 hover:text-red-800 cursor-pointer flex items-center justify-center',
+                                            onClick: async (e) => {
+                                                e.stopPropagation();
+                                                const internalId = row.cells[0].data;
+                                                console.log('Delete clicked for ID:', internalId);
+
+                                                if (!confirm("Are you sure you want to delete this survey record?")) return;
+
+                                                try {
+                                                    const res = await fetch('/api/delete-survey-choice-by-id', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({ id: internalId })
+                                                    });
+
+                                                    const data = await res.json();
+
+                                                    if(!res.ok || !data.success) {
+                                                        this.notyf.open({
+                                                            type: 'warning',
+                                                            message: data.message,
+                                                            duration: 5000
+                                                        });
+                                                    } else {
+                                                        this.notyf.success("Survey record deleted successfully");
+                                                        const newData = detailGrid.config.data
+                                                            .filter(r => r[0] !== internalId);
+                                                        
+                                                        if (newData.length === 0) {
+                                                            window.location.reload();
+                                                        } else {
+                                                            detailGrid.updateConfig({ data: newData }).forceRender();
+                                                        }
+                                                    }
+                                                } catch (err) {
+                                                    console.log(err)
+                                                    alert("Something went wrong", "error");
+                                                }
+                                            }
+                                        }, gridjs.html(`
+                                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        `))
+                                        ]);
+                                    }
+                                }
+                            ],
+                            data: data.map(row => [
+                                row[0],
+                                row[1],
+                                row[2],
+                                row[3],
+                                row[4],
+                                row[6],
+                                row[8],
+                                row[10],
+                                null
+                            ]),
+                            pagination: { enabled: true, limit: 10 },
+                            search: true,
+                            sort: false,
+                            className: {
+                                table: "w-full border-collapse border border-gray-300",
+                                th: "border px-1 py-2 text-left text-sm font-semibold uppercase !text-gray-800 whitespace-normal break-words",
+                                td: "border px-1 py-2 whitespace-normal break-words"
+                            },
+                            // afterRender: () => {
+                            //     lucide.createIcons();
+                            // }
+                        });
+                        detailGrid.render(detailDiv);
+                        lucide.createIcons();
+                    } else {
+                        detailGrid.updateConfig({
+                            data: data.map(row => [
+                                row[0],
+                                row[1],
+                                row[2],
+                                row[3],
+                                row[4],
+                                row[6],
+                                row[8],
+                                row[10],
+                                null
+                            ])
+                        }).forceRender();
+
+                        lucide.createIcons();
+                    }
+                } else {
+                    detailDiv.innerHTML = `<div class="text-gray-500">No detail data found.</div>`;
+                }
+            });
+        });
+
         lucide.createIcons();
     }
 
@@ -315,7 +535,7 @@ export class AjaxDataTable {
     }
     */
 
-    async closeSurvey() {
+    async closeSurvey(button) {
 
         const modal = document.getElementById("closeSurveyModal");
         const confirmBtn = document.getElementById("confirmCloseSurvey");
@@ -335,27 +555,49 @@ export class AjaxDataTable {
 
         // confirm handler
         const confirmHandler = async () => {
+            // hide modal immediately
+
+            modal.classList.add("hidden");
+
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                        </path>
+                    </svg> Closing...
+                `;
+            }
+
             try {
-                const res = await fetch('/api/close-survey', {
+                const res = await fetch(`/api/close-survey`, {
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
-                    // body: JSON.stringify({ cycle_id })
+                    body: JSON.stringify({})
                 });
 
                 const data = await res.json();
 
                 if (!res.ok || !data.success) {
-                    // alert(data.message);
-                    this.showToast(data.message, "error");
-                } else {
-                    // alert(data.message);
-                    this.showToast(data.message, "success");
-                    setTimeout(() => window.location.reload(), 1000);
+                    this.notyf.open({
+                        type: 'warning',
+                        message: data.message,
+                        duration: 5000
+                    });
+                    // this.showToast(data.message, "error");
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = "Close";
+
+                        return false;
+                    }
                 }
+                window.location.reload()
             } catch (err) {
                 console.error(err);
-                // alert("Something went wrong");
-                this.showToast("Something went wrong", "error");
+                this.notyf.error("Something is wrong. Please contact your administrator.");
             } finally {
                 modal.classList.add("hidden");
                 cancelBtn.removeEventListener("click", cancelHandler);
@@ -364,56 +606,91 @@ export class AjaxDataTable {
         };
 
         confirmBtn.addEventListener("click", confirmHandler);
+    }
 
+    async deleteSurveyCycle(cycle_id, button) {
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg> Deleting...
+            `;
+        }
 
+        try {
+            const res = await fetch(`/api/delete-survey-cycle-by-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cycle_id })
+            });
 
+            const data = await res.json();
 
-        // Open modal by simulating a click on a trigger
-        console.log('logged')
+            if (!res.ok || !data.success) {
+                this.notyf.error('Failed to delete survey cycle.')
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Refresh";
+                }
+                return false;
+            }
+            window.location.reload()
+        } catch (err) {
+            console.error(err)
+            // alert('Error deleting survey cycle');
+            this.notyf.error('Failed to delete survey cycle.')
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Refresh";
+            }
+            return false;
+        }
+    }
 
-        
+    async refreshSurveyCycle(cycle_id, button) {
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg> Refreshing...
+            `;
+        }
 
-        // HSOverlay.open('#closeSurveyModal');
+        try {
+            const res = await fetch(`/api/refresh-survey-cycle-by-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cycle_id })
+            });
 
-        // const trigger = document.createElement("button");
-        // trigger.setAttribute("data-hs-overlay", "#closeSurveyModal");
+            const data = await res.json();
 
-        // console.log('logged2')
-        // document.body.appendChild(trigger);
-        // trigger.click();
-        // trigger.remove();
-
-        // const confirmBtn = document.getElementById("confirmCloseSurvey");
-
-        // if (!confirm("Are you sure to close this survey?")) return;
-
-        // const handler = async function () {
-        //     try {
-        //         const res = await fetch('/api/close-survey', {
-        //             method: 'POST',
-        //             headers: { "Content-Type": "application/json" }
-        //         });
-
-        //         const data = await res.json();
-
-        //         if (!res.ok || !data.success) {
-        //             alert(data.message);
-        //         } else {
-        //             alert(data.message);
-        //             window.location.reload();
-        //         }
-                
-        //     } catch (err) {
-        //         console.error(err);
-        //         alert('Something went wrong');
-        //     } finally {
-        //         // close modal
-        //         window.HSOverlay.close(modal)
-        //         confirmBtn.removeEventListener("click", handler);
-        //     }
-        // }
-
-        // confirmBtn.addEventListener("click", handler);
+            if (!res.ok || !data.success) {
+                this.notyf.warning('Failed to refresh survey cycle.');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Refresh";
+                }
+                return false;
+            }
+            window.location.reload()
+        } catch (err) {
+            console.error(err)
+            this.notyf.warning('Error refreshing survey cycle');
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Refresh";
+            }
+            return false;
+        }
     }
 }
 
