@@ -6,22 +6,15 @@ from project693.dao.analysis_dao import AnalysisDAO
 from project693.dao.survey_dao import SurveyDAO
 from project693.utils.session_manager import SessionManager
 from project693.core.analysis_calculation import (
-    beta_vs_win_percentage,
     beta_vs_win_percentage_V2,
     beta_vs_win_percentage_datatable,
-    beta_scores_by_image,
     beta_scores_by_image_V2,
-    beta_score_by_plant_datatable,
-    beta_scores_by_plant_type,
     beta_scores_by_plant_type_V2,
     beta_scores_by_plant_type_datatable,
-    win_loss_by_image,
     win_loss_by_image_V2,
     win_loss_by_plant_datatable,
-    beta_scores_heat_map,
     beta_scores_heat_map_V2,
     beta_score_heat_map_datatable,
-    beta_scores_ranking,
     beta_scores_ranking_V2,
     initialize
 )
