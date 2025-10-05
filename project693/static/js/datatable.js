@@ -75,7 +75,15 @@ export class AjaxDataTable {
             this.gotoPage(1);
         });
         if (this.downloadBtn) {
-            this.downloadBtn.addEventListener('click', () => this.downloadCSV());
+            this.downloadBtn.addEventListener('click', (e) => {
+                const type = e.target.dataset.downloadType;
+
+                if (type === 'meta-data') {
+                    this.downloadMetaCSV();
+                } else {
+                    this.downloadCSV();
+                }
+            });
         }
     }
     
@@ -165,11 +173,33 @@ export class AjaxDataTable {
             });
         });
 
+        // recalculate & refresh all survey data
+        this.tableBody.querySelectorAll('.recalculate-all-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                console.log('updating all survey data')
+                // const row = this.datatable[index];
+                // const cycle_id = row.cycle_id;
+                // console.log(row.cycle_id);
+
+                // if (!confirm("Are you sure you want to delete this survey cycle?")) return;
+                this.refreshAllSurveyData(btn);
+            });
+        });
+
         this.tableBody.querySelectorAll('.download-cycle-raw-data-btn').forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
                 console.log(row.cycle_id);
                 this.downloadCycleResultsCSV(row.cycle_id);
+            });
+        });
+
+        this.tableBody.querySelectorAll('.download-all-raw-data-btn').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                console.log('downloading all data...');
+                // const row = this.datatable[index];
+                // console.log(row.cycle_id);
+                this.downloadAllResultsCSV();
             });
         });
 
@@ -387,6 +417,40 @@ export class AjaxDataTable {
         }
     }
 
+    async downloadMetaCSV() {
+        try {
+            // fetch data from backend
+            const response = await fetch("/api/all-survey-meta-data", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (!response.ok) throw new Error("Something wrong please check with admin.");
+
+            const res = await response.json();
+            const data = res.datatable;
+            
+            if (!data.length) return;
+
+            const header = Object.keys(data[0]);
+            const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+            const csv = [header.join(','), ...data.map(r => header.map(h => escape(r[h])).join(','))].join('\n');
+
+            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_meta_result.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     async fetchCycleDataCSV(cycle_id, fileName, api_path) {
         try {
             const response = await fetch(`/api/${api_path}`, {
@@ -417,6 +481,31 @@ export class AjaxDataTable {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cycle_id })
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch zip file');
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_results.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async downloadAllResultsCSV() {
+        try {
+            const response = await fetch("/api/download-all-survey-data", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // body: JSON.stringify({ cycle_id })
             });
 
             if (!response.ok) throw new Error('Failed to fetch zip file');
@@ -660,7 +749,7 @@ export class AjaxDataTable {
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
                     </path>
-                </svg> Refreshing...
+                </svg> Updating...
             `;
         }
 
@@ -674,20 +763,63 @@ export class AjaxDataTable {
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                this.notyf.warning('Failed to refresh survey cycle.');
+                this.notyf.warning('Failed to update survey cycle.');
                 if (button) {
                     button.disabled = false;
-                    button.textContent = "Refresh";
+                    button.textContent = "Update";
                 }
                 return false;
             }
             window.location.reload()
         } catch (err) {
             console.error(err)
-            this.notyf.warning('Error refreshing survey cycle');
+            this.notyf.warning('Error updating survey cycle');
             if (button) {
                 button.disabled = false;
-                button.textContent = "Refresh";
+                button.textContent = "Update";
+            }
+            return false;
+        }
+    }
+
+
+    async refreshAllSurveyData(button) {
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2 inline text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg> Updating...
+            `;
+        }
+
+        try {
+            const res = await fetch(`/api/refresh-all-survey-data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // body: JSON.stringify({ cycle_id })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                this.notyf.warning('Failed to update survey data.');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Update";
+                }
+                return false;
+            }
+            window.location.reload()
+        } catch (err) {
+            console.error(err)
+            this.notyf.warning('Error updating survey data.');
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Update";
             }
             return false;
         }
