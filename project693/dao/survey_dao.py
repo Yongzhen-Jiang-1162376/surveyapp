@@ -315,7 +315,6 @@ class SurveyDAO(BaseDAO):
     def delete_survey_choice_by_id(self, id):
         
         session_id, cycle_id = self.get_survey_choice_detail_by_id(id)
-        # print(session_id, cycle_id)
         
         query = """
             delete from survey_results where id = %s;
