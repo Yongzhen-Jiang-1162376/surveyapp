@@ -1024,11 +1024,7 @@ def beta_scores_ranking_V2(db_rows, weighted=1):
 
 
 def save_survey_cycle_analysis_data():
-    
-    print('--------------------- saving data ----------------------------')
     config = initialize()
-    
-    # print(config)
     
     analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
@@ -1061,19 +1057,11 @@ def save_survey_cycle_analysis_data():
     analysis_dao.delete_beta_score_win_percentage(cycle_id)
     # save data
     analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
-    
-    print('--------------------- end of saving data ----------------------------')
 
 
 def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
-    # initialize()
     analysis_dao = AnalysisDAO()
-    # survey_dao = SurveyDAO()
-    # cycle_id = survey_dao.get_active_survey_cycle_id()
-    
     config = initialize(cycle_id)
-    
-    # print(config)
     
     # heat map data
     rows = beta_score_heat_map_datatable(config)
