@@ -187,7 +187,8 @@ class SurveyDAO(BaseDAO):
         query = """
             select
                 p.name,
-                p.invasiveness
+                p.invasiveness,
+                p.id
             from survey_results sr
             inner join plants p on sr.selected_plant_id = p.id
             where sr.session_id = %s
