@@ -7,9 +7,97 @@
 <!-- Toast container -->
 <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
 
+
 <div class="p-4 py-0 bg-white">
 <!-- Table Section -->
-<div class="max-w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+<div class="max-w-full px-4 py-4 sm:px-6 lg:px-8 lg:pt-10 mx-auto">
+  <!-- Card -->
+  <div class="flex flex-col">
+    <div class="-m-1.5 overflow-x-auto">
+      <div class="p-1.5 min-w-full inline-block align-middle">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden">
+          <!-- Header -->
+          <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800">
+                Survey Summary
+              </h2>
+              <!-- <p class="text-sm text-gray-600 dark:text-neutral-400">
+                Keys you have generated to connect with third-party clients or access the <a class="inline-flex items-center gap-x-1.5 text-blue-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-blue-500" href="#">Preline API.</a>
+              </p> -->
+            </div>
+
+            <!-- <div class="flex flex-wrap items-center gap-3">
+              <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                Rows per page
+                <select id="rowsPerPageSelect" class="block rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm">
+                  <option>5</option>
+                  <option selected>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+              </label>
+            </div> -->
+          </div>
+          <!-- End Header -->
+
+          <!-- Table -->
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
+                      Total Survey Participants
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
+                      Total Choices
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
+                      Survey Data
+                    </span>
+                  </div>
+                </th>
+
+                <th scope="col" class="px-6 py-3 text-start">
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-sm font-semibold uppercase text-gray-800">
+                      Action
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-200" id="surveySummaryTableBodyId">
+            </tbody>
+          </table>
+          <!-- End Table -->
+
+          <!-- Footer -->
+          <!-- End Footer -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<div class="p-4 py-0 bg-white">
+<!-- Table Section -->
+<div class="max-w-full px-4 py-4 sm:px-6 lg:px-8 lg:pb-10 mx-auto">
   <!-- Card -->
   <div class="flex flex-col">
     <div class="-m-1.5 overflow-x-auto">
@@ -217,16 +305,11 @@ const ajaxDataTable = new AjaxDataTable({
     {
       header: 'Survey Raw Data',
       render: row => {
-        if (row.status === 'Closed') {
-
-          return `
-            <button class="p-1 text-blue-600 hover:text-blue-800 download-cycle-raw-data-btn cursor-pointer">
-              <i data-lucide="download"></i>
-            </button>
-          `;
-        } else {
-          return '';
-        }
+        return `
+          <button class="p-1 text-blue-600 hover:text-blue-800 download-cycle-raw-data-btn cursor-pointer">
+            <i data-lucide="download"></i>
+          </button>
+        `;
       }
     },
     {
@@ -235,6 +318,15 @@ const ajaxDataTable = new AjaxDataTable({
         let actionButtons = '';
 
         if (row.status === 'Active') {
+          actionButtons += `
+            <button type="button" class="recalculate-btn w-28 py-2 px-3 inline-flex justify-center items-center gap-x-1 
+                    text-sm font-medium rounded-lg border border-transparent 
+                    bg-blue-500 text-white hover:bg-blue-600 cursor-pointer
+                    disabled:bg-gray-400 disabled:cursor-not-allowed">
+              <i data-lucide="rotate-ccw" class="w-4 h-4 shrink-0"></i>Update
+            </button>
+          `;
+
           actionButtons += `
             <button type="button" class="close-btn w-28 py-2 px-3 inline-flex justify-center items-center gap-x-2 
                     text-sm font-medium rounded-lg border border-transparent 
@@ -248,7 +340,7 @@ const ajaxDataTable = new AjaxDataTable({
                     text-sm font-medium rounded-lg border border-transparent 
                     bg-blue-500 text-white hover:bg-blue-600 cursor-pointer
                     disabled:bg-gray-400 disabled:cursor-not-allowed">
-              <i data-lucide="rotate-ccw" class="w-4 h-4 shrink-0"></i>Recalculate
+              <i data-lucide="rotate-ccw" class="w-4 h-4 shrink-0"></i>Update
             </button>
           `;
         }
@@ -267,6 +359,72 @@ const ajaxDataTable = new AjaxDataTable({
 });
 
 window.ajaxDataTable = ajaxDataTable;
+
+
+const ajaxSummaryDataTable = new AjaxDataTable({
+  apiUrl: "/api/survey-all-data",
+  tableBodyId: "surveySummaryTableBodyId",
+  prevBtnId: "prevBtn",
+  nextBtnId: "nextBtn",
+  pageInfoId: "pageInfo",
+  rangeInfoId: "rangeInfo",
+  rowsPerPageSelectId: "rowsPerPageSelect",
+  downloadBtnId: "downloadAllBtn",
+  rowsPerPage: 10,
+  columns: [
+    { 
+      // key: 'survey_participants', 
+      header: 'Survey Participants',
+      render: row => {
+        return `
+          <span class="text-green-600 text-lg font-semibold">
+            ${row.survey_participants}
+          </span>
+        `
+      }
+    },
+    { 
+      // key: 'total_choices', 
+      header: 'Total Choices',
+      render: row => {
+        return `
+          <span class="text-green-600 text-lg font-semibold">
+            ${row.total_choices}
+          </span>
+        `
+      }
+    },
+    {
+      header: 'Survey Raw Data',
+      render: row => {
+        return `
+          <button class="p-1 text-blue-600 hover:text-blue-800 download-all-raw-data-btn cursor-pointer">
+            <i data-lucide="download"></i>
+          </button>
+        `;
+      }
+    },
+    {
+      header: 'Action',
+      render: row => {
+        let actionButtons = '';
+        actionButtons += `
+          <button type="button" class="recalculate-all-btn w-28 py-2 px-3 inline-flex justify-center items-center gap-x-1 
+                  text-sm font-medium rounded-lg border border-transparent 
+                  bg-blue-500 text-white hover:bg-blue-600 cursor-pointer
+                  disabled:bg-gray-400 disabled:cursor-not-allowed">
+            <i data-lucide="rotate-ccw" class="w-4 h-4 shrink-0"></i>Update
+          </button>
+        `;
+
+        return `<div class="flex items-center gap-2">${actionButtons}</div>`;
+      }
+    },
+  ]
+});
+
+window.ajaxSummaryDataTable = ajaxSummaryDataTable;
+
 
 </script>
 
