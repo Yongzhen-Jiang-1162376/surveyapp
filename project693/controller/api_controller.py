@@ -22,7 +22,7 @@ from project693.utils.openai_utils import fetch_plant_info_from_openai
 # client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
-@app.route("/api/current-survey-data", methods=["POST"])
+@app.route("/api/all-survey-data", methods=["POST"])
 def get_survey_data():
     # page = int(request.args.get("page", 1))
     # limit = int(request.args.get("limit", 10))
@@ -34,8 +34,8 @@ def get_survey_data():
     
     analysis_dao = AnalysisDAO()
 
-    total = analysis_dao.get_current_total_survey_results()
-    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
+    total = analysis_dao.get_all_total_survey_results()
+    rows = analysis_dao.list_all_survey_results_with_plant_name_paginated(
         limit, offset)
 
     columns = [
@@ -121,42 +121,42 @@ def get_all_survey_data_by_cycle_id():
         "datatable": datatable
     })
 
+# not used function
+# @app.route("/api/current-beta-vs-win-percentage", methods=["POST"])
+# def get_current_beta_vs_win_percentage_data():
+#     req = request.get_json()
+#     page = int(req.get("page", 1))
+#     limit = int(req.get("limit", 10))
 
-@app.route("/api/current-beta-vs-win-percentage", methods=["POST"])
-def get_current_beta_vs_win_percentage_data():
-    req = request.get_json()
-    page = int(req.get("page", 1))
-    limit = int(req.get("limit", 10))
+#     offset = (page - 1) * limit
 
-    offset = (page - 1) * limit
+#     analysis_dao = AnalysisDAO()
+#     total = analysis_dao.get_current_total_survey_results()
+#     rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
+#         limit, offset)
 
-    analysis_dao = AnalysisDAO()
-    total = analysis_dao.get_current_total_survey_results()
-    rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
-        limit, offset)
+#     columns = [
+#         'session_id',
+#         'question_seq',
+#         'submission_time',
+#         'response_time',
+#         'invasive_plant_id',
+#         'invasive_plant_name',
+#         'non_invasive_plant_id',
+#         'non_invasive_plant_name',
+#         'selected_plant_id',
+#         'selected_plant_name',
+#         'has_garden',
+#         'age_group',
+#         'reasoning',
+#         'invasive_win'
+#     ]
+#     datatable = [dict(zip(columns, row)) for row in rows]
 
-    columns = [
-        'session_id',
-        'question_seq',
-        'submission_time',
-        'response_time',
-        'invasive_plant_id',
-        'invasive_plant_name',
-        'non_invasive_plant_id',
-        'non_invasive_plant_name',
-        'selected_plant_id',
-        'selected_plant_name',
-        'has_garden',
-        'age_group',
-        'reasoning',
-        'invasive_win'
-    ]
-    datatable = [dict(zip(columns, row)) for row in rows]
-
-    return jsonify({
-        "datatable": datatable,
-        "total": total
-    })
+#     return jsonify({
+#         "datatable": datatable,
+#         "total": total
+#     })
 
 
 @app.route("/api/survey-cycle-data", methods=["POST"])
