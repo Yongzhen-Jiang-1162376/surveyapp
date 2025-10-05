@@ -9,16 +9,7 @@ from datetime import datetime
 import time
 import threading
 from project693.utils.openai_utils import save_ai_generated_plant_info
-from project693.core.analysis_calculation import save_survey_cycle_analysis_data
-
-
-# plant_dao = PlantDAO()
-# survey_dao = SurveyDAO()
-
-
-# def save_data_to_db(data):
-    # time.sleep(10)
-    # print(f"Saved to DB: {data}")
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data, save_overall_survey_cycle_analysis_data
 
 
 @app.route("/survey/", methods=["GET", "POST"])
@@ -115,8 +106,6 @@ def survey_next_get():
         args=(pair[1].id,)
     ).start()
     
-    # print(qn)
-    
     # record page load time
     current_time = datetime.now().isoformat()
     SessionManager.set("page_load_time", current_time)
@@ -200,6 +189,9 @@ def survey_questionnaire():
     # async save analysis data for current cycle
     threading.Thread(target=save_survey_cycle_analysis_data).start()
     
+    # async save analysis data for all survey results
+    threading.Thread(target=save_overall_survey_cycle_analysis_data).start()
+    
     # Get all selected answers from session
     answers = SessionManager.get("answers") or []
 
@@ -253,9 +245,6 @@ def survey_choice_summary():
     survey_dao = SurveyDAO()
     plants = survey_dao.list_survey_summary(session_id)
     agg_counts = survey_dao.list_survey_summary_aggregation(session_id)
-    
-    # print(plants)
-    # print(agg_counts)
     
     data = {
         'invasive_count': agg_counts[0],
