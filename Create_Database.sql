@@ -171,4 +171,9 @@ alter table plants add column updated_at TIMESTAMP;
 -- add text field to plants to store AI generated plant information
 alter table plants add column ai_intro text;
 
+
+-- change the id field into bigint for heat map table
+-- because this table has a larger amount of rows
+alter table bt_beta_score_heat_map modify column id bigint unsigned AUTO_INCREMENT;
+
 SET FOREIGN_KEY_CHECKS = 1;
