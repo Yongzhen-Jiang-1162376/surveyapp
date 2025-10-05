@@ -168,5 +168,7 @@ add column active bool default 1;
 alter table plants add column created_at TIMESTAMP;
 alter table plants add column updated_at TIMESTAMP;
 
+-- add text field to plants to store AI generated plant information
+alter table plants add column ai_intro text;
 
 SET FOREIGN_KEY_CHECKS = 1;
