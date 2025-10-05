@@ -12,14 +12,13 @@ from bokeh.transform import factor_cmap, dodge
 import pandas as pd
 
 
-analysis_dao = AnalysisDAO()
-
 @app.route("/dashboard/analysis-gardening/", methods=["GET"])
 def choices_by_gardening():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
     
+    analysis_dao = AnalysisDAO()
     gardening_group_values = analysis_dao.list_survey_gardening_count()
     
     invasive_count_list = []
