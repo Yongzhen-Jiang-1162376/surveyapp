@@ -8,8 +8,6 @@ def fetch_plant_info_from_openai(name):
 
     # Use the Responses API
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    # print(client)
-    
     try:
         response = client.responses.create(
             # model="gpt-5-nano",
@@ -42,7 +40,6 @@ def save_ai_generated_plant_info(plant_id):
     
     name = plant.name
     
-    print(name)
     # call open ai api to fetch plant description
     description = fetch_plant_info_from_openai(name)
     
