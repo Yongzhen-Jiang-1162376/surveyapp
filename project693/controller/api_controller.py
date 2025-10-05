@@ -15,11 +15,11 @@ import zipfile
 from openai import OpenAI
 import os
 import html
+from project693.utils.openai_utils import fetch_plant_info_from_openai
 
 
-analysis_dao = AnalysisDAO()
-
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+# analysis_dao = AnalysisDAO()
+# client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
 @app.route("/api/current-survey-data", methods=["POST"])
@@ -31,6 +31,8 @@ def get_survey_data():
     limit = int(req.get("limit", 10))
 
     offset = (page - 1) * limit
+    
+    analysis_dao = AnalysisDAO()
 
     total = analysis_dao.get_current_total_survey_results()
     rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
@@ -62,7 +64,7 @@ def get_survey_data():
 
 @app.route("/api/all-current-survey-data", methods=["POST"])
 def get_all_survey_data():
-
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_all_current_survey_results_with_plant_name()
 
     columns = [
@@ -92,6 +94,8 @@ def get_all_survey_data():
 def get_all_survey_data_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
+    
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(
         cycle_id)
 
@@ -126,6 +130,7 @@ def get_current_beta_vs_win_percentage_data():
 
     offset = (page - 1) * limit
 
+    analysis_dao = AnalysisDAO()
     total = analysis_dao.get_current_total_survey_results()
     rows = analysis_dao.list_current_survey_results_with_plant_name_paginated(
         limit, offset)
@@ -162,6 +167,7 @@ def get_survey_cycle_data():
 
     offset = (page - 1) * limit
 
+    analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
     total = survey_dao.get_total_survey_cycles()
     rows = survey_dao.list_survey_cycle_paginated(limit, offset)
@@ -210,6 +216,8 @@ def close_survey():
 def get_beta_score_by_invasive_type_histogram_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
+    
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_beta_score_by_invasive_type_histogram_by_cycle_id(
         cycle_id)
 
@@ -236,6 +244,8 @@ def get_beta_score_by_invasive_type_histogram_by_cycle_id():
 def get_win_loss_by_plant_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
+    
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
 
     columns = [
@@ -257,6 +267,8 @@ def get_win_loss_by_plant_by_cycle_id():
 def get_beta_score_heat_map_by_plant_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
+    
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
 
     columns = [
@@ -279,6 +291,8 @@ def get_beta_score_heat_map_by_plant_by_cycle_id():
 def get_beta_score_win_percentage_by_cycle_id():
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
+    
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
 
     columns = [
@@ -312,6 +326,7 @@ def download_survey_cycle_data_by_cycle_id():
             writer.writerow(dict(zip(columns, row)))
         return output.getvalue()
 
+    analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_all_survey_results_with_plant_name_by_cycle_id(
         cycle_id)
     columns = [
@@ -402,27 +417,13 @@ def download_survey_cycle_data_by_cycle_id():
 
 @app.route("/survey/plant-info")
 def plant_info():
-    plant_name = request.args.get("name")
-
-    prompt = f"Provide a short, informative description of the plant '{plant_name}' including whether it is invasive, within 2-3 paragraphs. Use **bold** for important words."
-
-    # Use the Responses API
-    response = client.responses.create(
-        # model="gpt-5-nano",
-        model="gpt-4.1-nano",
-        input=[
-            {"role": "system", "content": "You are a helpful botanist assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        text={
-            "format": {
-                "type": "text"
-            }
-        },
-        max_output_tokens=5000
-    )
-
-    description = response.output_text or "No description available from this model."
+    plant_id = int(request.args.get("id"))
+    
+    plant_dao = PlantDAO()
+    description = plant_dao.get_ai_intro_by_id(plant_id)
+    
+    if not description:
+        description = "No description available for this plant"
     
     description = html.unescape(description)
 
