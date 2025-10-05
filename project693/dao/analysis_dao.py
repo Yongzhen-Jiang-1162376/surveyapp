@@ -433,35 +433,65 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
 
-    def list_all_survey_results_with_plant_name_by_cycle_id(self, cycle_id):
-        avg_response_time = self.get_average_response_time_by_cycle_id(cycle_id)
+    def list_all_survey_results_with_plant_name_by_cycle_id(self, cycle_id=None):
+        avg_response_time = None
+        query = None
+        result = None
         
-        query = """
-            select
-                sr.session_id,
-                sr.question_seq,
-                date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
-                ifnull(round(sr.response_time, 5), %s) as response_time,
-                sr.invasive_plant_id,
-                p.name as invasive_plant_name,
-                sr.non_invasive_plant_id,
-                p1.name as non_invasive_plant_name,
-                sr.selected_plant_id,
-                p2.name as selected_plant_name,
-                if(sm.has_garden = 1, 'Yes', 'No') as has_garden,
-                sm.age as age_group,
-                sm.reasoning as reasoning,
-                sr.invasive_winner as invasive_win
-            from survey_results sr
-            inner join plants p on sr.invasive_plant_id = p.id
-            inner join plants p1 on sr.non_invasive_plant_id = p1.id
-            inner join plants p2 on sr.selected_plant_id = p2.id
-            left join survey_metadata sm on sr.session_id = sm.session_id
-            where sr.cycle_id = %s
-            order by sr.submission_time, sr.question_seq;
-        """
-
-        result = self.execute_query(query, (avg_response_time, cycle_id))        
+        if not cycle_id:
+            avg_response_time = self.get_overall_average_response_time()
+            query = """
+                select
+                    sr.session_id,
+                    sr.question_seq,
+                    date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
+                    ifnull(round(sr.response_time, 5), %s) as response_time,
+                    sr.invasive_plant_id,
+                    p.name as invasive_plant_name,
+                    sr.non_invasive_plant_id,
+                    p1.name as non_invasive_plant_name,
+                    sr.selected_plant_id,
+                    p2.name as selected_plant_name,
+                    if(sm.has_garden = 1, 'Yes', 'No') as has_garden,
+                    sm.age as age_group,
+                    sm.reasoning as reasoning,
+                    sr.invasive_winner as invasive_win
+                from survey_results sr
+                inner join plants p on sr.invasive_plant_id = p.id
+                inner join plants p1 on sr.non_invasive_plant_id = p1.id
+                inner join plants p2 on sr.selected_plant_id = p2.id
+                left join survey_metadata sm on sr.session_id = sm.session_id
+                order by sr.submission_time, sr.question_seq;
+            """
+            result = self.execute_query(query, (avg_response_time,)) 
+        else:
+            avg_response_time = self.get_average_response_time_by_cycle_id(cycle_id)
+            query = """
+                select
+                    sr.session_id,
+                    sr.question_seq,
+                    date_format(sr.submission_time, '%m-%d-%Y %H:%i:%S') as submission_time,
+                    ifnull(round(sr.response_time, 5), %s) as response_time,
+                    sr.invasive_plant_id,
+                    p.name as invasive_plant_name,
+                    sr.non_invasive_plant_id,
+                    p1.name as non_invasive_plant_name,
+                    sr.selected_plant_id,
+                    p2.name as selected_plant_name,
+                    if(sm.has_garden = 1, 'Yes', 'No') as has_garden,
+                    sm.age as age_group,
+                    sm.reasoning as reasoning,
+                    sr.invasive_winner as invasive_win
+                from survey_results sr
+                inner join plants p on sr.invasive_plant_id = p.id
+                inner join plants p1 on sr.non_invasive_plant_id = p1.id
+                inner join plants p2 on sr.selected_plant_id = p2.id
+                left join survey_metadata sm on sr.session_id = sm.session_id
+                where sr.cycle_id = %s
+                order by sr.submission_time, sr.question_seq;
+            """
+            result = self.execute_query(query, (avg_response_time, cycle_id)) 
+               
         return result if result else []
     
     
@@ -536,21 +566,21 @@ class AnalysisDAO(BaseDAO):
         return
 
 
-    def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
-        query = """
-            SELECT
-                cycle_id,
-                plant_id,
-                plant_name,
-                invasiveness,
-                win,
-                loss
-            FROM win_loss_by_plant
-            where cycle_id = %s
-            order by id;
-        """
-        result = self.execute_query(query, (cycle_id,))        
-        return result if result else []
+    # def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
+    #     query = """
+    #         SELECT
+    #             cycle_id,
+    #             plant_id,
+    #             plant_name,
+    #             invasiveness,
+    #             win,
+    #             loss
+    #         FROM win_loss_by_plant
+    #         where cycle_id = %s
+    #         order by id;
+    #     """
+    #     result = self.execute_query(query, (cycle_id,))        
+    #     return result if result else []
 
 
     def save_beta_score_heat_map_by_plant(self, data, cycle_id):
@@ -578,22 +608,22 @@ class AnalysisDAO(BaseDAO):
         return
     
     
-    def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
-        query = """
-            SELECT
-                cycle_id,
-                plant_a_id,
-                plant_a_name,
-                plant_b_id,
-                plant_b_name,
-                plant_a_beats_b,
-                plant_a_beats_b_weighted
-            FROM bt_beta_score_heat_map
-            where cycle_id = %s
-            order by id;
-        """
-        result = self.execute_query(query, (cycle_id,))        
-        return result if result else []
+    # def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
+    #     query = """
+    #         SELECT
+    #             cycle_id,
+    #             plant_a_id,
+    #             plant_a_name,
+    #             plant_b_id,
+    #             plant_b_name,
+    #             plant_a_beats_b,
+    #             plant_a_beats_b_weighted
+    #         FROM bt_beta_score_heat_map
+    #         where cycle_id = %s
+    #         order by id;
+    #     """
+    #     result = self.execute_query(query, (cycle_id,))        
+    #     return result if result else []
 
 
     def save_beta_score_win_percentage(self, data, cycle_id):
@@ -632,7 +662,6 @@ class AnalysisDAO(BaseDAO):
                 bt_beta_score_weighted
             FROM bt_beta_score_win_percentage
             where cycle_id = %s
-            -- order by id
             order by plant_name;
         """
         result = self.execute_query(query, (cycle_id,))        
@@ -690,7 +719,7 @@ class AnalysisDAO(BaseDAO):
         """
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
-
+    
 
     def delete_beta_score_heat_map_by_plant(self, cycle_id):
         query = """
