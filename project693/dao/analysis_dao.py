@@ -14,7 +14,7 @@ class AnalysisDAO(BaseDAO):
         query = None
         result = None
         
-        if not cycle_id:
+        if cycle_id is None:
             query = """
                 select
                     p.id,
@@ -25,6 +25,22 @@ class AnalysisDAO(BaseDAO):
                     select distinct invasive_plant_id as plant_id from survey_results where active = 1
                     union
                     select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            result = self.execute_query(query)
+        elif cycle_id == 0:
+            query = """
+                select
+                    p.id,
+                    p.name
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results
                 ) sr
                 on p.id = sr.plant_id
                 order by p.id;
@@ -58,7 +74,7 @@ class AnalysisDAO(BaseDAO):
         query = None
         result = None
         
-        if not cycle_id:
+        if cycle_id is None:
             query = """
                 select
                     p.id,
@@ -69,6 +85,23 @@ class AnalysisDAO(BaseDAO):
                     select distinct invasive_plant_id as plant_id from survey_results where active = 1
                     union
                     select distinct non_invasive_plant_id as plant_id from survey_results where active = 1
+                ) sr
+                on p.id = sr.plant_id
+                order by p.id;
+            """
+            
+            result = self.execute_query(query)
+        elif cycle_id == 0:
+            query = """
+                select
+                    p.id,
+                    p.invasiveness
+                from plants p
+                inner join
+                (
+                    select distinct invasive_plant_id as plant_id from survey_results
+                    union
+                    select distinct non_invasive_plant_id as plant_id from survey_results
                 ) sr
                 on p.id = sr.plant_id
                 order by p.id;
@@ -94,6 +127,12 @@ class AnalysisDAO(BaseDAO):
             result = self.execute_query(query, (cycle_id, cycle_id))
         return result if result else []
 
+    def get_overall_average_response_time(self):
+        query = """
+            select round(avg(response_time), 6) as avg_response_time from survey_results;
+        """
+        result = self.execute_query(query)
+        return result[0][0] if result else 0
     
     def get_current_average_response_time(self):
         query = """
@@ -120,12 +159,12 @@ class AnalysisDAO(BaseDAO):
         return result[0][0] if result else 0
     
     
-    def get_current_total_survey_results(self):
+    def get_all_total_survey_results(self):
         query = """
             select
                 count(1) as total
             from survey_results sr
-            where sr.active = 1    
+            -- where sr.active = 1    
         """
         result = self.execute_query(query)
         return result[0][0] if result else 0
@@ -141,21 +180,7 @@ class AnalysisDAO(BaseDAO):
         # Theoretically speaking, null response time is very much unlikely 
         # because the timing is only recorded after user submits
         
-        if cycle_id:
-            avg_response_time = self.get_average_response_time_by_cycle_id(cycle_id)
-            query = """
-                select
-                    sr.winner,
-                    sr.loser,
-                    ifnull(sr.response_time, %s) as response_time,
-                    sr.invasive_winner,
-                    sr.invasive_loser
-                from survey_results sr
-                where sr.cycle_id = %s
-                order by sr.id;
-            """
-            result = self.execute_query(query, (avg_response_time, cycle_id))
-        else:
+        if cycle_id is None:
             avg_response_time = self.get_current_average_response_time()
             query = """
                 select
@@ -169,6 +194,35 @@ class AnalysisDAO(BaseDAO):
                 order by sr.id;
             """
             result = self.execute_query(query, (avg_response_time,))
+        elif cycle_id == 0:
+            avg_response_time = self.get_overall_average_response_time()
+            query = """
+                select
+                    sr.winner,
+                    sr.loser,
+                    ifnull(sr.response_time, %s) as response_time,
+                    sr.invasive_winner,
+                    sr.invasive_loser
+                from survey_results sr
+                -- where sr.active = 1
+                order by sr.id;
+            """
+            result = self.execute_query(query, (avg_response_time,))
+        else:
+            avg_response_time = self.get_average_response_time_by_cycle_id(cycle_id)
+            query = """
+                select
+                    sr.winner,
+                    sr.loser,
+                    ifnull(sr.response_time, %s) as response_time,
+                    sr.invasive_winner,
+                    sr.invasive_loser
+                from survey_results sr
+                where sr.cycle_id = %s
+                order by sr.id;
+            """
+            result = self.execute_query(query, (avg_response_time, cycle_id))
+        
 
         return result if result else []
 
@@ -179,7 +233,7 @@ class AnalysisDAO(BaseDAO):
                 sum(invasive_winner = 1) as invasive_count,
                 sum(invasive_winner = 0) as non_invasive_count
             from survey_results
-            where active = 1;
+            -- where active = 1;
         """
         
         result = self.execute_query(query)
@@ -210,7 +264,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '18-29'
             )
-            and active = 1
+            -- and active = 1
             
             union all
             
@@ -222,7 +276,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '30-49'
             )
-            and active = 1
+            -- and active = 1
             
             union all
             
@@ -234,7 +288,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '50-64'
             )
-            and active = 1
+            -- and active = 1
             
             union all
             
@@ -246,7 +300,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where age = '65+'
             )
-            and active = 1
+            -- and active = 1
         """
 
         result = self.execute_query(query)
@@ -263,7 +317,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where has_garden = 1
             )
-            and active = 1
+            -- and active = 1
 
             union all
 
@@ -275,7 +329,7 @@ class AnalysisDAO(BaseDAO):
             (
                 select session_id from survey_metadata where has_garden = 0
             )
-            and active = 1
+            -- and active = 1
         """
         
         result = self.execute_query(query)
@@ -314,7 +368,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
 
-    def list_current_survey_results_with_plant_name_paginated(self, limit, offset):
+    def list_all_survey_results_with_plant_name_paginated(self, limit, offset):
         avg_response_time = self.get_current_average_response_time()
         
         query = """
@@ -338,7 +392,7 @@ class AnalysisDAO(BaseDAO):
             inner join plants p1 on sr.non_invasive_plant_id = p1.id
             inner join plants p2 on sr.selected_plant_id = p2.id
             left join survey_metadata sm on sr.session_id = sm.session_id
-            where sr.active = 1
+            -- where sr.active = 1
             order by sr.submission_time, sr.question_seq
             limit %s offset %s;
         """
