@@ -9,65 +9,89 @@
 
         <form method="POST" action="{{ url_for('survey_questionnaire') }}">
             <div class="mt-4">
-
-                <div class="mb-1">
-                    <input 
-                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
-                        type="radio" 
-                        name="reasoning" 
-                        value="Color" 
-                        id="reasonColor" 
-                        required
+                <div class="mb-3">
+                    <label
+                        for="reasonDominantFlowerColour"
+                        class="flex items-center gap-3 p-3 mb-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-200 transition"
                     >
-                    <label class="text-gray-700 ms-1" for="reasonColor">The dominant flower colour (e.g. red, blue, white etc.)</label>
+                        <input 
+                            class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                            type="radio" 
+                            name="reasoning" 
+                            value="Dominant Flower Colour"
+                            id="reasonDominantFlowerColour" 
+                            required
+                        >
+                        <span class="text-gray-900">The dominant flower colour (e.g. red, blue, white etc.)</span>
+                    </label>
                 </div>
 
-                <div class="mb-1">
-                    <input 
-                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
-                        type="radio" 
-                        name="reasoning" 
-                        value="Shape" 
-                        id="reasonShape" 
-                        required
+                <div class="mb-3">
+                    <label
+                        for="reasonContrastingColours"
+                        class="flex items-center gap-3 p-3 mb-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-200 transition"
                     >
-                    <label class="text-gray-700 ms-1" for="reasonShape">Contrasting colours in the flower (e.g. green and yellow, blue and white etc.)</label>
+                        <input 
+                            class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                            type="radio" 
+                            name="reasoning" 
+                            value="Contrasting Colours"
+                            id="reasonContrastingColours" 
+                            required
+                        >
+                        <span class="text-gray-900">Contrasting colours in the flower (e.g. green and yellow, blue and white etc.)</span>
+                    </label>
                 </div>
 
-                <div class="mb-1">
-                    <input 
-                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
-                        type="radio" 
-                        name="reasoning" 
-                        value="Familiarity" 
-                        id="reasonFamiliarity" 
-                        required
+                <div class="mb-3">
+                    <label
+                        for="reasonFlowerShape"
+                        class="flex items-center gap-3 p-3 mb-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-200 transition"
                     >
-                    <label class="text-gray-700 ms-1" for="reasonFamiliarity">Flower shape (e.g. round, heart-shaped etc.)</label>
+                        <input 
+                            class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                            type="radio" 
+                            name="reasoning"
+                            value="Flower Shape"
+                            id="reasonFlowerShape" 
+                            required
+                        >
+                        <span class="text-gray-900">Flower shape (e.g. round, heart-shaped etc.)</span>
+                    </label>
                 </div>
 
-                <div class="mb-1">
-                    <input 
-                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
-                        type="radio" 
-                        name="reasoning" 
-                        value="Novelty" 
-                        id="reasonNovelty" 
-                        required
+                <div class="mb-3">
+                    <label
+                        for="reasonFamiliarity"
+                        class="flex items-center gap-3 p-3 mb-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-200 transition"
                     >
-                    <label class="text-gray-700 ms-1" for="reasonNovelty">It was a plant that was familiar to you</label>
+                        <input 
+                            class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                            type="radio"
+                            name="reasoning"
+                            value="Familiarity"
+                            id="reasonFamiliarity"
+                            required
+                        >
+                        <span class="text-gray-900">It was a plant that was familiar to you</span>
+                    </label>
                 </div>
 
-                <div class="mb-1">
-                    <input 
-                        class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
-                        type="radio" 
-                        name="reasoning" 
-                        value="General Plant Form" 
-                        id="reasonForm" 
-                        required
+                <div class="mb-3">
+                    <label
+                        for="reasonDifference"
+                        class="flex items-center gap-3 p-3 mb-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-200 transition"
                     >
-                    <label class="text-gray-700 ms-1" for="reasonForm">It was a plant that looked different from most plants you know</label>
+                        <input 
+                            class="mt-0.5 border-gray-200 rounded-full text-blue-600 focus:ring-blue-500 checked:border-blue-500" 
+                            type="radio" 
+                            name="reasoning"
+                            value="Different From Most Plant You Know"
+                            id="reasonDifference"
+                            required
+                        >
+                        <span class="text-gray-900">It was a plant that looked different from most plants you know</span>
+                    </label>
                 </div>
             </div>
 

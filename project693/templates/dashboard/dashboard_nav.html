@@ -54,6 +54,24 @@
     By Gardening
   </a>
   <a class=" 
+             
+            min-w-0 
+            {% if current_page == 'preference' %}bg-gray-200{% else %}bg-white{% endif %}
+            py-2
+            px-4 
+            {% if current_page == 'preference' %}text-blue-600{% endif %}
+            hover:text-gray-700 
+            font-medium 
+            text-center 
+            overflow-hidden 
+            hover:bg-gray-200 
+            focus:z-10 
+            focus:outline-hidden 
+            cursor-pointer"
+      href="{{ url_for('choices_by_preference') }}">
+    By Preference
+  </a>
+  <a class=" 
             min-w-0 
             {% if current_page == 'bt_model' %}bg-gray-200{% else %}bg-white{% endif %}
             py-2

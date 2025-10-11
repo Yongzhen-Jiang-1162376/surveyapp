@@ -12,14 +12,13 @@ import pandas as pd
 import json
 
 
-analysis_dao = AnalysisDAO()
-
-
 @app.route("/dashboard/", methods=["GET"])
 def dashboard():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
+    
+    analysis_dao = AnalysisDAO()
     
     if len(analysis_dao.list_choice_count()) == 0:
         return render_template("dashboard/dashboard_empty.html", current_page="dashboard")

@@ -8,10 +8,6 @@ import uuid
 from datetime import datetime
 
 
-# plant_dao = PlantDAO()
-# survey_dao = SurveyDAO()
-
-
 @app.route("/siteadmin/survey_cycle", methods=["GET"])
 def survey_cycle():
     return render_template("admin/survey_cycle.html")

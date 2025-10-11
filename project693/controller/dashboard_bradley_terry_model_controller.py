@@ -45,7 +45,10 @@ def bradley_terry_model():
     
     survey_dao = SurveyDAO()
     analysis_dao = AnalysisDAO()
-    cycle_id = survey_dao.get_active_survey_cycle_id()
+    
+    # cycle_id = 0 to fetch analysis data for ALL survery results
+    cycle_id = 0
+    # cycle_id = survey_dao.get_active_survey_cycle_id()
     
     
     # 1. win percentage vs beta scatter plot
