@@ -8,23 +8,15 @@ import uuid
 from datetime import datetime
 import time
 import threading
-from project693.core.analysis_calculation import save_survey_cycle_analysis_data
-
-
-plant_dao = PlantDAO()
-survey_dao = SurveyDAO()
-
-
-# def save_data_to_db(data):
-    # time.sleep(10)
-    # print(f"Saved to DB: {data}")
+from project693.utils.openai_utils import save_ai_generated_plant_info
+from project693.core.analysis_calculation import save_survey_cycle_analysis_data, save_overall_survey_cycle_analysis_data
 
 
 @app.route("/survey/", methods=["GET", "POST"])
 def survey():
     if request.method == "GET":
         return render_template("survey_intro.html")
-    
+
 
     # POST method – user submitted intro form
     session["session_id"] = str(uuid.uuid4())  # new session
@@ -42,18 +34,33 @@ def survey():
         age=age_range,
         reasoning=None
     )
+    
+    survey_dao = SurveyDAO()
     survey_dao.save_metadata(metadata)
 
     # Start tracking pairs
     SessionManager.set("used_invasive", [])
     SessionManager.set("used_non_invasive", [])
 
+    plant_dao = PlantDAO()
     pair = plant_dao.get_random_pair([], [])
     if not pair:
         flash("Not enough plants in the database!", "warning")
         return redirect(url_for("list_plants"))
 
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
+    
+    # fetch open ai description of the plant and save to db if success
+    threading.Thread(
+        target=save_ai_generated_plant_info,
+        args=(pair[0].id,)
+    ).start()
+    
+    # fetch open ai description of the plant and save to db if success
+    threading.Thread(
+        target=save_ai_generated_plant_info,
+        args=(pair[1].id,)
+    ).start()
     
     # record page load time
     current_time = datetime.now().isoformat()
@@ -75,6 +82,7 @@ def survey_next_get():
     used_invasive = SessionManager.get("used_invasive") or []
     used_non_invasive = SessionManager.get("used_non_invasive") or []
 
+    plant_dao = PlantDAO()
     pair = plant_dao.get_random_pair(
         used_invasive_ids=used_invasive,
         used_non_invasive_ids=used_non_invasive
@@ -86,7 +94,17 @@ def survey_next_get():
 
     SessionManager.set("last_pair", [pair[0].id, pair[1].id])
     
-    # print(qn)
+    # fetch open ai description of the plant and save to db if success
+    threading.Thread(
+        target=save_ai_generated_plant_info,
+        args=(pair[0].id,)
+    ).start()
+    
+    # fetch open ai description of the plant and save to db if success
+    threading.Thread(
+        target=save_ai_generated_plant_info,
+        args=(pair[1].id,)
+    ).start()
     
     # record page load time
     current_time = datetime.now().isoformat()
@@ -123,6 +141,7 @@ def survey_next():
         image_2_id=image_2_id,
         response_time=elapsed
     )
+    survey_dao = SurveyDAO()
     survey_dao.survey_answer(answer)
 
     # Update answers list
@@ -135,6 +154,7 @@ def survey_next():
     used_non_invasive = SessionManager.get("used_non_invasive") or []
     last_pair = SessionManager.get("last_pair") or []
 
+    plant_dao = PlantDAO()
     for comp_id in last_pair:
         plant = plant_dao.get_plant_by_id(int(comp_id))
         if plant.invasiveness == 'invasive':
@@ -160,6 +180,7 @@ def survey_questionnaire():
     session_id = session.get("session_id")
 
     # Save reasoning as question 10
+    survey_dao = SurveyDAO()
     survey_dao.update_reasoning(
         session_id=session_id,
         reasoning=reasoning
@@ -168,6 +189,9 @@ def survey_questionnaire():
     # async save analysis data for current cycle
     threading.Thread(target=save_survey_cycle_analysis_data).start()
     
+    # async save analysis data for all survey results
+    threading.Thread(target=save_overall_survey_cycle_analysis_data).start()
+    
     # Get all selected answers from session
     answers = SessionManager.get("answers") or []
 
@@ -175,6 +199,7 @@ def survey_questionnaire():
     invasive_count = 0
     non_invasive_count = 0
 
+    plant_dao = PlantDAO()
     for plant_id in answers:
         plant = plant_dao.get_plant_by_id(int(plant_id))
         if plant.invasiveness == 'invasive':
@@ -217,11 +242,9 @@ def survey_choice_summary():
     session_id = request.args.get("session_id")
     # session_id = 'bb57d3b7-6ff3-4573-b645-eaff6302fb01'
     
+    survey_dao = SurveyDAO()
     plants = survey_dao.list_survey_summary(session_id)
     agg_counts = survey_dao.list_survey_summary_aggregation(session_id)
-    
-    # print(plants)
-    # print(agg_counts)
     
     data = {
         'invasive_count': agg_counts[0],

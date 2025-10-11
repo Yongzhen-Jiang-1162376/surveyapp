@@ -24,7 +24,14 @@ class PlantDAO(BaseDAO):
             WHERE id = %s;
         """
         self.execute_non_query(query, (name, description, invasiveness, image, id))
-
+    
+    def update_plant_ai_description(self, id: int, ai_description: str) -> None:
+        query = """
+            update plants
+                set ai_intro = %s
+            where id = %s;
+        """
+        self.execute_non_query(query, (ai_description, id))
 
     def delete_plant(self, id: int) -> None:
         query = "DELETE FROM plants WHERE id = %s"
@@ -65,6 +72,16 @@ class PlantDAO(BaseDAO):
                 invasiveness=row[4]
             )
         return None
+    
+    def get_ai_intro_by_id(self, id: int) -> str:
+        query = """
+            select
+                ai_intro
+            from plants
+            where id = %s;
+        """
+        result = self.execute_query(query, (id,))
+        return result[0][0] if result else None
     
     
     def get_all_plants(self) -> List[Plant]:

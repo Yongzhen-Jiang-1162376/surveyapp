@@ -12,14 +12,13 @@ from bokeh.transform import factor_cmap, dodge
 import pandas as pd
 
 
-analysis_dao = AnalysisDAO()
-
 @app.route("/dashboard/analysis-age-group/", methods=["GET"])
 def choices_by_age_group():
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
     
+    analysis_dao = AnalysisDAO()
     age_group_values = analysis_dao.list_survey_age_group_count()
     
     invasive_count_list = []

@@ -168,5 +168,26 @@ add column active bool default 1;
 alter table plants add column created_at TIMESTAMP;
 alter table plants add column updated_at TIMESTAMP;
 
+-- add text field to plants to store AI generated plant information
+alter table plants add column ai_intro text;
+
+-- remove foreign key for cycle _id
+-- the reason of this is to support cycle_id = 0 which represents all survey result
+-- including all survey cycles
+ALTER TABLE bt_beta_score_by_invasive_type_histogram
+DROP FOREIGN KEY fk_cycle_id_bt_beta_histogram;
+
+ALTER TABLE bt_beta_score_heat_map
+DROP FOREIGN KEY fk_cycle_id_bt_beta_heat_map;
+
+ALTER TABLE bt_beta_score_win_percentage
+DROP FOREIGN KEY fk_cycle_id_bt_beta_win_percentage;
+
+ALTER TABLE win_loss_by_plant
+DROP FOREIGN KEY fk_cycle_id_win_loss;
+
+-- change the id field into bigint for heat map table
+-- because this table has a larger amount of rows
+alter table bt_beta_score_heat_map modify column id bigint unsigned AUTO_INCREMENT;
 
 SET FOREIGN_KEY_CHECKS = 1;

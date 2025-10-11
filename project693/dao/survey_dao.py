@@ -181,13 +181,27 @@ class SurveyDAO(BaseDAO):
 
         result = self.execute_query(query, (limit, offset))        
         return result if result else []
+    
+    
+    def list_all_survey_summary(self):
+        
+        query = """
+        select
+            count(distinct session_id) as survey_participants,
+            count(1) as total_choices
+        from survey_results;
+        """
+
+        result = self.execute_query(query)        
+        return result if result else []
 
 
     def list_survey_summary(self, session_id):
         query = """
             select
                 p.name,
-                p.invasiveness
+                p.invasiveness,
+                p.id
             from survey_results sr
             inner join plants p on sr.selected_plant_id = p.id
             where sr.session_id = %s
@@ -314,7 +328,6 @@ class SurveyDAO(BaseDAO):
     def delete_survey_choice_by_id(self, id):
         
         session_id, cycle_id = self.get_survey_choice_detail_by_id(id)
-        # print(session_id, cycle_id)
         
         query = """
             delete from survey_results where id = %s;
@@ -372,3 +385,92 @@ class SurveyDAO(BaseDAO):
             delete from survey_cycle where id = %s and active != 1;
         """
         self.execute_non_query(query, (cycle_id,))
+
+
+    def get_survey_preference_summary(self):
+        query = """
+            SELECT
+                if(count(1) = 0, 0, SUM(reasoning = 'Dominant Flower Colour') / count(1)) as r1_perc,
+                SUM(reasoning = 'Dominant Flower Colour') AS r1_count,
+                if(count(1) = 0, 0, SUM(reasoning = 'Contrasting Colours') / count(1)) as r2_perc,
+                SUM(reasoning = 'Contrasting Colours') AS r2_count,
+                if(count(1) = 0, 0, SUM(reasoning = 'Flower Shape') / count(1)) as r3_perc,
+                SUM(reasoning = 'Flower Shape') AS r3_count,
+                if(count(1) = 0, 0, SUM(reasoning = 'Familiarity') / count(1)) as r4_perc,
+                SUM(reasoning = 'Familiarity') AS r4_count,
+                if(count(1) = 0, 0, SUM(reasoning = 'Different From Most Plant You Know') / count(1)) as r5_perc,
+                SUM(reasoning = 'Different From Most Plant You Know') AS r5_count,
+                count(1) as total
+            FROM survey_metadata
+            where session_id in (select distinct session_id from survey_results);    
+        """
+        
+        result = self.execute_query(query)
+        return result[0]
+    
+    def get_survey_preference_statistics(self, pref):
+        query = """
+            select
+                %s as preference,
+                if(count(1) = 0, 0, sum(age = '18-29') / count(1)) as ag1_perc,
+                ifnull(sum(age = '18-29'), 0) as age1,
+                if(count(1) = 0, 0, sum(age = '30-49') / count(1)) as ag2_perc,
+                ifnull(sum(age = '30-49'), 0) as age2,
+                if(count(1) = 0, 0, sum(age = '50-64') / count(1)) as ag3_perc,
+                ifnull(sum(age = '50-64'), 0) as age3,
+                if(count(1) = 0, 0, sum(age = '65+') / count(1)) as ag4_perc,
+                ifnull(sum(age = '65+'), 0) as age4,
+                if(count(1) = 0, 0, sum(has_garden = 1) / count(1)) as gardener_perc,
+                ifnull(sum(has_garden = 1), 0) as gardener,
+                if(count(1) = 0, 0, sum(has_garden = 0) / count(1)) as non_gardener_perc,
+                ifnull(sum(has_garden = 0), 0) as non_gardener,
+                ifnull(count(1), 0) as total
+            FROM survey_metadata
+            where reasoning = %s
+            and session_id in (select distinct session_id from survey_results);
+        """
+        result = self.execute_query(query, (pref, pref,))
+        return result[0]
+
+    def get_all_survey_meta_data_count(self):
+        query = """
+            select
+                count(1) as total
+            from survey_metadata sm
+            where session_id in (select distinct session_id from survey_results);
+        """
+        result = self.execute_query(query)
+        return result[0][0] if result else 0
+
+    def list_all_survey_meta_data_paginated(self, limit, offset):
+        query = """
+            select
+                session_id,
+                date_format(sm.submitted_at, '%m-%d-%Y %H:%i:%S') as submission_time,
+                has_garden,
+                age as age_group,
+                reasoning as preference
+            from survey_metadata sm
+            where session_id in (select distinct session_id from survey_results)
+            order by submitted_at
+            limit %s offset %s;
+        """
+
+        result = self.execute_query(query, (limit, offset))        
+        return result if result else []
+    
+    def list_all_survey_meta_data(self):
+        query = """
+            select
+                session_id,
+                date_format(sm.submitted_at, '%m-%d-%Y %H:%i:%S') as submission_time,
+                has_garden,
+                age as age_group,
+                reasoning as preference
+            from survey_metadata sm
+            where session_id in (select distinct session_id from survey_results)
+            order by submitted_at;
+        """
+
+        result = self.execute_query(query)        
+        return result if result else []
