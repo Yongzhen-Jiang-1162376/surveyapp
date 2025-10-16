@@ -48,7 +48,7 @@ values ('Akebia quinata', 'Akebia quinata Weed', 'Akebia quinata Weed.jpg', 'inv
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-
+INSERT INTO `configuration` (number_of_image_pairs) values (10);
 
 /*
 SET FOREIGN_KEY_CHECKS = 0;
