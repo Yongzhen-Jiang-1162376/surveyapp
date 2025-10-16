@@ -16,7 +16,7 @@
                 </div> -->
                 
                 <div class="w-full mx-auto mt-2 flex items-center gap-x-1">
-                    {% for n in range(1, 11) %}
+                    {% for n in range(1, number_of_pairs + 1) %}
                         <div class="w-full 
                                 h-2.5 
                                 flex 
@@ -30,7 +30,7 @@
                     {% endfor %}
                 </div>
                 <div class="flex">
-                    <p class="pt-2 text-sm text-gray-500">{{ question_number }} of 10 to unlock result</p>
+                    <p class="pt-2 text-sm text-gray-500">{{ question_number }} of {{ number_of_pairs }} to unlock result</p>
                 </div>
             </div>
 

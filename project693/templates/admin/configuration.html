@@ -1,0 +1,57 @@
+{% extends "site_layout.html" %}
+
+{% block title %}Configuration{% endblock %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto my-10 p-6 bg-white rounded-2xl shadow-md">
+    <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Survey Configuration</h2>
+
+    <!-- Configuration Form -->
+    <form method="POST" action="{{ url_for('configuration') }}" class="space-y-5">
+        <div>
+            <label for="num_pairs" class="block text-gray-700 font-medium mb-2">
+                Number of Image Pairs per Survey
+            </label>
+            <input type="number" id="number_of_image_pairs" name="number_of_image_pairs"
+                   value="{{ number_of_image_pairs }}"
+                   min="1" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div class="flex justify-center">
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                Save Configuration
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const notyf = new Notyf({
+      duration: 3000,       // 3 seconds
+      dismissible: true,    // allow manual dismiss
+      ripple: true,
+    });
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          {% if category == 'success' %}
+            notyf.success("{{ message }}");
+          {% elif category == 'error' %}
+            notyf.error("{{ message }}");
+          {% elif category == 'warning' %}
+            notyf.open({ type: 'warning', message: "{{ message }}" });
+          {% else %}
+            notyf.open({ type: 'info', message: "{{ message }}" });
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  });
+</script>
+
+{% endblock %}

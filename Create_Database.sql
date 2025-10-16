@@ -190,4 +190,12 @@ DROP FOREIGN KEY fk_cycle_id_win_loss;
 -- because this table has a larger amount of rows
 alter table bt_beta_score_heat_map modify column id bigint unsigned AUTO_INCREMENT;
 
+
+-- configuration table
+DROP TABLE IF EXISTS `configuration`;
+CREATE TABLE `configuration` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `number_of_image_pairs` INT NOT NULL DEFAULT 10
+);
+
 SET FOREIGN_KEY_CHECKS = 1;

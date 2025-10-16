@@ -16,6 +16,7 @@ class SessionManager:
         ADDPLANT = "add_plant"
         LISTPLANTS = "list_plants"
         DASHBOARD = "dashboard"
+        CONFIGURATION = "configuration"
         LIST_IMAGE_VARIATIONS = "list_image_variations"
 
     @staticmethod
