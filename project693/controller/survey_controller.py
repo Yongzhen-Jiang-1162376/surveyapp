@@ -3,6 +3,7 @@ from project693.controller import app
 from project693.utils.session_manager import SessionManager
 from project693.dao.plant_dao import PlantDAO
 from project693.dao.survey_dao import SurveyDAO
+from project693.dao.configuration_dao import ConfigurationDAO
 from project693.model.survey import SurveyMetadata, SurveyAnswer
 import uuid
 from datetime import datetime
@@ -37,7 +38,11 @@ def survey():
     
     survey_dao = SurveyDAO()
     survey_dao.save_metadata(metadata)
-
+    
+    configuration_dao = ConfigurationDAO()
+    result = configuration_dao.get_configuration()
+    number_of_pairs = result.number_of_image_pairs
+    
     # Start tracking pairs
     SessionManager.set("used_invasive", [])
     SessionManager.set("used_non_invasive", [])
@@ -66,7 +71,7 @@ def survey():
     current_time = datetime.now().isoformat()
     SessionManager.set("page_load_time", current_time)
 
-    return render_template("survey.html", pair=pair, question_number=1)
+    return render_template("survey.html", pair=pair, question_number=1, number_of_pairs=number_of_pairs)
 
 
 @app.route("/survey/next/", methods=["GET"])
@@ -76,7 +81,12 @@ def survey_next_get():
 
     qn = session.get("question_number", 1)
 
-    if qn == 11:
+    configuration_dao = ConfigurationDAO()
+    config = configuration_dao.get_configuration()
+    number_of_pairs = config.number_of_image_pairs
+
+    # if qn == 11:
+    if qn == number_of_pairs + 1:
         return render_template("survey_questionnaire.html")
 
     used_invasive = SessionManager.get("used_invasive") or []
@@ -110,7 +120,7 @@ def survey_next_get():
     current_time = datetime.now().isoformat()
     SessionManager.set("page_load_time", current_time)
 
-    return render_template("survey.html", pair=pair, question_number=qn)
+    return render_template("survey.html", pair=pair, question_number=qn, number_of_pairs = number_of_pairs)
 
 @app.route("/survey/next/", methods=["POST"])
 def survey_next():
