@@ -42,6 +42,7 @@ from . import home_controller
 from . import plant_controller
 from . import user_controller
 from . import survey_controller
+from . import configuration_controller
 from . import (
     dashboard_controller, 
     dashboard_age_group_controller, 
@@ -49,6 +50,7 @@ from . import (
     dashboard_preference_controller,
     dashboard_bradley_terry_model_controller,
     api_controller,
-    survey_cycle_controller
+    survey_cycle_controller,
+    configuration_controller
 )
 from . import image_controller
