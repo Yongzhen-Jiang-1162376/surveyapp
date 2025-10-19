@@ -622,6 +622,13 @@ def save_survey_cycle_analysis_data():
 
 # recalcuate analysis data for cycle by cycle id
 def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
+    
+    # if all survey data in this cycle has been deleted, then no need to refresh
+    survey_dao = SurveyDAO()
+    result = survey_dao.survey_results_available_for_cycle(cycle_id)
+    if not result:
+        return
+    
     analysis_dao = AnalysisDAO()
     config = initialize(cycle_id)
     
@@ -656,11 +663,18 @@ def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
 
 # save analysis data for all survey results
 def save_overall_survey_cycle_analysis_data():
+    
+    # if all survey data is deleted, then no need to recalculate the result
+    survey_dao = SurveyDAO()
+    result = survey_dao.survey_results_available()
+    if not result:
+        return
+    
     # cycle_id = 0 for all survey results
     config = initialize(cycle_id=0)
     
     analysis_dao = AnalysisDAO()
-    survey_dao = SurveyDAO()
+    
     # cycle_id = 0 for all survey results
     cycle_id = 0
     
