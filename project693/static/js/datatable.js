@@ -905,8 +905,11 @@ export class DataTable {
             const header = this.columns;
             const data_header = this.dataColumns;
 
+            const visibleColumns = this.columns;
+
             const escape = v => /[\",\\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
-            const csv = [header.join(','), ...this.data.map(r => data_header.map(h => escape(r[h])).join(','))].join('\n');
+            // const csv = [header.join(','), ...this.data.map(r => data_header.map(h => escape(r[h])).join(','))].join('\n');
+            const csv = [visibleColumns.join(','), ...this.data.map(r => visibleColumns.map(h => escape(r[h])).join(','))].join('\n');
 
             const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
             const url = URL.createObjectURL(blob);
