@@ -248,7 +248,8 @@ def get_survey_all_data():
     datatable = [dict(zip(columns, row)) for row in rows]
 
     return jsonify({
-        "datatable": datatable
+        "datatable": datatable,
+        "total": 1
     })
 
 

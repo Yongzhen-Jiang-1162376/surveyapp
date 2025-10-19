@@ -134,7 +134,9 @@ export class AjaxDataTable {
 
         this.prevBtn.disabled = this.currentPage <= 1;
         this.nextBtn.disabled = this.currentPage >= totalPages;
-        this.pageInfo.textContent = `Page ${this.currentPage} of ${totalPages}`;
+        if (this.pageInfo) {
+            this.pageInfo.textContent = `Page ${this.currentPage} of ${totalPages}`;
+        }
         this.rangeInfo.textContent = this.total 
             ? `Showing ${start + 1} to ${end} of ${this.total} entries` 
             : `No entries to show`;
