@@ -15,6 +15,9 @@ from project693.core.analysis_calculation import save_survey_cycle_analysis_data
 
 @app.route("/survey/", methods=["GET", "POST"])
 def survey():
+    """
+    Controller to start a survey
+    """
     if request.method == "GET":
         return render_template("survey_intro.html")
 
@@ -76,6 +79,9 @@ def survey():
 
 @app.route("/survey/next/", methods=["GET"])
 def survey_next_get():
+    """
+    Controller to get next survey page
+    """
     if "session_id" not in session:
         return redirect(url_for("survey"))
 
@@ -124,6 +130,9 @@ def survey_next_get():
 
 @app.route("/survey/next/", methods=["POST"])
 def survey_next():
+    """
+    Controller to submit a survey selection
+    """
     if "session_id" not in session:
         return redirect(url_for("survey"))
     
@@ -186,6 +195,9 @@ def survey_next():
 
 @app.route("/survey/questionnaire/", methods=["POST"])
 def survey_questionnaire():
+    """
+    Controller function to display the final question before survey completion
+    """
     reasoning = request.form.get("reasoning")
     session_id = session.get("session_id")
 
@@ -248,7 +260,9 @@ def survey_questionnaire():
 
 @app.route("/survey/choice-summary/", methods=["GET"])
 def survey_choice_summary():
-    
+    """
+    Controller to display plant names after survey is done
+    """
     session_id = request.args.get("session_id")
     # session_id = 'bb57d3b7-6ff3-4573-b645-eaff6302fb01'
     

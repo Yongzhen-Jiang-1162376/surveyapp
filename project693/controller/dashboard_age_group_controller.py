@@ -14,6 +14,9 @@ import pandas as pd
 
 @app.route("/dashboard/analysis-age-group/", methods=["GET"])
 def choices_by_age_group():
+    """
+    Controller to get data for analysis result by age group
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )

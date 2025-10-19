@@ -6,10 +6,13 @@ import random # this is for project693
 
 
 class PlantDAO(BaseDAO):
-
+    """
+    Data access object for plants
+    """
     def __init__(self) -> None:
         super().__init__()
 
+    # add plant function
     def add_plant(self, name: str, description: str, image: str, invasiveness: str) -> None:
         query = """
             INSERT INTO plants (name, description, image, invasiveness, created_at, updated_at)
@@ -17,6 +20,7 @@ class PlantDAO(BaseDAO):
         """
         self.execute_non_query(query, (name, description, image, invasiveness))
 
+    # edit plant function
     def edit_plant(self, id: int, name: str, invasiveness: str, description: str, image: str) -> None:
         query = """
             UPDATE plants
@@ -25,6 +29,7 @@ class PlantDAO(BaseDAO):
         """
         self.execute_non_query(query, (name, description, invasiveness, image, id))
     
+    # update plant AI-generated description
     def update_plant_ai_description(self, id: int, ai_description: str) -> None:
         query = """
             update plants
@@ -33,10 +38,12 @@ class PlantDAO(BaseDAO):
         """
         self.execute_non_query(query, (ai_description, id))
 
+    # delete plant function
     def delete_plant(self, id: int) -> None:
         query = "DELETE FROM plants WHERE id = %s"
         self.execute_non_query(query, (id,))
 
+    # search plant
     def search_plants(self, keyword: str) -> List[Plant]:
         query = """
             SELECT id, name, description, image, invasiveness
@@ -59,6 +66,7 @@ class PlantDAO(BaseDAO):
         
         return plants
 
+    # get plant by plant id
     def get_plant_by_id(self, id: int) -> Plant:
         query = "SELECT * FROM plants WHERE id = %s"
         result = self.execute_query(query, (id,))
@@ -73,6 +81,7 @@ class PlantDAO(BaseDAO):
             )
         return None
     
+    # get AI-generated description by plant id
     def get_ai_intro_by_id(self, id: int) -> str:
         query = """
             select
@@ -83,7 +92,7 @@ class PlantDAO(BaseDAO):
         result = self.execute_query(query, (id,))
         return result[0][0] if result else None
     
-    
+    # get all plant information
     def get_all_plants(self) -> List[Plant]:
         query = "SELECT id, name, description, image, invasiveness FROM plants"
         result = self.execute_query(query)
@@ -101,7 +110,7 @@ class PlantDAO(BaseDAO):
         
         return plants
     
-
+    # get random pair of plants for survey
     def get_random_pair(self, used_invasive_ids=None, used_non_invasive_ids=None) -> List[Plant]:
         all_plants = self.get_all_plants()
 

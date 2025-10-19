@@ -3,6 +3,7 @@ import os
 from project693.dao.plant_dao import PlantDAO
 
 
+# fetch plant description from OpenAI
 def fetch_plant_info_from_openai(name):
     prompt = f"Provide a short, informative description of the plant '{name}' including whether it is invasive, within 2-3 paragraphs. Use **bold** for important words."
 
@@ -34,6 +35,7 @@ def fetch_plant_info_from_openai(name):
     return description
 
 
+# save AI-generated plant description
 def save_ai_generated_plant_info(plant_id):
     plant_dao = PlantDAO()
     plant = plant_dao.get_plant_by_id(plant_id)

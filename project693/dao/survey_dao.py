@@ -4,10 +4,13 @@ from project693.model.survey import SurveyMetadata, SurveyAnswer
 
 
 class SurveyDAO(BaseDAO):
+    """
+    Data access object for survey data
+    """
     def __init__(self) -> None:
         super().__init__()
 
-
+    # save meta data
     def save_metadata(self, metadata: SurveyMetadata):
         """
         Stores the introductory metadata: garden status, age range, and initial reasoning.
@@ -26,7 +29,7 @@ class SurveyDAO(BaseDAO):
             )
         )
 
-
+    # update reasoning preference
     def update_reasoning(self, session_id: str, reasoning: str):
         """
         Updates the reasoning after Q10 is answered.
@@ -36,7 +39,7 @@ class SurveyDAO(BaseDAO):
         """
         self.execute_non_query(query, (reasoning, session_id))
 
-
+    # save survey choice made by user
     def survey_answer(self, answer: SurveyAnswer):
         """
         Stores an answer to a survey question.
@@ -93,6 +96,7 @@ class SurveyDAO(BaseDAO):
             )
         )
     
+    # check whether an active survey cycle existed
     def active_survey_cycle_existed(self):
         """
         check whether an active survey cycle is existed
@@ -104,6 +108,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)
         return result
     
+    # get current active survey cycle id
     def get_active_survey_cycle_id(self):
         """
         get the active (current) survey cycle id
@@ -114,6 +119,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0]
 
+    # check whether active survey result is existed
     def active_survey_result_existed(self):
         """
         check whether active survey result existed
@@ -123,7 +129,8 @@ class SurveyDAO(BaseDAO):
         """
         result = self.execute_query(query)
         return result[0][0]
-        
+    
+    # start a new survey cycle    
     def start_survey_cyle(self):
         """
         Start a new survey cycle
@@ -145,7 +152,7 @@ class SurveyDAO(BaseDAO):
         """
         self.execute_non_query(query)
 
-
+    # get all survey cycles
     def get_total_survey_cycles(self):
         query = """
             select count(1) from survey_cycle;  
@@ -153,7 +160,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
 
-
+    # get survey cycle data with pagination
     def list_survey_cycle_paginated(self, limit, offset):
         
         query = """
@@ -182,7 +189,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (limit, offset))        
         return result if result else []
     
-    
+    # get summary information for all surveys
     def list_all_survey_summary(self):
         
         query = """
@@ -195,7 +202,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)        
         return result if result else []
 
-
+    # get survey summary for one session
     def list_survey_summary(self, session_id):
         query = """
             select
@@ -211,7 +218,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (session_id,))
         return result if result else []
 
-
+    # get survery aggregation information for one survey session
     def list_survey_summary_aggregation(self, session_id):
         query = """
             select
@@ -224,7 +231,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (session_id,))
         return result[0]
 
-
+    # get all survey cycle detailed record by cycle id
     def list_survey_cycle_detail_data(self, cycle_id):
         query = """
             select
@@ -250,6 +257,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
     
+    # get single survey record by record id
     def get_survey_choice_detail_by_id(self, id):
         query = """
             select
@@ -261,6 +269,8 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (id,))
         return result[0]
     
+    # get choice id by session id
+    # to check whether all records are deleted for this session
     def get_survey_choice_detail_by_session_id(self, session_id):
         query = """
             select
@@ -271,6 +281,8 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (session_id,))
         return result if result else []
     
+    # get choice id by cycle id
+    # to check whether all choices are deleted for this cycle id
     def get_survey_choice_detail_by_cycle_id(self, cycle_id):
         query = """
             select
@@ -281,12 +293,14 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
     
+    # delete survey meta data by session id
     def delete_survey_meta_by_session_id(self, session_id):
         query = """
             delete from survey_metadata where session_id = %s;
         """
         self.execute_non_query(query, (session_id,))
     
+    # check whether a cycle id is an active cycle
     def cycle_id_is_active(self, cycle_id):
         query = """
             select id from survey_cycle where id = %s and active = 1;
@@ -294,37 +308,42 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return True if result else False
     
+    # delete the whole cycle by cycle id
     def delete_survey_cycle_by_id(self, cycle_id):
         query = """
             delete from survey_cycle where id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
-        
+    
+    # delete beat score by invasive by by cycle id    
     def delete_beta_score_by_invasive_type_hist_by_cycle_id(self, cycle_id):
         query = """
             delete from bt_beta_score_by_invasive_type_histogram where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
     
+    # delete beta score for heat map by cycle id
     def delete_beta_score_heat_map_by_cycle_id(self, cycle_id):
         query = """
             delete from bt_beta_score_heat_map where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
     
+    # delete beta score vs win percentage by cycle id
     def delete_beta_score_win_percentage_by_cycle_id(self, cycle_id):
         query = """
             delete from bt_beta_score_win_percentage where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
     
+    # delete win/loss by plant by cycle id
     def delete_win_loss_by_plant_by_cycle_id(self, cycle_id):
         query = """
             delete from win_loss_by_plant where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
         
-    
+    # delete survey choice by record id
     def delete_survey_choice_by_id(self, id):
         
         session_id, cycle_id = self.get_survey_choice_detail_by_id(id)
@@ -350,11 +369,10 @@ class SurveyDAO(BaseDAO):
             
             self.delete_survey_cycle_by_id(cycle_id)
 
-
+    # delete survey cycle by id
     def delete_survey_cycle_by_id(self, cycle_id):
         
         # need to delete survey_results first because of foreign key
-        
         # delete survey results
         query = """
             delete from survey_results where cycle_id = %s;
@@ -386,7 +404,7 @@ class SurveyDAO(BaseDAO):
         """
         self.execute_non_query(query, (cycle_id,))
 
-
+    # get survey preference summary data
     def get_survey_preference_summary(self):
         query = """
             SELECT
@@ -408,6 +426,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0]
     
+    # get survey preference statistical data
     def get_survey_preference_statistics(self, pref):
         query = """
             select
@@ -432,6 +451,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (pref, pref,))
         return result[0]
 
+    # get all survey meta data count
     def get_all_survey_meta_data_count(self):
         query = """
             select
@@ -442,6 +462,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
 
+    # get all survey meta data paginated
     def list_all_survey_meta_data_paginated(self, limit, offset):
         query = """
             select
@@ -459,6 +480,7 @@ class SurveyDAO(BaseDAO):
         result = self.execute_query(query, (limit, offset))        
         return result if result else []
     
+    # get all survey meta data
     def list_all_survey_meta_data(self):
         query = """
             select

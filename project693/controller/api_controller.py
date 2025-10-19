@@ -28,6 +28,9 @@ from project693.utils.openai_utils import fetch_plant_info_from_openai
 
 @app.route("/api/all-survey-data", methods=["POST"])
 def get_survey_data():
+    """
+    API controller to get all survey data
+    """
     # page = int(request.args.get("page", 1))
     # limit = int(request.args.get("limit", 10))
     req = request.get_json()
@@ -68,6 +71,9 @@ def get_survey_data():
 
 @app.route("/api/all-current-survey-data", methods=["POST"])
 def get_all_survey_data():
+    """
+    API controller to all current survey data
+    """
     analysis_dao = AnalysisDAO()
     rows = analysis_dao.list_all_current_survey_results_with_plant_name()
 
@@ -96,6 +102,9 @@ def get_all_survey_data():
 
 @app.route("/api/all-survey-data-by-cycle-id", methods=["POST"])
 def get_all_survey_data_by_cycle_id():
+    """
+    API controller to get survey data by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     
@@ -128,6 +137,9 @@ def get_all_survey_data_by_cycle_id():
 
 @app.route("/api/survey-meta-data-paginated", methods=["POST"])
 def get_survey_meta_data_paginated():
+    """
+    API controller to get paginated survey meta data
+    """
     # page = int(request.args.get("page", 1))
     # limit = int(request.args.get("limit", 10))
     req = request.get_json()
@@ -159,7 +171,9 @@ def get_survey_meta_data_paginated():
 
 @app.route("/api/all-survey-meta-data", methods=["POST"])
 def get_all_survey_meta_data():
-    
+    """
+    API controller to get all survey meta data
+    """
     survey_dao = SurveyDAO()
     rows = survey_dao.list_all_survey_meta_data()
 
@@ -179,13 +193,16 @@ def get_all_survey_meta_data():
 
 @app.route("/api/survey-cycle-data", methods=["POST"])
 def get_survey_cycle_data():
+    """
+    API controller to get all survey cycle data
+    """
     req = request.get_json()
     page = int(req.get("page", 1))
     limit = int(req.get("limit", 10))
 
     offset = (page - 1) * limit
 
-    analysis_dao = AnalysisDAO()
+    # analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
     total = survey_dao.get_total_survey_cycles()
     rows = survey_dao.list_survey_cycle_paginated(limit, offset)
@@ -208,13 +225,16 @@ def get_survey_cycle_data():
 
 @app.route("/api/survey-all-data", methods=["POST"])
 def get_survey_all_data():
+    """
+    API controller to get all survey data
+    """
     # req = request.get_json()
     # page = int(req.get("page", 1))
     # limit = int(req.get("limit", 10))
 
     # offset = (page - 1) * limit
 
-    analysis_dao = AnalysisDAO()
+    # analysis_dao = AnalysisDAO()
     survey_dao = SurveyDAO()
     # total = survey_dao.get_total_survey_cycles()
     rows = survey_dao.list_all_survey_summary()
@@ -232,7 +252,9 @@ def get_survey_all_data():
 
 @app.route("/api/close-survey", methods=["POST"])
 def close_survey():
-
+    """
+    API controller to close survey
+    """
     survey_dao = SurveyDAO()
 
     active_survey_result = survey_dao.active_survey_result_existed()
@@ -256,6 +278,9 @@ def close_survey():
 
 @app.route("/api/beta-score-by-invasive-type-histogram-by-cycle-id", methods=["POST"])
 def get_beta_score_by_invasive_type_histogram_by_cycle_id():
+    """
+    API controller to get beta score by invasive type for histogram chart
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     
@@ -284,6 +309,9 @@ def get_beta_score_by_invasive_type_histogram_by_cycle_id():
 
 @app.route("/api/win-loss-by-plant-by-cycle-id", methods=["POST"])
 def get_win_loss_by_plant_by_cycle_id():
+    """
+    API controller to get win loss by plant by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     
@@ -307,6 +335,9 @@ def get_win_loss_by_plant_by_cycle_id():
 
 @app.route("/api/beta-score-heat-map-by-plant-by-cycle-id", methods=["POST"])
 def get_beta_score_heat_map_by_plant_by_cycle_id():
+    """
+    API controller to get beta score heat map data by plant by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     
@@ -331,6 +362,9 @@ def get_beta_score_heat_map_by_plant_by_cycle_id():
 
 @app.route("/api/beta-score-win-percentage-by-cycle-id", methods=["POST"])
 def get_beta_score_win_percentage_by_cycle_id():
+    """
+    API controller to get beta score vs win percentage by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
     
@@ -355,6 +389,9 @@ def get_beta_score_win_percentage_by_cycle_id():
 
 @app.route("/api/download-survey-cycle-data-by-cycle-id", methods=["POST"])
 def download_survey_cycle_data_by_cycle_id():
+    """
+    API controller to download survey cycle data by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id", 1))
 
@@ -460,6 +497,9 @@ def download_survey_cycle_data_by_cycle_id():
 
 @app.route("/api/download-all-survey-data", methods=["POST"])
 def download_all_survey_data():
+    """
+    API controller to download all survey data
+    """
     # req = request.get_json()
     # cycle_id = int(req.get("cycle_id", 1))
 
@@ -562,6 +602,9 @@ def download_all_survey_data():
 
 @app.route("/survey/plant-info")
 def plant_info():
+    """
+    API controller to get plant description
+    """
     plant_id = int(request.args.get("id"))
     
     plant_dao = PlantDAO()
@@ -577,6 +620,9 @@ def plant_info():
 
 @app.route("/api/survey-cycle-detail", methods=["POST"])
 def survey_cycle_detail_by_cycle_id():
+    """
+    API controller to get survey cycle detail
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id"))
     
@@ -589,6 +635,9 @@ def survey_cycle_detail_by_cycle_id():
 
 @app.route("/api/delete-survey-choice-by-id", methods=['POST'])
 def delete_survey_choice_by_id():
+    """
+    API controller to delete survey record by id
+    """
     req = request.get_json()
     survey_id = int(req.get("id"))
     
@@ -600,6 +649,9 @@ def delete_survey_choice_by_id():
 
 @app.route("/api/delete-survey-cycle-by-id", methods=['POST'])
 def delete_survey_cycle_by_id():
+    """
+    API controller to delete survey cycle by cycle id
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id"))
     
@@ -611,6 +663,9 @@ def delete_survey_cycle_by_id():
 
 @app.route("/api/refresh-survey-cycle-by-id", methods=['POST'])
 def refresh_survey_cycle_by_id():
+    """
+    API controller to recalculate survey cycle data
+    """
     req = request.get_json()
     cycle_id = int(req.get("cycle_id"))
     
@@ -620,6 +675,9 @@ def refresh_survey_cycle_by_id():
 
 @app.route("/api/refresh-all-survey-data", methods=['POST'])
 def refresh_all_survey_data():
+    """
+    API controller to recalculate all survey data
+    """
     # req = request.get_json()
     # cycle_id = int(req.get("cycle_id"))
     

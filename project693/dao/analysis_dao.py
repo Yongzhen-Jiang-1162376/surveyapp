@@ -3,9 +3,13 @@ from project693.dao.survey_dao import SurveyDAO
 
 
 class AnalysisDAO(BaseDAO):
+    """
+    Data access class for analysis data
+    """
     def __init__(self) -> None:
         super().__init__()
     
+    # list all survey plants that are involved in survey
     def list_survey_plants(self, cycle_id=None):
         """
         list all plants which have been chosen for survey
@@ -66,6 +70,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
 
+    # list invasiveness for plants involved in survey
     def list_survey_plants_invasiveness(self, cycle_id=None):
         """
         list all plants which have been chosen for survey
@@ -127,6 +132,7 @@ class AnalysisDAO(BaseDAO):
             result = self.execute_query(query, (cycle_id, cycle_id))
         return result if result else []
 
+    # get overall averate response time
     def get_overall_average_response_time(self):
         query = """
             select round(avg(response_time), 6) as avg_response_time from survey_results;
@@ -134,6 +140,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
     
+    # get average response time for current cycle
     def get_current_average_response_time(self):
         query = """
             select round(avg(response_time), 6) as avg_response_time from survey_results where active = 1;
@@ -142,14 +149,16 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
 
-    def get_average_response_time_by_cycle_id(self, cylce_id):
-        query = """
-            select round(avg(response_time), 6) as avg_response_time from survey_results where cycle_id = %s;
-        """
+    # get average response time for a survey cycle by cycle id
+    # def get_average_response_time_by_cycle_id(self, cylce_id):
+    #     query = """
+    #         select round(avg(response_time), 6) as avg_response_time from survey_results where cycle_id = %s;
+    #     """
         
-        result = self.execute_query(query, (cylce_id,))
-        return result[0][0] if result else 0
+    #     result = self.execute_query(query, (cylce_id,))
+    #     return result[0][0] if result else 0
     
+    # get average response time for a survey cycle by cycle id
     def get_average_response_time_by_cycle_id(self, cycle_id):
         query = """
             select round(avg(response_time), 6) as avg_response_time from survey_results where cycle_id = %s;
@@ -158,7 +167,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result[0][0] if result else 0
     
-    
+    # get total for all survey results
     def get_all_total_survey_results(self):
         query = """
             select
@@ -169,7 +178,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query)
         return result[0][0] if result else 0
     
-    
+    # get survey results for a cycle by cycle id
     def list_survey_results(self, cycle_id):
         
         avg_response_time = None
@@ -227,6 +236,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
 
+    # get count of invasive choices and non-invasive choices for all survey results
     def list_choice_count(self):
         query = """
             select
@@ -240,20 +250,8 @@ class AnalysisDAO(BaseDAO):
         
         return result if result[0][0] is not None else []
 
+    # get age group count for survey by age group
     def list_survey_age_group_count(self):
-        # query = """
-        #     select 
-        #         sum(age='18-29') as '18-29',
-        #         sum(age='30-49') as '30-49',
-        #         sum(age='50-64') as '50-64',
-        #         sum(age='65+') as '65+'
-        #     from survey_metadata
-        #     where session_id in
-        #     (
-        #         select distinct session_id from survey_results
-        #     );
-        # """
-        
         query = """
 
             select
@@ -307,6 +305,7 @@ class AnalysisDAO(BaseDAO):
 
         return result if result else []
     
+    # get summary count by gardening
     def list_survey_gardening_count(self):
         query = """
             select
@@ -336,6 +335,7 @@ class AnalysisDAO(BaseDAO):
         
         return result if result else []
 
+    # get current survey result with plant names
     def list_current_survey_results_with_plant_name(self):
         avg_response_time = self.get_current_average_response_time()
         
@@ -368,6 +368,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
 
 
+    # get paginated current survey data with plant names
     def list_all_survey_results_with_plant_name_paginated(self, limit, offset):
         avg_response_time = self.get_current_average_response_time()
         
@@ -400,7 +401,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (avg_response_time, limit, offset))        
         return result if result else []
     
-    
+    # get all survey results with plant names
     def list_all_current_survey_results_with_plant_name(self):
         avg_response_time = self.get_current_average_response_time()
         
@@ -432,7 +433,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (avg_response_time,))        
         return result if result else []
 
-
+    # get all survey results with plant names for one cycle by cycle id
     def list_all_survey_results_with_plant_name_by_cycle_id(self, cycle_id=None):
         avg_response_time = None
         query = None
@@ -494,7 +495,7 @@ class AnalysisDAO(BaseDAO):
                
         return result if result else []
     
-    
+    # save beta scores data by invasive type for histogram chart
     def save_beta_score_by_invasive_type_histogram(self, data, cycle_id):
         sql = """
             insert into bt_beta_score_by_invasive_type_histogram (
@@ -522,6 +523,7 @@ class AnalysisDAO(BaseDAO):
         self.execute_many(sql, tuple_date)
         return
     
+    # get beat score data by cycle id for invaive type histogram
     def list_beta_score_by_invasive_type_histogram_by_cycle_id(self, cycle_id):
         query = """
             SELECT
@@ -543,6 +545,7 @@ class AnalysisDAO(BaseDAO):
         return result if result else []
         
 
+    # save win/loss by plant data for survey cycle
     def save_win_loss_by_plant(self, data, cycle_id):
         sql = """
             insert into win_loss_by_plant (
@@ -565,24 +568,7 @@ class AnalysisDAO(BaseDAO):
         self.execute_many(sql, tuple_data)
         return
 
-
-    # def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
-    #     query = """
-    #         SELECT
-    #             cycle_id,
-    #             plant_id,
-    #             plant_name,
-    #             invasiveness,
-    #             win,
-    #             loss
-    #         FROM win_loss_by_plant
-    #         where cycle_id = %s
-    #         order by id;
-    #     """
-    #     result = self.execute_query(query, (cycle_id,))        
-    #     return result if result else []
-
-
+    # save beta score data for heat map by plant for survey cycle
     def save_beta_score_heat_map_by_plant(self, data, cycle_id):
         
         sql = """
@@ -608,24 +594,7 @@ class AnalysisDAO(BaseDAO):
         return
     
     
-    # def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
-    #     query = """
-    #         SELECT
-    #             cycle_id,
-    #             plant_a_id,
-    #             plant_a_name,
-    #             plant_b_id,
-    #             plant_b_name,
-    #             plant_a_beats_b,
-    #             plant_a_beats_b_weighted
-    #         FROM bt_beta_score_heat_map
-    #         where cycle_id = %s
-    #         order by id;
-    #     """
-    #     result = self.execute_query(query, (cycle_id,))        
-    #     return result if result else []
-
-
+    # save beat socre vs win percentage for a survey cycle by cycle id
     def save_beta_score_win_percentage(self, data, cycle_id):
         sql = """
             insert into bt_beta_score_win_percentage (
@@ -649,7 +618,7 @@ class AnalysisDAO(BaseDAO):
         self.execute_many(sql, tuple_data)
         return
     
-    
+    # get beat score vs win percentage by cycle id
     def list_beta_score_win_percentage_by_cycle_id(self, cycle_id):
         query = """
             SELECT
@@ -667,6 +636,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))        
         return result if result else []
     
+    # get win/loss data by plant by cycle id
     def list_win_loss_by_plant_by_cycle_id(self, cycle_id):
         query = """
             select
@@ -683,7 +653,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
 
-
+    # get beta score data by plant type by cycle id
     def list_beta_score_by_plant_type_histogram_by_cycle_id(self, cycle_id):
         query = """
             select
@@ -703,6 +673,7 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
     
+    # get beat score data for heat map by plant by cycle id
     def list_beta_score_heat_map_by_plant_by_cycle_id(self, cycle_id):
         query = """
             select
@@ -720,25 +691,28 @@ class AnalysisDAO(BaseDAO):
         result = self.execute_query(query, (cycle_id,))
         return result if result else []
     
-
+    # delete beta score data for heat map by cycle id
     def delete_beta_score_heat_map_by_plant(self, cycle_id):
         query = """
             delete from bt_beta_score_heat_map where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
     
+    # delete win/loss data by plant by cycle id
     def delete_win_loss_by_plant(self, cycle_id):
         query = """
             delete from win_loss_by_plant where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
 
+    # delete beta score data by invasive type by cycle id
     def delete_beta_score_by_invasive_type_histogram(self, cycle_id):
         query = """
             delete from bt_beta_score_by_invasive_type_histogram where cycle_id = %s;
         """
         self.execute_non_query(query, (cycle_id,))
     
+    # delete beat score vs win percentage by cycle id
     def delete_beta_score_win_percentage(self, cycle_id):
         query = """
             delete from bt_beta_score_win_percentage where cycle_id = %s;

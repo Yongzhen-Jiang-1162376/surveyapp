@@ -15,6 +15,9 @@ import pandas as pd
 
 @app.route("/dashboard/analysis-preference/", methods=["GET"])
 def choices_by_preference():
+    """
+    Controller to get summary data grouped by users' reasoning preference
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )

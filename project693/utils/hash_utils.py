@@ -13,7 +13,7 @@ PASSWORD_SALT = "d653bda9e01ec6c5b6c36f53d0d2ee4c"
 app = Flask(__name__)
 hashing = Hashing(app)
 
-
+# function to generate hash
 def get_password_hash(password):
     """
     Generate a hash for the provided password.
@@ -27,6 +27,7 @@ def get_password_hash(password):
     password_hash = hashing.hash_value(password, PASSWORD_SALT)
     return password_hash
 
+# function to check hash
 def check_password_hash( password,password_hash):
     """
     Check if the provided password matches the stored hash.
