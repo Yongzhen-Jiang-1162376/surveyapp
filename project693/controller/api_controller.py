@@ -611,7 +611,7 @@ def plant_info():
     description = plant_dao.get_ai_intro_by_id(plant_id)
     
     if not description:
-        description = "No description available for this plant"
+        description = "No AI-generated description available for this plant.\n Please check whether your OpenAI API Key still valid."
     
     description = html.unescape(description)
 
