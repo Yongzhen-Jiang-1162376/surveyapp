@@ -309,11 +309,11 @@ class SurveyDAO(BaseDAO):
         return True if result else False
     
     # delete the whole cycle by cycle id
-    def delete_survey_cycle_by_id(self, cycle_id):
-        query = """
-            delete from survey_cycle where id = %s;
-        """
-        self.execute_non_query(query, (cycle_id,))
+    # def delete_survey_cycle_by_id(self, cycle_id):
+    #     query = """
+    #         delete from survey_cycle where id = %s;
+    #     """
+    #     self.execute_non_query(query, (cycle_id,))
     
     # delete beat score by invasive by by cycle id    
     def delete_beta_score_by_invasive_type_hist_by_cycle_id(self, cycle_id):
@@ -372,25 +372,38 @@ class SurveyDAO(BaseDAO):
     # delete survey cycle by id
     def delete_survey_cycle_by_id(self, cycle_id):
         
-        # need to delete survey_results first because of foreign key
-        # delete survey results
         query = """
-            delete from survey_results where cycle_id = %s;
-        """
-        self.execute_non_query(query, (cycle_id,))
-        
-        
-        # delete survey metadata
-        query = """
-            delete from survey_metadata where session_id in
-            (
-                select 
+            select 
                 distinct session_id
-                from survey_results
-                where cycle_id = %s
-            );
+            from survey_results
+            where cycle_id = %s
         """
-        self.execute_non_query(query, (cycle_id,))
+        session_ids = self.execute_query(query, (cycle_id,))
+        
+        print('-----------------------1-----------------------')
+        print(session_ids)
+        
+        # convert to a list
+        session_ids = [s[0] for s in session_ids]
+        
+        if session_ids:
+            # delete survey results
+            query = """
+                delete from survey_results where cycle_id = %s;
+            """
+            self.execute_non_query(query, (cycle_id,))
+        
+            # delete survey metadata
+            placeholders = ', '.join(['%s'] * len(session_ids))
+            print('-----------------------2-----------------------')
+            print(placeholders)
+            query = f"""
+                delete from survey_metadata where session_id in ({placeholders})
+            """
+            self.execute_non_query(query, tuple(session_ids))
+        
+        # need to delete survey_results first because of foreign key
+        
         
         # delete analysis data for this cycle
         self.delete_beta_score_heat_map_by_cycle_id(cycle_id)
@@ -398,11 +411,30 @@ class SurveyDAO(BaseDAO):
         self.delete_beta_score_win_percentage_by_cycle_id(cycle_id)
         self.delete_win_loss_by_plant_by_cycle_id(cycle_id)
         
+        # if there's no survey data available, then need to delete the analysis data for all survey cycle_id =0
+        result = self.survey_results_available()
+        print('-----------------------3-----------------------')
+        print(result)
+        if not result:
+            self.delete_beta_score_heat_map_by_cycle_id(0)
+            self.delete_beta_score_by_invasive_type_hist_by_cycle_id(0)
+            self.delete_beta_score_win_percentage_by_cycle_id(0)
+            self.delete_win_loss_by_plant_by_cycle_id(0)
+        
         # delete survey_cycle table only if the cycle is not active
         query = """
             delete from survey_cycle where id = %s and active != 1;
         """
         self.execute_non_query(query, (cycle_id,))
+    
+    def survey_results_available(self):
+        query = """
+            select count(1) as total from survey_results;
+        """
+        result = self.execute_query(query)
+        print('------------------------- result ----------------------')
+        print(result)
+        return 1 if result[0][0] else 0
 
     # get survey preference summary data
     def get_survey_preference_summary(self):
