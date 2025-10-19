@@ -3,6 +3,24 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+-- DROP TABLE IF EXISTS `users`;
+-- CREATE TABLE `users` (
+--   `id` int NOT NULL AUTO_INCREMENT,
+--   `username` varchar(20) NOT NULL,
+--   `password_hash` varchar(64) NOT NULL,
+--   `email` varchar(255) NOT NULL,
+--   `first_name` varchar(50) DEFAULT NULL,
+--   `last_name` varchar(50) DEFAULT NULL,
+--   `location` json DEFAULT NULL,
+--   `description` varchar(255) DEFAULT NULL,
+--   `avatar` varchar(64) NOT NULL,
+--   `role` enum('siteadmin') NOT NULL,
+--   `status` enum('active','inactive') NOT NULL,
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY `username_UK` (`username`),
+--   UNIQUE KEY `email_UK` (`email`)
+-- );
+
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -21,181 +39,354 @@ CREATE TABLE `users` (
   UNIQUE KEY `email_UK` (`email`)
 );
 
+
+-- DROP TABLE IF EXISTS `plants`;
+-- CREATE TABLE `plants` (
+--   `id` int NOT NULL AUTO_INCREMENT,
+--   `name` varchar(50) NOT NULL,
+--   `description` varchar(255) NOT NULL,
+--   `image` varchar(64) NOT NULL,
+--   `invasiveness` enum('invasive', 'non-invasive') NOT NULL DEFAULT 'non-invasive',
+--   `ai_generated` bool,
+--   `is_variation` bool,
+--   `original_image_id`	int,
+--   PRIMARY KEY (`id`)
+-- ) ;
+
 DROP TABLE IF EXISTS `plants`;
 CREATE TABLE `plants` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `description` varchar(255) NOT NULL,
   `image` varchar(64) NOT NULL,
-  `invasiveness` enum('invasive', 'non-invasive') NOT NULL DEFAULT 'non-invasive',
+  `invasiveness` enum('invasive','non-invasive') NOT NULL DEFAULT 'non-invasive',
+  `ai_generated` tinyint(1) DEFAULT NULL,
+  `is_variation` tinyint(1) DEFAULT NULL,
+  `original_image_id` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `ai_intro` text,
   PRIMARY KEY (`id`)
-) ;
+);
+
+
+
+-- DROP TABLE IF EXISTS `survey_metadata`;
+-- CREATE TABLE `survey_metadata` (
+--   `id` INT AUTO_INCREMENT,
+--   `session_id` VARCHAR(255) NOT NULL,
+--   `has_garden` BOOLEAN,
+--   `age` VARCHAR(50),
+--   `reasoning` VARCHAR(50), 
+--   `submitted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY (`session_id`)
+-- );
 
 DROP TABLE IF EXISTS `survey_metadata`;
 CREATE TABLE `survey_metadata` (
-  `id` INT AUTO_INCREMENT,
-  `session_id` VARCHAR(255) NOT NULL,
-  `has_garden` BOOLEAN,
-  `age` VARCHAR(50),
-  `reasoning` VARCHAR(50), 
-  `submitted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(255) NOT NULL,
+  `has_garden` tinyint(1) DEFAULT NULL,
+  `age` varchar(50) DEFAULT NULL,
+  `reasoning` varchar(50) DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`session_id`)
+  UNIQUE KEY `session_id` (`session_id`)
 );
 
+
 -- add survey cycle table to support survey cycle
+-- DROP TABLE IF EXISTS `survey_cycle`;
+-- CREATE TABLE `survey_cycle` (
+--   `id` INT AUTO_INCREMENT,
+--   `start_time` TIMESTAMP,
+--   `end_time` TIMESTAMP,
+--   `survey_participants` INT,
+--   `total_choices` INT,
+--   `active` INT default 1,
+--   PRIMARY KEY (`id`)
+-- );
+
 DROP TABLE IF EXISTS `survey_cycle`;
 CREATE TABLE `survey_cycle` (
-  `id` INT AUTO_INCREMENT,
-  `start_time` TIMESTAMP,
-  `end_time` TIMESTAMP,
-  `survey_participants` INT,
-  `total_choices` INT,
-  `active` INT default 1,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `start_time` timestamp NULL DEFAULT NULL,
+  `end_time` timestamp NULL DEFAULT NULL,
+  `survey_participants` int DEFAULT NULL,
+  `total_choices` int DEFAULT NULL,
+  `active` int DEFAULT 1,
   PRIMARY KEY (`id`)
 );
 
+
+-- DROP TABLE IF EXISTS `survey_results`;
+-- CREATE TABLE `survey_results` (
+--   `id` INT AUTO_INCREMENT,
+--   `session_id` VARCHAR(255) NOT NULL,       -- stores UUID string
+--   `question_seq` INT NOT NULL,           -- 1 to 10
+--   `selected_plant_id` INT NOT NULL,    -- which plant they chose
+--   `submission_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- auto logs each click time
+--   `response_time`	float,
+-- 	`invasive_plant_id` int,
+--   `non_invasive_plant_id` int,
+--   `winner` int,
+--   `loser` int,
+--   `invasive_winner` int,
+--   `invasive_loser` int,
+--   `active` bool default 1,
+--   `cycle_id` int,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_selected_plant`
+--     FOREIGN KEY (`selected_plant_id`) REFERENCES `plants`(`id`),
+--   CONSTRAINT `fk_session_id`
+--     FOREIGN KEY (`session_id`) REFERENCES `survey_metadata`(`session_id`),
+--   CONSTRAINT `fk_cycle_id`
+--     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
+
+
 DROP TABLE IF EXISTS `survey_results`;
 CREATE TABLE `survey_results` (
-  `id` INT AUTO_INCREMENT,
-  `session_id` VARCHAR(255) NOT NULL,       -- stores UUID string
-  `question_seq` INT NOT NULL,           -- 1 to 10
-  `selected_plant_id` INT NOT NULL,    -- which plant they chose
-  `submission_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- auto logs each click time
-  `response_time`	float,
-	`invasive_plant_id` int,
-  `non_invasive_plant_id` int,
-  `winner` int,
-  `loser` int,
-  `invasive_winner` int,
-  `invasive_loser` int,
-  `active` bool default 1,
-  `cycle_id` int,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(255) NOT NULL,
+  `question_seq` int NOT NULL,
+  `selected_plant_id` int NOT NULL,
+  `submission_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `response_time` float DEFAULT NULL,
+  `invasive_plant_id` int DEFAULT NULL,
+  `non_invasive_plant_id` int DEFAULT NULL,
+  `winner` int DEFAULT NULL,
+  `loser` int DEFAULT NULL,
+  `invasive_winner` int DEFAULT NULL,
+  `invasive_loser` int DEFAULT NULL,
+  `active` tinyint(1) DEFAULT 1,
+  `cycle_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_selected_plant`
-    FOREIGN KEY (`selected_plant_id`) REFERENCES `plants`(`id`),
-  CONSTRAINT `fk_session_id`
-    FOREIGN KEY (`session_id`) REFERENCES `survey_metadata`(`session_id`),
-  CONSTRAINT `fk_cycle_id`
-    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+  KEY `fk_selected_plant` (`selected_plant_id`),
+  KEY `fk_session_id` (`session_id`),
+  KEY `fk_cycle_id` (`cycle_id`),
+  CONSTRAINT `fk_cycle_id` FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle` (`id`),
+  CONSTRAINT `fk_selected_plant` FOREIGN KEY (`selected_plant_id`) REFERENCES `plants` (`id`),
+  CONSTRAINT `fk_session_id` FOREIGN KEY (`session_id`) REFERENCES `survey_metadata` (`session_id`)
 );
 
-SET FOREIGN_KEY_CHECKS = 1;
 
-/* update database tables and structured for stage 2 */
-SET FOREIGN_KEY_CHECKS = 0;
-
--- add fields in plants table
-alter table plants
-add (
-	`ai_generated` bool,
-  `is_variation` bool,
-  `original_image_id`	int
-);
+-- DROP TABLE IF EXISTS `bt_beta_score_win_percentage`;
+-- CREATE TABLE `bt_beta_score_win_percentage` (
+--   `id` INT AUTO_INCREMENT,
+--   `cycle_id` INT NOT NULL,
+--   `plant_id` INT NOT NULL,
+--   `plant_name` VARCHAR(255) NOT NULL,
+--   `invasiveness` VARCHAR(50) NOT NULL,
+--   `win_percentage` float not null,
+--   `bt_beta_score` float not null,
+--   `bt_beta_score_weighted` float not null,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
+--     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
 
 -- add bradley-terry beta score with win percentage table
 DROP TABLE IF EXISTS `bt_beta_score_win_percentage`;
 CREATE TABLE `bt_beta_score_win_percentage` (
-  `id` INT AUTO_INCREMENT,
-  `cycle_id` INT NOT NULL,
-  `plant_id` INT NOT NULL,
-  `plant_name` VARCHAR(255) NOT NULL,
-  `invasiveness` VARCHAR(50) NOT NULL,
-  `win_percentage` float not null,
-  `bt_beta_score` float not null,
-  `bt_beta_score_weighted` float not null,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cycle_id` int NOT NULL,
+  `plant_id` int NOT NULL,
+  `plant_name` varchar(255) NOT NULL,
+  `invasiveness` varchar(50) NOT NULL,
+  `win_percentage` float NOT NULL,
+  `bt_beta_score` float NOT NULL,
+  `bt_beta_score_weighted` float NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
-    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+  KEY `fk_cycle_id_bt_beta_win_percentage` (`cycle_id`)
 );
 
+
+-- DROP TABLE IF EXISTS `bt_beta_score_win_percentage`;
+-- CREATE TABLE `bt_beta_score_win_percentage` (
+--   `id` INT AUTO_INCREMENT,
+--   `cycle_id` INT NOT NULL,
+--   `plant_id` INT NOT NULL,
+--   `plant_name` VARCHAR(255) NOT NULL,
+--   `invasiveness` VARCHAR(50) NOT NULL,
+--   `win_percentage` float not null,
+--   `bt_beta_score` float not null,
+--   `bt_beta_score_weighted` float not null,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_cycle_id_bt_beta_win_percentage`
+--     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
+
 -- add bradley-terry beta score heat map table
+-- DROP TABLE IF EXISTS `bt_beta_score_heat_map`;
+-- CREATE TABLE `bt_beta_score_heat_map` (
+--   `id` INT AUTO_INCREMENT,
+--   `cycle_id` INT NOT NULL,
+--   `plant_a_id` INT NOT NULL,
+--   `plant_a_name` VARCHAR(255) NOT NULL,
+--   `plant_b_id` INT NOT NULL,
+--   `plant_b_name` VARCHAR(255) NOT NULL,
+--   `plant_a_beats_b` float,
+--   `plant_a_beats_b_weighted` float,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_cycle_id_bt_beta_heat_map`
+--     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
+
 DROP TABLE IF EXISTS `bt_beta_score_heat_map`;
 CREATE TABLE `bt_beta_score_heat_map` (
-  `id` INT AUTO_INCREMENT,
-  `cycle_id` INT NOT NULL,
-  `plant_a_id` INT NOT NULL,
-  `plant_a_name` VARCHAR(255) NOT NULL,
-  `plant_b_id` INT NOT NULL,
-  `plant_b_name` VARCHAR(255) NOT NULL,
-  `plant_a_beats_b` float,
-  `plant_a_beats_b_weighted` float,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `cycle_id` int NOT NULL,
+  `plant_a_id` int NOT NULL,
+  `plant_a_name` varchar(255) NOT NULL,
+  `plant_b_id` int NOT NULL,
+  `plant_b_name` varchar(255) NOT NULL,
+  `plant_a_beats_b` float DEFAULT NULL,
+  `plant_a_beats_b_weighted` float DEFAULT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_cycle_id_bt_beta_heat_map`
-    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+  KEY `fk_cycle_id_bt_beta_heat_map` (`cycle_id`)
 );
 
 -- add bradley-terry beta score by invasive type histogram table
+-- DROP TABLE IF EXISTS `bt_beta_score_by_invasive_type_histogram`;
+-- CREATE TABLE `bt_beta_score_by_invasive_type_histogram` (
+--   `id` INT AUTO_INCREMENT,
+--   `cycle_id` INT NOT NULL,
+--   `bin_no` INT NOT NULL,
+--   `bin_left` float NOT NULL,
+--   `bin_right` float NOT NULL,
+--   `invasive_count` int NOT NULL,
+--   `non_invasive_count` int not null,
+--   `bin_left_weighted` float NOT NULL,
+--   `bin_right_weighted` float NOT NULL,
+--   `invasive_count_weighted` int NOT NULL,
+--   `non_invasive_count_weighted` int not null,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_cycle_id_bt_beta_histogram`
+--     FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
+
 DROP TABLE IF EXISTS `bt_beta_score_by_invasive_type_histogram`;
 CREATE TABLE `bt_beta_score_by_invasive_type_histogram` (
-  `id` INT AUTO_INCREMENT,
-  `cycle_id` INT NOT NULL,
-  `bin_no` INT NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cycle_id` int NOT NULL,
+  `bin_no` int NOT NULL,
   `bin_left` float NOT NULL,
   `bin_right` float NOT NULL,
   `invasive_count` int NOT NULL,
-  `non_invasive_count` int not null,
+  `non_invasive_count` int NOT NULL,
   `bin_left_weighted` float NOT NULL,
   `bin_right_weighted` float NOT NULL,
   `invasive_count_weighted` int NOT NULL,
-  `non_invasive_count_weighted` int not null,
+  `non_invasive_count_weighted` int NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_cycle_id_bt_beta_histogram`
-    FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+  KEY `fk_cycle_id_bt_beta_histogram` (`cycle_id`)
 );
 
 -- add win/loss by plant table
+-- DROP TABLE IF EXISTS `win_loss_by_plant`;
+-- CREATE TABLE `win_loss_by_plant` (
+--   `id` INT AUTO_INCREMENT,
+--   `cycle_id` INT NOT NULL,
+--   `plant_id` INT NOT NULL,
+--   `plant_name` VARCHAR(255) NOT NULL,
+--   `invasiveness` VARCHAR(50) NOT NULL,
+--   `win` INT NOT NULL,
+--   `loss` INT NOT NULL,
+--   PRIMARY KEY (`id`),
+--   CONSTRAINT `fk_cycle_id_win_loss`
+--   FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+-- );
+
 DROP TABLE IF EXISTS `win_loss_by_plant`;
 CREATE TABLE `win_loss_by_plant` (
-  `id` INT AUTO_INCREMENT,
-  `cycle_id` INT NOT NULL,
-  `plant_id` INT NOT NULL,
-  `plant_name` VARCHAR(255) NOT NULL,
-  `invasiveness` VARCHAR(50) NOT NULL,
-  `win` INT NOT NULL,
-  `loss` INT NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cycle_id` int NOT NULL,
+  `plant_id` int NOT NULL,
+  `plant_name` varchar(255) NOT NULL,
+  `invasiveness` varchar(50) NOT NULL,
+  `win` int NOT NULL,
+  `loss` int NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_cycle_id_win_loss`
-  FOREIGN KEY (`cycle_id`) REFERENCES `survey_cycle`(`id`)
+  KEY `fk_cycle_id_win_loss` (`cycle_id`)
 );
+
+
+-- configuration table
+-- DROP TABLE IF EXISTS `configuration`;
+-- CREATE TABLE `configuration` (
+--   `id` INT AUTO_INCREMENT PRIMARY KEY,
+--   `number_of_image_pairs` INT NOT NULL DEFAULT 10
+-- );
+
+DROP TABLE IF EXISTS `configuration`;
+CREATE TABLE `configuration` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `number_of_image_pairs` int NOT NULL DEFAULT 10,
+  PRIMARY KEY (`id`)
+);
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+/* update database tables and structured for stage 2 */
+-- SET FOREIGN_KEY_CHECKS = 0;
+
+-- add fields in plants table
+-- alter table plants
+-- add (
+-- 	`ai_generated` bool,
+--   `is_variation` bool,
+--   `original_image_id`	int
+-- );
+
+
+
+
+
+
+
+
+
 
 -- add an active column to servey result table to support survey period
 -- by default it is true (active)
-alter table survey_results
-add column active bool default 1;
+-- alter table survey_results
+-- add column active bool default 1;
 
 
-alter table plants add column created_at TIMESTAMP;
-alter table plants add column updated_at TIMESTAMP;
+-- alter table plants add column created_at TIMESTAMP;
+-- alter table plants add column updated_at TIMESTAMP;
 
 -- add text field to plants to store AI generated plant information
-alter table plants add column ai_intro text;
+-- alter table plants add column ai_intro text;
 
 -- remove foreign key for cycle _id
 -- the reason of this is to support cycle_id = 0 which represents all survey result
 -- including all survey cycles
-ALTER TABLE bt_beta_score_by_invasive_type_histogram
-DROP FOREIGN KEY fk_cycle_id_bt_beta_histogram;
+-- ALTER TABLE bt_beta_score_by_invasive_type_histogram
+-- DROP FOREIGN KEY fk_cycle_id_bt_beta_histogram;
 
-ALTER TABLE bt_beta_score_heat_map
-DROP FOREIGN KEY fk_cycle_id_bt_beta_heat_map;
+-- ALTER TABLE bt_beta_score_heat_map
+-- DROP FOREIGN KEY fk_cycle_id_bt_beta_heat_map;
 
-ALTER TABLE bt_beta_score_win_percentage
-DROP FOREIGN KEY fk_cycle_id_bt_beta_win_percentage;
+-- ALTER TABLE bt_beta_score_win_percentage
+-- DROP FOREIGN KEY fk_cycle_id_bt_beta_win_percentage;
 
-ALTER TABLE win_loss_by_plant
-DROP FOREIGN KEY fk_cycle_id_win_loss;
+-- ALTER TABLE win_loss_by_plant
+-- DROP FOREIGN KEY fk_cycle_id_win_loss;
 
 -- change the id field into bigint for heat map table
 -- because this table has a larger amount of rows
-alter table bt_beta_score_heat_map modify column id bigint unsigned AUTO_INCREMENT;
+-- alter table bt_beta_score_heat_map modify column id bigint unsigned AUTO_INCREMENT;
 
 
 -- configuration table
-DROP TABLE IF EXISTS `configuration`;
-CREATE TABLE `configuration` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `number_of_image_pairs` INT NOT NULL DEFAULT 10
-);
+-- DROP TABLE IF EXISTS `configuration`;
+-- CREATE TABLE `configuration` (
+--   `id` INT AUTO_INCREMENT PRIMARY KEY,
+--   `number_of_image_pairs` INT NOT NULL DEFAULT 10
+-- );
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- SET FOREIGN_KEY_CHECKS = 1;

@@ -24,6 +24,9 @@ def allowed_file(filename):
 
 @app.route("/siteadmin/profile/", methods=["GET", "POST"])
 def profile():
+    """
+    function to display user profile page
+    """
     user_id = session["user_id"]
     user_dao = UserDao()
     user = user_dao.get_full_user_info(user_id)
@@ -36,6 +39,9 @@ def profile():
 
 @app.route("/siteadmin/update_profile_image/", methods=["POST"])
 def update_profile_image():
+    """
+    function to update user profile image
+    """
     user_id = session["user_id"]
     user_dao = UserDao()
     user = user_dao.find_by_id(user_id)
@@ -55,6 +61,9 @@ def update_profile_image():
 
 @app.route("/siteadmin/update_profile/", methods=["GET", "POST"])
 def update_profile():
+    """
+    function to dislay and update user profile
+    """
     user_id = session["user_id"]
     user_dao = UserDao()
     user = user_dao.find_by_id(user_id)

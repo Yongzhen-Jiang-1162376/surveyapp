@@ -14,6 +14,9 @@ import json
 
 @app.route("/dashboard/", methods=["GET"])
 def dashboard():
+    """
+    Controller to get overall analysis data for all survey data
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )

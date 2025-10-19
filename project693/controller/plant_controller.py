@@ -27,6 +27,9 @@ def allowed_file(filename):
 
 @app.route("/siteadmin/list_plants", methods=["GET"])
 def list_plants():
+    """
+    Controller for listing plants
+    """
     keyword = request.args.get("search", "")
     plants = plant_dao.search_plants(keyword)
     SessionManager.set(
@@ -40,6 +43,9 @@ def list_plants():
 
 @app.route("/siteadmin/add_plants", methods=["GET", "POST"])
 def add_plant():
+    """
+    Controller for adding a new plant
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.ADDPLANT.value
     )
@@ -84,7 +90,9 @@ def add_plant():
 
 @app.route("/siteadmin/edit_plant/<int:id>", methods=["GET", "POST"])
 def edit_plant(id):
-    
+    """
+    Controller for editing a plant
+    """
     plant = plant_dao.get_plant_by_id(id)
     
     if request.method == "POST":
@@ -132,7 +140,9 @@ def edit_plant(id):
 
 @app.route("/siteadmin/delete_plants/<int:id>", methods=["POST"])
 def delete_plant(id):
-    
+    """
+    Controller for editing a plant
+    """
     plant = plant_dao.get_plant_by_id(id)
     if not plant:
         flash("Plant not found.", "error")

@@ -14,6 +14,9 @@ import pandas as pd
 
 @app.route("/dashboard/analysis-gardening/", methods=["GET"])
 def choices_by_gardening():
+    """
+    Controller to get analysis data by gardening
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
@@ -47,7 +50,6 @@ def choices_by_gardening():
             non_invasive_percentage_display_list.append("{:.2f}".format(100 * non_invasive_perc))
     
     garden_group = ['Gardener', 'Non-Gardener']
-    # years = ['Invasive', 'Non-Invasive']
 
     data = {'garden_group' : garden_group,
             'Invasive'   : invasive_count_list,

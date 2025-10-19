@@ -1,6 +1,9 @@
 import json
 
 class Plant:
+    """
+    Plant model
+    """
     def __init__(
         self,
         id,

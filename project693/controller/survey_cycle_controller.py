@@ -10,4 +10,7 @@ from datetime import datetime
 
 @app.route("/siteadmin/survey_cycle", methods=["GET"])
 def survey_cycle():
+    """
+    Controller to display survey cycle
+    """
     return render_template("admin/survey_cycle.html")

@@ -2,6 +2,11 @@ import pandas as pd
 
 import random
 
+"""
+These are mock data for testing only.
+"""
+
+
 # number of total choices
 total_round = 50
 # assumed propability of invasive plant choice
@@ -147,11 +152,6 @@ for n in range(total_round):
     })
 """
 
-# print(data)
-# print(invasive_map)
-# print(data['winner'])
-# print(data.values.tolist())
-
 survey_data = [
     [39.0, 17.0, 1.0, 0.0, 1.0],
     [35.0, 25.0, 1.0, 0.0, 1.0],
@@ -206,8 +206,6 @@ survey_data = [
 ]
 
 data = pd.DataFrame(survey_data, columns=['winner', 'loser', 'RT', 'invasive_winner', 'invasive_loser'])
-# print(data)
-
 
 for index, row in data.iterrows():
     winner = int(row['winner'])
@@ -218,6 +216,3 @@ for index, row in data.iterrows():
     invasive_map.update({
         loser: 1 if loser <= 34 else 0
     })
-
-
-# print(invasive_map)

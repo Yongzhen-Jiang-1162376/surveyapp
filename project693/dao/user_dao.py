@@ -11,9 +11,13 @@ import json
 
 
 class UserDao(BaseDAO):
+    """
+    Data access object for users
+    """
     def __init__(self) -> None:
         super().__init__()
 
+    # authenticate user
     def authenticate_user(self, user_name, password):
         query = (
             r"select id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status"
@@ -51,6 +55,7 @@ class UserDao(BaseDAO):
         else:
             return None, "Invalid username or password. Please try again."
 
+    # get user details
     def get_user_details(self, user_id):
         query = (
             r"select id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status"
@@ -80,7 +85,7 @@ class UserDao(BaseDAO):
 
             return user
 
-
+    # find email by email
     def find_by_email(self, email):
         query = "SELECT * FROM users WHERE email = %s"
         result = self.execute_query(query, (email,))
@@ -104,6 +109,7 @@ class UserDao(BaseDAO):
             )
         return None
 
+    # get user information by user id
     def find_by_id(self, user_id):
         query = "select id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status from users where id = %s"
         result = self.execute_query(query, (user_id,))
@@ -126,6 +132,7 @@ class UserDao(BaseDAO):
 
         return None
 
+    # update user information
     def update_user(self, user: User):
         query = (
             "update users set username = %s, password_hash = %s, email = %s, first_name = %s, last_name = %s, "
@@ -148,7 +155,7 @@ class UserDao(BaseDAO):
             ),
         )
 
-
+    # update backend user
     def update_backend_user(
         self,
         user_id,
@@ -187,6 +194,7 @@ class UserDao(BaseDAO):
 
         self.execute_non_query(query, params)
 
+    # get user information by user name
     def find_by_username(self, username):
         query = """
             SELECT id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status 
@@ -211,7 +219,7 @@ class UserDao(BaseDAO):
             )
         return None
 
-
+    # get all user information by user id
     def get_full_user_info(self, user_id):
         query = """
             SELECT id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status

@@ -12,6 +12,13 @@ from bokeh.transform import dodge
 import random
 from mockdata import invasive_plants, non_invasive_plants
 
+
+"""
+These are mock data for defining data structure and testing only.
+Functions within this module are not used in production.
+"""
+
+
 # number of total choices
 total_round = 50
 # assumed propability of invasive plant choice
@@ -55,33 +62,12 @@ for n in range(total_round):
     })
     
 
-print(data)
-
 image_ids = sorted(set(data['winner']).union(set(data['loser'])))
 id_to_idx = {img_id: idx for idx, img_id in enumerate(image_ids)}
 idx_to_id = {idx: img_id for img_id, idx in id_to_idx.items()}
 
-print(image_ids)
-
 num_images = len(image_ids)
     
-    # plant = random.choice(invasive_plants)
-    # data['winner'].append(plant[0])
-    # invasive_map.update({
-    #     plant[0]: 1
-    # })
-    
-    # plant = random.choice(non_invasive_plants)
-    # plant['loser'].append(plant[0])
-    # invasive_map.update({
-    #     plant[0]: 0
-    # })
-
-# print(data['winner'])
-# print(data['loser'])
-# print(invasive_map)
-# print(len(invasive_map))
-
 def weighted_log_likelihood(betas, data):
     ll = 0.0
     for _, row in data.iterrows():
@@ -96,7 +82,6 @@ def weighted_log_likelihood(betas, data):
     return -ll
 
 # optimization
-
 betas_init = np.zeros(num_images)
 
 def constraint(betas):
@@ -112,20 +97,10 @@ result = minimize(
 
 beta_estimates = result.x
 
-# print("Estimated Attractiveness Scores (β):")
-# for i, beta in enumerate(beta_estimates):
-#     img_id = idx_to_id[i]
-#     print(f"Image {img_id} (Invasive={invasive_map[img_id]}): beta = {beta:.3f}")
-
 
 # compare invasive vs. non-invasive
 invasive_betas = [beta_estimates[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
 non_invasive_betas = [beta_estimates[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
-
-# print("\nMean beta (invasive):", np.mean(invasive_betas))
-# print("\nMean beta (non-invasive):", np.mean(non_invasive_betas))
-
-
 
 # Normalization of Betas
 beta_min = beta_estimates.min()
@@ -137,18 +112,9 @@ beta_scaled_0_1 = (beta_estimates - beta_min) / (beta_max - beta_min)
 # rescale to [-1, +1]
 beta_normalized = beta_scaled_0_1 * 2 - 1
 
-# print("Normalized Attractiveness Scores (β) [-1, +1]:")
-# for i, beta in enumerate(beta_normalized):
-#     img_id = idx_to_id[i]
-#     print(f"Image {img_id} (Invasive={invasive_map[img_id]}): beta = {beta:.3f}")
-
 # compare normalized invasive vs. non-invasive
 normalized_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 1]
 normalized_non_invasive_betas = [beta_normalized[id_to_idx[key]] for key, value in invasive_map.items() if value == 0]
-
-# print("\nMean normalized beta (invasive):", np.mean(normalized_invasive_betas))
-# print("\nMean normalized beta (non-invasive):", np.mean(normalized_non_invasive_betas))
-
 
 # Calculate in percentage
 wins = data['winner'].value_counts()
@@ -164,7 +130,6 @@ plot_data = {
     'bradley_terry_beta': [],
     'label_color': []
 }
-
 
 win_percentages_dict = win_percentages.to_dict()
 
@@ -194,8 +159,6 @@ p = figure(
     height=600,
     sizing_mode="stretch_width"
 )
-
-# p.circle("win_percentage", "bradley_terry_beta", size=8, source=source, color="navy", alpha=0.6)
 
 p.scatter("win_percentage", "bradley_terry_beta", size=8, marker="circle", source=source, color="navy", alpha=0.6)
 
@@ -230,7 +193,6 @@ p.vbar(x="names", top="score", width=0.6, color="color", source=source)
 p.xaxis.major_label_orientation = 0.785
 
 show(p)
-
 
 
 # Histogram of Attractiveness Scores by Plant Type
@@ -272,16 +234,10 @@ show(p)
 
 
 # Wins/Losses Chart
-print(invasive_map)
-print(all_plants)
 images = [all_plants[id] for id in image_ids]
-print(images)
 
 wins = [int((data['winner'] == id).sum()) for id in image_ids]
 losses = [int((data['loser'] == id).sum()) for id in image_ids]
-
-print(wins)
-print(losses)
 
 source = ColumnDataSource(data=dict(
     images=images,

@@ -5,6 +5,9 @@ from project693.model.enums import (
 
 
 class User:
+    """
+    User model
+    """
     def __init__(
         self,
         id,

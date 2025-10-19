@@ -173,3 +173,8 @@ project693/dao/connect.py
 
 # npm
 node_modules/
+
+
+# add tracking for js and css lib
+!project693/static/css/lib/
+!project693/static/js/lib/

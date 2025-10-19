@@ -10,7 +10,9 @@ from datetime import datetime
 
 @app.route("/siteadmin/configuration", methods=["GET", "POST"])
 def configuration():
-    
+    """
+    Controller to update site configuration settings
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.CONFIGURATION.value
     )

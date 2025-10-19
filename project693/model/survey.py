@@ -1,4 +1,7 @@
 class SurveyMetadata:
+    """
+    Survey model
+    """
     def __init__(self, session_id, has_garden=None, age=None, reasoning=None):
         self.session_id = session_id
         self.has_garden = has_garden
@@ -24,6 +27,9 @@ class SurveyMetadata:
 
 
 class SurveyAnswer:
+    """
+    Survey answer model
+    """
     def __init__(self, session_id, question_number, selected_plant_id, image_1_id, image_2_id, response_time):
         self.session_id = session_id
         self.question_number = question_number
