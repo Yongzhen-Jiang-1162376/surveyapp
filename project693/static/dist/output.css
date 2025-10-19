@@ -485,9 +485,6 @@
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
-  .ml-auto {
-    margin-left: auto;
-  }
   .\!flex {
     display: flex !important;
   }
@@ -1098,9 +1095,6 @@
   .bg-red-400 {
     background-color: var(--color-red-400);
   }
-  .bg-red-500 {
-    background-color: var(--color-red-500);
-  }
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
@@ -1502,14 +1496,6 @@
   .duration-500 {
     --tw-duration: 500ms;
     transition-duration: 500ms;
-  }
-  .ease-in {
-    --tw-ease: var(--ease-in);
-    transition-timing-function: var(--ease-in);
-  }
-  .ease-out {
-    --tw-ease: var(--ease-out);
-    transition-timing-function: var(--ease-out);
   }
   .file\:mr-3 {
     &::file-selector-button {
@@ -2553,10 +2539,6 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-ease {
-  syntax: "*";
-  inherits: false;
-}
 @property --tw-content {
   syntax: "*";
   initial-value: "";
@@ -2617,7 +2599,6 @@
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-duration: initial;
-      --tw-ease: initial;
       --tw-content: "";
       --tw-divide-x-reverse: 0;
     }
