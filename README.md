@@ -10,3 +10,7 @@
 
 ## Compile Tailwind CSS into fully generated CSS file
 npx @tailwindcss/cli -i ./project693/static/src/input.css -o ./project693/static/dist/output.css --watch
+
+
+## Documents
+Please see instruction and deployment documents under documents folder
