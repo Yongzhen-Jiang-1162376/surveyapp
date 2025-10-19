@@ -435,6 +435,15 @@ class SurveyDAO(BaseDAO):
         print('------------------------- result ----------------------')
         print(result)
         return 1 if result[0][0] else 0
+    
+    def survey_results_available_for_cycle(self, cycle_id):
+        query = """
+            select count(1) as total from survey_results where cycle_id = %s;
+        """
+        result = self.execute_query(query, (cycle_id,))
+        print('------------------------- result ----------------------')
+        print(result)
+        return 1 if result[0][0] else 0
 
     # get survey preference summary data
     def get_survey_preference_summary(self):
