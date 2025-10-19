@@ -165,7 +165,8 @@ class SurveyDAO(BaseDAO):
         
         query = """
             select 
-                id as cycle_id, 
+                id as cycle_id,
+                concat('C', date_format(ifnull(start_time, now()), '%d%m%Y'), '-', id) as cycle_code,
                 date_format(start_time, '%d-%m-%Y %H:%i:%S') as start_time,
                 date_format(end_time, '%d-%m-%Y %H:%i:%S') as end_time,
                 m.survey_participants,

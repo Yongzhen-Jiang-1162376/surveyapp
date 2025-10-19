@@ -136,7 +136,7 @@
                 <th scope="col" class="px-6 py-3 text-start">
                   <div class="flex items-center gap-x-2">
                     <span class="text-sm font-semibold uppercase text-gray-800">
-                      Internal Cycle Id
+                      Cycle Id
                     </span>
                   </div>
                 </th>
@@ -278,7 +278,8 @@ const ajaxDataTable = new AjaxDataTable({
   downloadBtnId: "downloadBtn",
   rowsPerPage: 10,
   columns: [
-    { key: 'cycle_id', header: 'Cycle ID' },
+    //{ key: 'cycle_id', header: 'Cycle ID', hidden: true },
+    { key: 'cycle_code', header: 'Cycle ID' },
     { key: 'start_time', header: 'Start Time' },
     { key: 'end_time', header: 'End Time' },
     { key: 'survey_participants', header: 'Survey Participants' },

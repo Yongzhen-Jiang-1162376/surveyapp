@@ -209,6 +209,7 @@ def get_survey_cycle_data():
 
     columns = [
         'cycle_id',
+        'cycle_code',
         'start_time',
         'end_time',
         'survey_participants',

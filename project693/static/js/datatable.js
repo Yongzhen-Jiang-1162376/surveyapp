@@ -143,7 +143,7 @@ export class AjaxDataTable {
         this.tableBody.querySelectorAll('.close-btn').forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 const row = this.datatable[index];
-                console.log(row.cycle_id);
+                console.log(row);
                 this.closeSurvey(btn);
             });
         });
