@@ -3,6 +3,9 @@ from enum import Enum
 
 
 class SessionManager:
+    """
+    Session management class
+    """
     # Session keys as constants
     USER = "user"
     ACTIVE_PAGE = "active_page"

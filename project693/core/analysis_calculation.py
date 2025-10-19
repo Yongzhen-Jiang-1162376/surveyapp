@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 from collections import OrderedDict
 
+# Sample Config dict
 # config = {
 #     'id_to_idx': None,
 #     'idx_to_id': None,
@@ -33,7 +34,8 @@ from collections import OrderedDict
 #     'image_ids': None
 # }
 
-
+# initialize for Bradley-Terry model calculation
+# data are fetched from database and saved into a pandas data framework for calculation
 def initialize(cycle_id=None):
     
     config = {
@@ -53,7 +55,6 @@ def initialize(cycle_id=None):
         'image_ids': None
     }
     
-    # print('---------------------- initialize ---------------------------')
     analysis_dao = AnalysisDAO()
 
     all_plants_from_db = analysis_dao.list_survey_plants(cycle_id)
@@ -100,6 +101,7 @@ def initialize(cycle_id=None):
     return config
 
 
+# weighted log likelihood function to calculate bradley-terry model beta scores
 def weighted_log_likelihood(betas, config):
     ll = 0.0
     
@@ -115,6 +117,7 @@ def weighted_log_likelihood(betas, config):
     return -ll
 
 
+# unweighted log likelihood function to calculate bradley-terry model beta scores
 def unweighted_log_likelihood(betas, config):
     ll = 0.0
     for _, row in config['data'].iterrows():
@@ -127,10 +130,14 @@ def unweighted_log_likelihood(betas, config):
         ll += weight * np.log(p + 1e-9)
     return -ll
 
+
+# constraint function to calculate beta scores
 def constraint(betas):
     return betas[-1]
 
 
+# function to calculate weighted beta scores
+# use scipy.minimize function
 def calc_weighted_beta_estimates(config):
     if config['data'] is None or len(config['data']) == 0:
         return np.array(config['betas_init'])
@@ -144,6 +151,8 @@ def calc_weighted_beta_estimates(config):
     )
     return result.x
 
+# function to calculate unweighted beta scores
+# use scipy.minimize function
 def calc_unweighted_beta_estimates(config):
     if config['data'] is None or len(config['data']) == 0:
         return np.array(config['betas_init'])
@@ -157,9 +166,8 @@ def calc_unweighted_beta_estimates(config):
     )
     return result.x
 
-# weighted_betas = calc_weighted_beta_estimates()
-# unweighted_betas = calc_unweighted_beta_estimates()
 
+# normalize beta scores
 def calc_normalized_betas(betas):
     betas = np.array(betas)
     
@@ -177,10 +185,8 @@ def calc_normalized_betas(betas):
     
     return beta_normalized
 
-# weighted_beta_normalized = calc_normalized_betas(weighted_betas)
-# unweighted_beta_normalized = calc_normalized_betas(unweighted_betas)
 
-# calculate probability matrix
+# calculate probability matrix used in heat map
 def probability_matrix(betas):
     n = len(betas)
     prob_matrix = np.zeros((n, n))
@@ -195,12 +201,6 @@ def probability_matrix(betas):
 
 # 1. scatter chart beta vs win percentage 
 def beta_vs_win_percentage_V2(db_rows, weighted=1):
-    
-    # analysis_dao = AnalysisDAO()
-    # rows = analysis_dao.list_beta_score_win_percentage_by_cycle_id(cycle_id)
-    
-    # row data returned from db
-    # cycle_id, plant_id, plant_name, invasiveness, win_percentage, bt_beta_score, bt_beta_score_weighted
     
     plot_data = {
         'plant': [r[2] for r in db_rows],
@@ -267,6 +267,7 @@ def beta_vs_win_percentage_datatable(config):
     return rows
 
 
+# generate plot data for beat scores by plant image
 def beta_scores_by_image_V2(db_rows, weighted=1):
    
     plot_data = {
@@ -292,6 +293,7 @@ def beta_scores_by_image_V2(db_rows, weighted=1):
     return plot
 
 
+# generate plot data for beta scores by plant type for histogram chart
 def beta_scores_by_plant_type_V2(db_rows, weighted=1):
     
     beta_normalized = [r[6] if weighted else r[5] for r in db_rows]
@@ -377,7 +379,7 @@ def beta_scores_by_plant_type_datatable(config):
 
     return rows
 
-
+# generate plot data for win/loss chart by plant image
 def win_loss_by_image_V2(db_rows, weighted=1):
     
     plot_data = {
@@ -437,6 +439,7 @@ def win_loss_by_plant_datatable(config):
     return rows
 
 
+# generate plot data for beta scores by heat map
 def beta_scores_heat_map_V2(db_rows, weighted=1):
     
     betas = [r[6] if weighted else r[5] for r in db_rows]
@@ -473,9 +476,6 @@ def beta_scores_heat_map_V2(db_rows, weighted=1):
     # plot.xaxis.major_label_orientation = np.pi/4
     plot.xaxis.major_label_orientation = "vertical"
     
-    
-    # plot.xaxis.visible = False
-    # plot.yaxis.visible = False
     
     colors = ["#FFC000" if r[3] == 'invasive' else "#00B050" for r in db_rows]
     
@@ -532,7 +532,7 @@ def beta_score_heat_map_datatable(config):
 
     return rows
 
-
+# generate plot data for beta score ranking
 def beta_scores_ranking_V2(db_rows, weighted=1):
     
     betas = [r[6] if weighted else r[5] for r in db_rows]
@@ -583,7 +583,7 @@ def beta_scores_ranking_V2(db_rows, weighted=1):
     
     return plot
 
-
+# save survey analysis data for current active survey cycle
 def save_survey_cycle_analysis_data():
     config = initialize()
     
@@ -620,6 +620,7 @@ def save_survey_cycle_analysis_data():
     analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
 
 
+# recalcuate analysis data for cycle by cycle id
 def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
     analysis_dao = AnalysisDAO()
     config = initialize(cycle_id)
@@ -653,6 +654,7 @@ def refresh_survey_cycle_analysis_data_by_cycle_id(cycle_id):
     analysis_dao.save_beta_score_win_percentage(rows, cycle_id)
 
 
+# save analysis data for all survey results
 def save_overall_survey_cycle_analysis_data():
     # cycle_id = 0 for all survey results
     config = initialize(cycle_id=0)

@@ -36,14 +36,13 @@ from project693.data.mockdata import invasive_plants, non_invasive_plants, data,
 
 @app.route("/dashboard/bradley-terry-model", methods=["GET"])
 def bradley_terry_model():
+    """
+    Controller to get all analysis data calculated based on bradley-terry model
+    """
     SessionManager.set(
         SessionManager.ACTIVE_PAGE, SessionManager.Page.DASHBOARD.value
     )
     
-    # analysis_dao = AnalysisDAO()
-    # initialize()
-    
-    survey_dao = SurveyDAO()
     analysis_dao = AnalysisDAO()
     
     # cycle_id = 0 to fetch analysis data for ALL survery results
@@ -72,8 +71,6 @@ def bradley_terry_model():
         for r in db_rows
     ]
     
-    # rows = beta_vs_win_percentage_datatable()
-    
     # datatable data
     beta_vs_win_percentage_dt = {
         'columns': list(rows[0].keys()),
@@ -86,8 +83,6 @@ def bradley_terry_model():
     
     beta_scores_by_image_uw_script, beta_scores_by_image_uw_div = components(beta_scores_by_image_uw)
     beta_scores_by_image_w_script, beta_scores_by_image_w_div = components(beta_scores_by_image_w)
-    
-    # rows = beta_score_by_plant_datatable()
     
     rows = [
         {
@@ -111,8 +106,6 @@ def bradley_terry_model():
     
     beta_scores_by_plant_type_uw_script, beta_scores_by_plant_type_uw_div = components(beta_scores_by_plant_type_uw)
     beta_scores_by_plant_type_w_script, beta_scores_by_plant_type_w_div = components(beta_scores_by_plant_type_w)
-    
-    # rows = beta_scores_by_plant_type_datatable()
     
     plant_type_hist_rows = analysis_dao.list_beta_score_by_plant_type_histogram_by_cycle_id(cycle_id)
     
@@ -147,8 +140,6 @@ def bradley_terry_model():
     win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
     win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
     
-    # rows = win_loss_by_plant_datatable()
-    
     win_loss_db_rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
     
     rows = [
@@ -173,8 +164,6 @@ def bradley_terry_model():
     beta_scores_heat_map_w = beta_scores_heat_map_V2(db_rows, weighted=1)
     beta_scores_heat_map_by_image_uw_script, beta_scores_heat_map_by_image_uw_div = components(beta_scores_heat_map_uw)
     beta_scores_heat_map_by_image_w_script, beta_scores_heat_map_by_image_w_div = components(beta_scores_heat_map_w)
-    
-    # rows = beta_score_heat_map_datatable()
     
     # datatable data
     heat_map_rows = analysis_dao.list_beta_score_heat_map_by_plant_by_cycle_id(cycle_id)
@@ -201,8 +190,6 @@ def bradley_terry_model():
     beta_scores_ranking_w = beta_scores_ranking_V2(db_rows, weighted=1)
     beta_scores_ranking_uw_script, beta_scores_ranking_uw_div = components(beta_scores_ranking_uw)
     beta_scores_ranking_w_script, beta_scores_ranking_w_div = components(beta_scores_ranking_w)
-    
-    # rows = beta_score_by_plant_datatable()
     
     # datatable data
     rows = [

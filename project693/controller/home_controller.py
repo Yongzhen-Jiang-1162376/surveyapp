@@ -13,6 +13,9 @@ def format_date(date_obj):
 
 @app.route("/home/", methods=["GET"])
 def site_home():
+    """
+    Controller for home page
+    """
     SessionManager.set(SessionManager.ACTIVE_PAGE, SessionManager.Page.SITEHOME.value)
     
     survey_dao = SurveyDAO()

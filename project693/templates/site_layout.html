@@ -12,13 +12,6 @@
     />
     <script src="{{url_for('static',filename='js/lib/gridjs/gridjs.umd.js')}}"></script>
 
-    <!-- <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
-    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script> -->
-
-    <!-- Notyf CSS -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> -->
-
     <!-- Notyf JS -->
      <link
       rel="stylesheet"
@@ -26,15 +19,10 @@
     />
     <script src="{{url_for('static',filename='js/lib/notyf/notyf.min.js')}}"></script>
     
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/preline@2.5.0/dist/preline.min.js"></script> -->
     <script src="{{url_for('static',filename='js/lib/preline/preline.min.js')}}"></script>
 
     <script src="{{url_for('static',filename='js/lib/bokeh/bokeh.min.js')}}"></script>
-    <!-- <link
-      href="https://cdn.bokeh.org/bokeh/release/bokeh-3.7.3.min.css"
-      rel="stylesheet"
-    /> -->
+
     <script src="{{url_for('static',filename='js/lib/lucide/lucide.min.js')}}"></script>
 
 
@@ -145,83 +133,6 @@
         </div>
       </nav>
     </header>
-
-    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="position: fixed; top: 0; width: 100%; z-index: 1000; background-color: #343a40; padding-top: 5px; padding-bottom: 5px">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
-                    <img src="{{ url_for('static', filename='img/cclogo.png') }}" alt="Logo" style="height: 40px" />
-                    <span class="ms-2">Green Or Mean</span>
-                </a>
-
-                <ul class="navbar-nav align-items-center ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% if session.active_page == 'site_home' %}active{% endif %}" href="{{ url_for('site_home') }}">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if session.active_page in ['list_image_variations'] %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown">
-                            Misc Links
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item {% if session.active_page == 'list_image_variations' %}active{% endif %}" href="{{ url_for('list_image_variations') }}">Image Variation</a>
-                            </li>
-                        </ul>
-                    </li>
-                    {%if not session.user|default('') %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if session.active_page == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
-                    </li>
-                    {% else %}
-
-                    {% if session.user.role == 'siteadmin' %}
-
-                    <li class="nav-item">
-                        <a class="nav-link {% if session.active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if session.active_page in ['add_plant', 'list_plants'] %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown">
-                            Site Management
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item {% if session.active_page == 'add_plant' %}active{% endif %}" href="{{ url_for('add_plant') }}">Add Plants</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item {% if session.active_page == 'list_plants' %}active{% endif %}" href="{{ url_for('list_plants') }}">Plant List</a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endif %}
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ url_for('static', filename='img/' ~ session.user.avatar) }}" alt="Avatar" class="rounded-circle" width="40" height="40" />
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item {% if session.active_page == 'user_profile' %}active{% endif %}" href="{{ url_for('profile') }}">User Profile</a>
-                            </li>
-                            <hr />
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('logout') }}" onclick="confirmLogout(event)">Log Out</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <script type="text/javascript">
-                        function confirmLogout(event) {
-                            event.preventDefault();
-                            if (confirm("Are you sure you want to log out?")) {
-                                window.location.href = event.target.href;
-                            }
-                        }
-                    </script>
-                    {%endif%}
-                </ul>
-            </div>
-        </nav> -->
-
-    <!-- <div style="height: 60px"></div> -->
 
     <main class="min-h-[calc(100vh-100px)]"
     >

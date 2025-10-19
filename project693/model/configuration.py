@@ -1,6 +1,9 @@
 import json
 
 class Configuration:
+    """
+    Configuration model
+    """
     def __init__(
         self,
         id,

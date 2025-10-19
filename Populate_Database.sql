@@ -1,13 +1,15 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 
-truncate table plants;
-truncate table users;
+-- truncate table plants;
+-- truncate table users;
 
 
 INSERT INTO `users` (id, username, password_hash, email, first_name, last_name, location, description, avatar, role, status) VALUES
 (1, 'siteadmin1', 'f8b0c38da5bcf5e7913b51e51a6e7e009c84110f377f0a0f1e178cd99e1bfe2a', 'siteadmin1@example.com', 'John', 'Doe', '{"lat": -45.9, "lon": 170.4}', NULL, 'default.png', 'siteadmin', 'active'),
 (2, 'siteadmin2', '96bd7a2f308098c2e52d1cc3c9e5406f914f08fcf989989e35bc80c16063e455', 'siteadmin2@example.com', 'Jane', 'Smith', '{"lat": -45.0, "lon": 168.7}', NULL, 'default.png', 'siteadmin', 'active');
+
+INSERT INTO `configuration` (number_of_image_pairs) values (10);
 
 
 insert into plants (name, description, image, invasiveness, ai_generated, is_variation)
@@ -48,7 +50,7 @@ values ('Akebia quinata', 'Akebia quinata Weed', 'Akebia quinata Weed.jpg', 'inv
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO `configuration` (number_of_image_pairs) values (10);
+
 
 /*
 SET FOREIGN_KEY_CHECKS = 0;
