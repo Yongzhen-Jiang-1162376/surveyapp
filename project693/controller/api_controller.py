@@ -75,7 +75,8 @@ def get_all_survey_data():
     API controller to all current survey data
     """
     analysis_dao = AnalysisDAO()
-    rows = analysis_dao.list_all_current_survey_results_with_plant_name()
+    # rows = analysis_dao.list_all_current_survey_results_with_plant_name()
+    rows = analysis_dao.list_all_survey_results_with_plant_name()
 
     columns = [
         'session_id',
