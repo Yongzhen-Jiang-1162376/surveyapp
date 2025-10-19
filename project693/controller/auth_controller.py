@@ -137,4 +137,4 @@ def logout():
     session.pop("login_password", None)
     session.pop("user_role", None)
     session.pop("env", None)
-    return redirect(url_for("login"))
+    return redirect(url_for("site_home"))
