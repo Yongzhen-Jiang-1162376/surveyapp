@@ -412,6 +412,72 @@ def win_loss_by_image_V2(db_rows, weighted=1):
     return plot
 
 
+def win_loss_by_image_V2_invasive(db_rows, weighted=1):
+    invasive_rows = [r for r in db_rows if r[3] == 'invasive']
+    
+    plot_data = {
+        'images': [r[2] for r in invasive_rows],
+        'wins': [r[4] for r in invasive_rows],
+        'losses': [r[5] for r in invasive_rows]
+    }
+    
+    source = ColumnDataSource(data=plot_data)
+    
+    title = "Wins/Losses per Image (weighted)" if weighted else "Wins/Losses per Image"
+    
+    plot = figure(x_range=plot_data['images'], height=600, sizing_mode="stretch_width", title=title)
+
+    plot.vbar(x=dodge("images", -0.15, range=plot.x_range), top="wins", width=0.3, source=source,
+        color="#FFC000", legend_label="Wins")
+    plot.vbar(x=dodge("images", 0.15, range=plot.x_range), top="losses", width=0.3, source=source,
+        color="#00B050", legend_label="Losses")
+    
+    # Styling
+    plot.x_range.range_padding = 0.05
+    plot.xgrid.grid_line_color = None
+    plot.y_range.start = 0
+    plot.yaxis.axis_label = "Count"
+    plot.legend.location = "top_left"
+    plot.legend.orientation = "horizontal"
+
+    plot.xaxis.major_label_orientation = 0.785
+    
+    return plot
+
+
+def win_loss_by_image_V2_non_invasive(db_rows, weighted=1):
+    non_invasive_rows = [r for r in db_rows if r[3] == 'non-invasive']
+    
+    plot_data = {
+        'images': [r[2] for r in non_invasive_rows],
+        'wins': [r[4] for r in non_invasive_rows],
+        'losses': [r[5] for r in non_invasive_rows]
+    }
+    
+    source = ColumnDataSource(data=plot_data)
+    
+    title = "Wins/Losses per Image (weighted)" if weighted else "Wins/Losses per Image"
+    
+    plot = figure(x_range=plot_data['images'], height=600, sizing_mode="stretch_width", title=title)
+
+    plot.vbar(x=dodge("images", -0.15, range=plot.x_range), top="wins", width=0.3, source=source,
+        color="#FFC000", legend_label="Wins")
+    plot.vbar(x=dodge("images", 0.15, range=plot.x_range), top="losses", width=0.3, source=source,
+        color="#00B050", legend_label="Losses")
+    
+    # Styling
+    plot.x_range.range_padding = 0.05
+    plot.xgrid.grid_line_color = None
+    plot.y_range.start = 0
+    plot.yaxis.axis_label = "Count"
+    plot.legend.location = "top_left"
+    plot.legend.orientation = "horizontal"
+
+    plot.xaxis.major_label_orientation = 0.785
+    
+    return plot
+
+
 # 4-1 Win/Loss by plant datatable
 def win_loss_by_plant_datatable(config):
     rows = []

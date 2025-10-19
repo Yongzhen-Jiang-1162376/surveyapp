@@ -12,6 +12,8 @@ from project693.core.analysis_calculation import (
     beta_scores_by_plant_type_V2,
     beta_scores_by_plant_type_datatable,
     win_loss_by_image_V2,
+    win_loss_by_image_V2_invasive,
+    win_loss_by_image_V2_non_invasive,
     win_loss_by_plant_datatable,
     beta_scores_heat_map_V2,
     beta_score_heat_map_datatable,
@@ -134,11 +136,28 @@ def bradley_terry_model():
     
     # 4. wins/Losses bar chart
     win_loss_rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
-    win_loss_by_image_uw = win_loss_by_image_V2(win_loss_rows, weighted=0)
-    win_loss_by_image_w = win_loss_by_image_V2(win_loss_rows, weighted=1)
     
-    win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
-    win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
+    # win_loss_rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
+    # win_loss_by_image_uw = win_loss_by_image_V2(win_loss_rows, weighted=0)
+    # win_loss_by_image_w = win_loss_by_image_V2(win_loss_rows, weighted=1)
+    
+    # win_loss_by_image_uw_script, win_loss_by_image_uw_div = components(win_loss_by_image_uw)
+    # win_loss_by_image_w_script, win_loss_by_image_w_div = components(win_loss_by_image_w)
+    
+    
+    # invasive
+    win_loss_by_image_uw_invasive = win_loss_by_image_V2_invasive(win_loss_rows, weighted=0)
+    win_loss_by_image_w_invasive = win_loss_by_image_V2_invasive(win_loss_rows, weighted=1)
+    
+    # non-invasive
+    win_loss_by_image_uw_non_invasive = win_loss_by_image_V2_non_invasive(win_loss_rows, weighted=0)
+    win_loss_by_image_w_non_invasive = win_loss_by_image_V2_non_invasive(win_loss_rows, weighted=1)
+    
+    win_loss_by_image_uw_script_invasive, win_loss_by_image_uw_div_invasive = components(win_loss_by_image_uw_invasive)
+    win_loss_by_image_w_script_invasive, win_loss_by_image_w_div_invasive = components(win_loss_by_image_w_invasive)
+    
+    win_loss_by_image_uw_script_non_invasive, win_loss_by_image_uw_div_non_invasive = components(win_loss_by_image_uw_non_invasive)
+    win_loss_by_image_w_script_non_invasive, win_loss_by_image_w_div_non_invasive = components(win_loss_by_image_w_non_invasive)
     
     win_loss_db_rows = analysis_dao.list_win_loss_by_plant_by_cycle_id(cycle_id)
     
@@ -224,10 +243,14 @@ def bradley_terry_model():
         'beta_scores_by_plant_type_w_script': beta_scores_by_plant_type_w_script,
         'beta_scores_by_plant_type_w_div': beta_scores_by_plant_type_w_div,
         
-        'win_loss_by_image_uw_script': win_loss_by_image_uw_script,
-        'win_loss_by_image_uw_div': win_loss_by_image_uw_div,
-        'win_loss_by_image_w_script': win_loss_by_image_w_script,
-        'win_loss_by_image_w_div': win_loss_by_image_w_div,
+        'win_loss_by_image_uw_script_invasive': win_loss_by_image_uw_script_invasive,
+        'win_loss_by_image_uw_div_invasive': win_loss_by_image_uw_div_invasive,
+        'win_loss_by_image_uw_script_non_invasive': win_loss_by_image_uw_script_non_invasive,
+        'win_loss_by_image_uw_div_non_invasive': win_loss_by_image_uw_div_non_invasive,
+        'win_loss_by_image_w_script_invasive': win_loss_by_image_w_script_invasive,
+        'win_loss_by_image_w_div_invasive': win_loss_by_image_w_div_invasive,
+        'win_loss_by_image_w_script_non_invasive': win_loss_by_image_w_script_non_invasive,
+        'win_loss_by_image_w_div_non_invasive': win_loss_by_image_w_div_non_invasive,
         
         'beta_scores_heat_map_by_image_uw_script': beta_scores_heat_map_by_image_uw_script,
         'beta_scores_heat_map_by_image_uw_div': beta_scores_heat_map_by_image_uw_div,
